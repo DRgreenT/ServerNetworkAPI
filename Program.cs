@@ -1,7 +1,9 @@
 using NetworkAPI.Services;
+using Microsoft.Extensions.Logging; 
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.SetMinimumLevel(LogLevel.Error);
 builder.Services.AddControllers();
 builder.Services.AddSingleton<NetworkScannerService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<NetworkScannerService>());
@@ -14,6 +16,8 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+
 
 var app = builder.Build();
 
