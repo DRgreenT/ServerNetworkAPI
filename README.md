@@ -74,10 +74,10 @@ To access the API from another device in your local network, make sure port 5050
 If you want to use the included localSystems.html template for visualizing the API data,
 please make sure to adjust the IP address in the following line:
 
-```const response = await fetch("http://192.168.178.10:5050/network");```
+```var localHostIP = "192.168.178.10";```
 
 Change the IP (192.168.178.10) to match the device where your API is hosted.
-This line is located around line 71 in the localSystems.html file.
+This line is located line 1 in the `./JS/script.js` file.
 
 ### Available parameters:
        
