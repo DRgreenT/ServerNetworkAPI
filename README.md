@@ -64,6 +64,19 @@ sudo pacman -S nmap      # Arch Linux, Manjaro
 sudo dnf install nmap    # Fedora
 sudo zypper install nmap # openSUSE
 
+To access the API from another device in your local network, make sure port 5050 is open:
+sudo ufw allow 5050                                                              # Debian/Ubuntu (with UFW enabled)
+sudo firewall-cmd --add-port=5050/tcp --permanent && sudo firewall-cmd --reload  # Fedora/CentOS
+sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT                             # Fallback (legacy systems)
+
+If you want to use the included localSystems.html template for visualizing the API data,
+please make sure to adjust the IP address in the following line:
+
+```const response = await fetch("http://192.168.178.10:5050/network");```
+
+Change the IP (192.168.178.10) to match the device where your API is hosted.
+This line is located around line 71 in the localSystems.html file.
+
 ---
 
 ## Build (Net9.0 SDK required)
