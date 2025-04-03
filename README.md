@@ -1,4 +1,4 @@
-# 💻 ServerNetworkAPI (v0.1a)
+# 💻 ServerNetworkAPI (v0.1b)
 
 A minimalistic Web API that scans your local IPv4 network and provides information like IP, OS, and open ports of all reachable devices.
 
@@ -9,6 +9,7 @@ Currently built with **.NET 9.0**.
 ## Features
 
 - Automatic network scan (IPv4 local)
+- CLI arguments
 - Logfile
 - RESTful Web API (JSON output)
 - Device & Port scanning via `nmap`
@@ -21,13 +22,13 @@ Currently built with **.NET 9.0**.
 ## Preview
 
 ### Terminal Output (Linux)
-<img src="./docs/networkAPI_1.png" alt="Linux Output" width="800"/>
+<img src="./dev/docs/networkAPI_1.png" alt="Linux Output" width="800"/>
 
 ### Web Output (HTML Raw)
-<img src="./docs/networkAPI_2.png" alt="Web Output(json)" width="800"/>
+<img src="./dev/docs/networkAPI_2.png" alt="Web Output(json)" width="800"/>
 
 ### Web Output (HTML frontend example)
-<img src="./docs/networkAPI_3_FrontEnd.png" alt="Web Output(html)" width="800"/>
+<img src="./dev/docs/networkAPI_3_FrontEnd.png" alt="Web Output(html)" width="800"/>
 
 ---
 
