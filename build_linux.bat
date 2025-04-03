@@ -1,35 +1,74 @@
 @echo off
+setlocal
 
-rd /s /q publish\linux
+set PROJECT_NAME=ServerNetworkAPI
+set CONFIG=Release
+set RUNTIME=linux-x64
+set OUTPUT=publish\linux
+set ZIPFILE=publish\linux.zip
 
-dotnet publish ServerNetworkAPI.csproj -c Release -r linux-x64 --self-contained true -o publish\linux
+echo ========================
+echo CLEANING PREVIOUS BUILD
+echo ========================
+if exist %OUTPUT% (
+    echo Deleting %OUTPUT% ...
+    rd /s /q %OUTPUT%
+)
+
+echo ========================
+echo BUILDING PROJECT
+echo ========================
+dotnet publish %PROJECT_NAME%.csproj -c %CONFIG% -r %RUNTIME% --self-contained true -o %OUTPUT%
 
 timeout /t 2 >nul
 
+echo ========================
+echo CLEANING BIN / OBJ FOLDER
+echo ========================
+
 if exist bin (
-    echo trying to delete "/Bin" ...
+    echo Trying to delete "/bin" ...
     rd /s /q bin
     if exist bin (
-        echo error!
+        echo Error deleting bin
     ) else (
-        echo done!
+        echo Bin deleted
     )
 )
 
 if exist obj (
-    echo trying to delete "/Obj" ...
+    echo Trying to delete "/obj" ...
     rd /s /q obj
     if exist obj (
-        echo error
+        echo Error deleting obj
     ) else (
-        echo done!
+        echo Obj deleted
     )
 )
 
-if exist publish\linux\publish (
-    echo deleting pubish\linux\publish...
-    rd /s /q publish\linux\publish
-    echo done!
+if exist %OUTPUT%\publish (
+    echo Deleting %OUTPUT%\publish ...
+    rd /s /q %OUTPUT%\publish
+    echo Done
 )
 
+echo ========================
+echo CREATING ZIP ARCHIVE
+echo ========================
+if exist %ZIPFILE% (
+    echo Previous ZIP exists. Deleting...
+    del /f /q %ZIPFILE%
+)
+
+powershell -Command "Compress-Archive -Path '%OUTPUT%\*' -DestinationPath '%ZIPFILE%' -Force"
+
+if exist %ZIPFILE% (
+    echo ZIP created: %ZIPFILE%
+) else (
+    echo Failed to create ZIP
+)
+
+echo ========================
+echo ALL DONE
+echo ========================
 pause
