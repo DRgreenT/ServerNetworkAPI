@@ -79,6 +79,15 @@ please make sure to adjust the IP address in the following line:
 Change the IP (192.168.178.10) to match the device where your API is hosted.
 This line is located around line 71 in the localSystems.html file.
 
+### Available parameters:
+       
+--help/-help           Shows this help message
+--t {int}              Delay between loops in seconds (default: 5 min: 1 max:3600)
+--p {int}              Web API port (default: 5050)
+--c {string}           Controller name (default: 'network')
+--nmap                 Set nmap scan inactive (ping only)
+--fip {string}         Default fallback IP mask 192.168.178. 
+
 ---
 
 ## Build (Net9.0 SDK required)
