@@ -42,7 +42,7 @@ At shutdown, all scan results are saved to disk and restored at the next start.
 
 ## 🛠️ Run
 You can download the **latest prebuilt Linux release** here:  
-👉 [📦 Download from GitHub](https://github.com/DRgreenT/ServerNetworkAPI/tree/main/publish/linux)
+👉 [📦 Download from GitHub]()
 
 Simply copy the binary to your Linux machine and execute it:
 
