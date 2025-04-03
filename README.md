@@ -81,12 +81,12 @@ This line is located around line 71 in the localSystems.html file.
 
 ### Available parameters:
        
---help/-help           Shows this help message
---t {int}              Delay between loops in seconds (default: 5 min: 1 max:3600)
---p {int}              Web API port (default: 5050)
---c {string}           Controller name (default: 'network')
---nmap                 Set nmap scan inactive (ping only)
---fip {string}         Default fallback IP mask 192.168.178. 
+`--help/-help`           Shows this help message<br>
+`--t {int}`              Delay between loops in seconds (default: 5 min: 1 max:3600)<br>
+`--p {int}`              Web API port (default: 5050)<br>
+`--c {string}`           Controller name (default: 'network')<br>
+`--nmap`                 Set nmap scan inactive (ping only)<br>
+`--fip {string}`         Default fallback IP mask 192.168.178.<br> 
 
 ---
 
