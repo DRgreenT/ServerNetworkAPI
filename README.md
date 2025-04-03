@@ -14,6 +14,7 @@ Currently built with **.NET 9.0**.
 - Device & Port scanning via `nmap`
 - OS recognition (basic detection implemented)
 - Persistent device data (loaded on startup)
+- HTML GUI template
 
 ---
 
@@ -35,8 +36,8 @@ Currently built with **.NET 9.0**.
 The application continuously scans the local network using ICMP (ping) to detect active devices.  
 Once a device responds, it runs a detailed `nmap` scan to gather more info such as:
 
-- Open TCP ports
-- Basic OS fingerprinting
+- Open ports
+- Very basic OS fingerprinting
 - Hostname
 
 At shutdown, all scan results are saved to disk and restored at the next start.
@@ -58,16 +59,16 @@ Simply copy the binary to your Linux machine, unpack and execute it:
 chmod +x ServerNetworkAPI
 ./ServerNetworkAPI
 ```
-To run the program [nmap] is mandator, you can check with ```nmap --version```; in case its not installed than:
-sudo apt install nmap    # Debian, Ubuntu, Raspberry Pi OS
-sudo pacman -S nmap      # Arch Linux, Manjaro
-sudo dnf install nmap    # Fedora
-sudo zypper install nmap # openSUSE
+To run the program [nmap] is mandator, you can check with ```nmap --version```; in case its not installed than:<br>
+sudo apt install nmap    # Debian, Ubuntu, Raspberry Pi OS<br>
+sudo pacman -S nmap      # Arch Linux, Manjaro<br>
+sudo dnf install nmap    # Fedora<br>
+sudo zypper install nmap # openSUSE<br>
 
-To access the API from another device in your local network, make sure port 5050 is open:
-sudo ufw allow 5050                                                              # Debian/Ubuntu (with UFW enabled)
-sudo firewall-cmd --add-port=5050/tcp --permanent && sudo firewall-cmd --reload  # Fedora/CentOS
-sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT                             # Fallback (legacy systems)
+To access the API from another device in your local network, make sure port 5050 is open:<br>
+sudo ufw allow 5050                                                              # Debian/Ubuntu (with UFW enabled)<br>
+sudo firewall-cmd --add-port=5050/tcp --permanent && sudo firewall-cmd --reload  # Fedora/CentOS<br>
+sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT                             # Fallback (legacy systems)<br>
 
 If you want to use the included localSystems.html template for visualizing the API data,
 please make sure to adjust the IP address in the following line:
@@ -80,9 +81,9 @@ This line is located around line 71 in the localSystems.html file.
 ---
 
 ## Build (Net9.0 SDK required)
-git clone https://github.com/DRgreenT/ServerNetworkAPI.git
-cd ServerNetworkAPI
-dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
+git clone https://github.com/DRgreenT/ServerNetworkAPI.git<br>
+cd ServerNetworkAPI<br>
+dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true<br>
 
 ---
 
