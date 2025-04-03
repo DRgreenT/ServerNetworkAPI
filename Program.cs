@@ -1,7 +1,4 @@
-using NetworkAPI.Services;
-using NetworkAPI; 
-
-var builder = WebApplication.CreateBuilder(args);
+using ServerNetworkAPI.dev;
 
 var startArgs = CLIArgsParser.GetArgs(args);
 
@@ -12,14 +9,18 @@ if (startArgs.ShowHelp)
 }
 else
 {
-    Settings.WebApiPort = startArgs.Port;
-    Settings.timeOut = startArgs.TimeoutSeconds;
-    Settings.WebApiName = startArgs.ControllerName;
 
+    Init.WebApiPort = startArgs.Port;
+    Init.timeOut = startArgs.TimeoutSeconds;
+    Init.WebApiName = startArgs.ControllerName;
+    Init.isNmapScanActive = startArgs.NmapScanActive;
+    Init.fallbackIpMask = startArgs.FallbackIpMask;
+
+    var builder = WebApplication.CreateBuilder(args);
     builder.Logging.SetMinimumLevel(LogLevel.Error);
     builder.Services.AddControllers();
-    builder.Services.AddSingleton<NetworkScannerService>();
-    builder.Services.AddHostedService(sp => sp.GetRequiredService<NetworkScannerService>());
+    builder.Services.AddSingleton<NetworkScan>();
+    builder.Services.AddHostedService(sp => sp.GetRequiredService<NetworkScan>());
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowAll", policy =>
@@ -35,7 +36,7 @@ else
 
     app.UseAuthorization();
     app.MapControllers();
-    app.Run("http://0.0.0.0:" + Settings.WebApiPort);
+    app.Run("http://0.0.0.0:" + Init.WebApiPort);
 }
 
 
