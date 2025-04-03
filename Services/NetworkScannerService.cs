@@ -2,8 +2,6 @@ using System.Net;
 using System.Text.Json;
 using NetworkAPI.Models;
 using NetworkAPI.Outputs;
-using System.Diagnostics;
-using Microsoft.Win32.SafeHandles;
 
 namespace NetworkAPI.Services
 {
@@ -61,7 +59,7 @@ namespace NetworkAPI.Services
 
                         foreach (var ip in localIPs)
                         {
-                            Console.WriteLine($"->  http://{ip}:{ApiControllerSettings.WebApiPort}/{ApiControllerSettings.WebApiName}");
+                            Console.WriteLine($"->  http://{ip}:{Settings.WebApiPort}/{Settings.WebApiName}");
                         }
                     }
                 }
@@ -105,7 +103,7 @@ namespace NetworkAPI.Services
                     Console.Write($"Scans: {scanCount}, Devices found: {_devices.Count}, avg scan time: {avgDuration.TotalSeconds:F1}s");
                     Output.Log($"Scan #{scanCount} completed in {scanDuration.TotalSeconds:F1}s. Devices found: {_devices.Count}", false);
                 }
-                await Task.Delay(TimeSpan.FromSeconds(ApiControllerSettings.timeOut), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(Settings.timeOut), stoppingToken);
             }
         }
 
