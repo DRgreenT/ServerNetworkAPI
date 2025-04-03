@@ -11,7 +11,7 @@ namespace NetworkAPI.Services
     {
         private readonly List<Device> _devices = new();
         private readonly object _lock = new();
-        private const string SaveFilePath = "devices.json";
+        private readonly string SaveFilePath = Output.baseDir + "devices.json";
         private bool isOnExit = false;
         private string localIP = "";
 
