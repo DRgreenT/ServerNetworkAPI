@@ -25,4 +25,4 @@ app.UseCors("AllowAll"); // Wichtig: Muss VOR UseAuthorization stehen
 
 app.UseAuthorization();
 app.MapControllers();
-app.Run("http://0.0.0.0:5050");
+app.Run("http://0.0.0.0:" + ApiControllerSettings.WebApiPort);
