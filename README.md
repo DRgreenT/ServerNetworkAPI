@@ -22,8 +22,11 @@ Currently built with **.NET 9.0**.
 ### Terminal Output (Linux)
 <img src="./docs/networkAPI_1.png" alt="Linux Output" width="800"/>
 
-### Web Output (HTML)
-<img src="./docs/networkAPI_2.png" alt="Web Output" width="800"/>
+### Web Output (HTML Raw)
+<img src="./docs/networkAPI_2.png" alt="Web Output(json)" width="800"/>
+
+### Web Output (HTML frontend example)
+<img src="./docs/networkAPI_3_FrontEnd.png" alt="Web Output(html)" width="800"/>
 
 ---
 
@@ -39,6 +42,11 @@ Once a device responds, it runs a detailed `nmap` scan to gather more info such 
 At shutdown, all scan results are saved to disk and restored at the next start.
 
 ---
+## 🔧 Requirements
+
+- Linux x64 System
+- [.NET 9.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) (only needed if you build it your self)
+- [nmap](https://nmap.org/) installed and accessible via command line
 
 ## Run
 You can download the **latest prebuilt Linux release** here:  
@@ -50,7 +58,7 @@ Simply copy the binary to your Linux machine, unpack and execute it:
 chmod +x ServerNetworkAPI
 ./ServerNetworkAPI
 ```
-To run the program [nmap] is mandator, you can check with nmap --version in case its not installed than:
+To run the program [nmap] is mandator, you can check with ```nmap --version```; in case its not installed than:
 sudo apt install nmap    # Debian, Ubuntu, Raspberry Pi OS
 sudo pacman -S nmap      # Arch Linux, Manjaro
 sudo dnf install nmap    # Fedora
@@ -62,4 +70,13 @@ sudo zypper install nmap # openSUSE
 git clone https://github.com/DRgreenT/ServerNetworkAPI.git
 cd ServerNetworkAPI
 dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
+
+---
+
+## Disclaimer
+
+This project is intended for **educational and local testing purposes only**.  
+Please use `nmap` **only in networks where you have explicit authorization**.  
+The developer takes **no responsibility** for any damage, malfunctions, or legal consequences resulting from improper use.
+
 
