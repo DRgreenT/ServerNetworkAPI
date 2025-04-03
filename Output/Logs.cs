@@ -2,7 +2,7 @@ namespace NetworkAPI.Outputs
 {   
     public class Output
     {
-        private static readonly string baseDir = AppContext.BaseDirectory;
+        public static readonly string baseDir = AppContext.BaseDirectory;
         private static readonly string logDir = Path.Combine(baseDir,"Log");
         private static readonly string logFilePath = Path.Combine(logDir,"scanlog.txt");
 
