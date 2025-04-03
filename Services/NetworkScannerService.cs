@@ -105,9 +105,7 @@ namespace NetworkAPI.Services
                     Console.Write($"Scans: {scanCount}, Devices found: {_devices.Count}, avg scan time: {avgDuration.TotalSeconds:F1}s");
                     Output.Log($"Scan #{scanCount} completed in {scanDuration.TotalSeconds:F1}s. Devices found: {_devices.Count}", false);
                 }
-
-
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(ApiControllerSettings.timeOut), stoppingToken);
             }
         }
 
@@ -136,10 +134,6 @@ namespace NetworkAPI.Services
             }
             await base.StopAsync(cancellationToken);
         }
-
-
-
-
         
         private async Task ScanNetwork()
         {                     
@@ -158,8 +152,6 @@ namespace NetworkAPI.Services
                 catch { }
 
                 string os = NetworkTasks.GetOS(nmapData);
-
-
 
                 lock (_lock)
                 {
