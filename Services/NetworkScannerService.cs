@@ -3,6 +3,7 @@ using System.Text.Json;
 using NetworkAPI.Models;
 using NetworkAPI.Outputs;
 using System.Diagnostics;
+using Microsoft.Win32.SafeHandles;
 
 namespace NetworkAPI.Services
 {
@@ -11,7 +12,8 @@ namespace NetworkAPI.Services
         private readonly List<Device> _devices = new();
         private readonly object _lock = new();
         private const string SaveFilePath = "devices.json";
-        private const int WebApiPort = 5050;
+        private bool isOnExit = false;
+        private string localIP = "";
 
         public List<Device> GetDevices()
         {
@@ -31,12 +33,9 @@ namespace NetworkAPI.Services
                     .ToList();
             }
         }
-
-        string localIP = "";
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            localIP = GetLocalNetworkPrefix();
+            localIP = NetworkTasks.GetLocalNetworkPrefix();
             if (File.Exists(SaveFilePath))
             {
                 try
@@ -62,7 +61,7 @@ namespace NetworkAPI.Services
 
                         foreach (var ip in localIPs)
                         {
-                            Console.WriteLine($"->  http://{ip}:{WebApiPort}/network");
+                            Console.WriteLine($"->  http://{ip}:{ApiControllerSettings.WebApiPort}/{ApiControllerSettings.WebApiName}");
                         }
                     }
                 }
@@ -93,10 +92,20 @@ namespace NetworkAPI.Services
                     isInitialScan = false;
                     Console.Write("done!\n");
                 }
-                Output.OverrideConsoleLine(coursorRow);
-                Console.Write($"Scans: {scanCount}, Devices found: {_devices.Count}, avg scan time: {avgDuration.TotalSeconds:F1}s");
+                if(!isOnExit)
+                {
+                    if(coursorRow <= Console.CursorTop)
+                    {
+                        for(int i = Console.CursorTop; i > coursorRow; i--) 
+                        {
+                            Output.OverrideConsoleLine(coursorRow);
+                        }
+                    }
+                    Output.OverrideConsoleLine(coursorRow);
+                    Console.Write($"Scans: {scanCount}, Devices found: {_devices.Count}, avg scan time: {avgDuration.TotalSeconds:F1}s");
+                    Output.Log($"Scan #{scanCount} completed in {scanDuration.TotalSeconds:F1}s. Devices found: {_devices.Count}", false);
+                }
 
-                Output.Log($"Scan #{scanCount} completed in {scanDuration.TotalSeconds:F1}s. Devices found: {_devices.Count}", false);
 
                 await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
             }
@@ -104,79 +113,41 @@ namespace NetworkAPI.Services
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
+            if(!isOnExit)
+            {
+                isOnExit = true;
+            }
             List<Device> snapshot;
             lock (_lock)
             {
                 snapshot = _devices.ToList();
             }
-
+            Console.WriteLine("\n");
+            Output.OverrideConsoleLine(Console.CursorTop);
             try
             {
                 var json = JsonSerializer.Serialize(snapshot, new JsonSerializerOptions { WriteIndented = true });
                 await File.WriteAllTextAsync(SaveFilePath, json);
-                Output.Log("\nDevice list saved.\n");
+                Output.Log(" Device list saved.\n");
             }
             catch (Exception ex)
             {
-                Output.Log($"Error while saving device list: {ex.Message}");
+                Output.Log($" Error while saving device list: {ex.Message}");
             }
-
             await base.StopAsync(cancellationToken);
         }
 
-        private string GetLocalNetworkPrefix()
-        {
-            var localIPs = Dns.GetHostEntry(Dns.GetHostName())
-                .AddressList
-                .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip))
-                .Select(ip => ip.ToString())
-                .ToList();
 
-            var firstIp = localIPs.FirstOrDefault();
-            string fallbackIP = "192.168.1.";
-            if (string.IsNullOrEmpty(firstIp))
-            {
-                Output.Log("Using fallback IP: " + fallbackIP);
-                return fallbackIP;
-            }
 
-            var parts = firstIp.Split('.');
-            if (parts.Length >= 3)
-            {
-                string str = $"{parts[0]}.{parts[1]}.{parts[2]}.";
-                Output.Log("Using IP-mask: " + str);
-                return str;
-            }
-            Output.Log("Using fallback IP: " + fallbackIP);
-            return fallbackIP;
-        }
 
+        
         private async Task ScanNetwork()
-        {
-            string baseIp = localIP;
-            var activeIps = new HashSet<string>();
-
-            var pingTasks = Enumerable.Range(1, 254).Select(async i =>
-            {
-                string ip = baseIp + i;
-                using var ping = new System.Net.NetworkInformation.Ping();
-                try
-                {
-                    var reply = await ping.SendPingAsync(ip, 500);
-                    if (reply.Status == System.Net.NetworkInformation.IPStatus.Success)
-                    {
-                        activeIps.Add(ip);
-                    }
-                }
-                catch { }
-            });
-
-            await Task.WhenAll(pingTasks);
-
+        {                     
+            var activeIps = await NetworkTasks.GetActiveDevices(localIP);
             var detailTasks = activeIps.Select(async ip =>
             {
-                string nmapRaw = await Nmap.GetNmapInfo(ip);
-                var nmapData = Nmap.GetNmaps(nmapRaw);
+                string nmapRaw = await NetworkTasks.GetNmapRawData(ip);
+                var nmapData = NetworkTasks.GetNmapData(nmapRaw);
                 if (nmapData.Count == 0) return;
 
                 string hostname = "-";
@@ -186,38 +157,9 @@ namespace NetworkAPI.Services
                 }
                 catch { }
 
-                string os = "unknown";
-                foreach (var line in nmapData)
-                {
-                    string lower = line.ToLower();
-                    if (lower.Contains("windows")) { os = "Windows"; break; }
-                    if (lower.Contains("linux")) { os = "Linux"; break; }
-                    if (lower.Contains("android")) { os = "Android"; break; }
-                    if (lower.Contains("iphone")) { os = "iOS"; break; }
-                    if (lower.Contains("apple")) { os = "MacOS"; break; }
-                    if (lower.Contains("freebsd")) { os = "FreeBSD"; break; }
-                    if (lower.Contains("routeros")) { os = "RouterOS"; break; }
-                    if (lower.Contains("openwrt")) { os = "OpenWRT"; break; }
-                }
+                string os = NetworkTasks.GetOS(nmapData);
 
-                var ports = new List<OpenPorts>();
-                foreach (var line in nmapData)
-                {
-                    var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 3 && parts[0].Contains("/") && parts[1] == "open")
-                    {
-                        var portProto = parts[0].Split('/');
-                        if (portProto.Length == 2 && int.TryParse(portProto[0], out var port))
-                        {
-                            ports.Add(new OpenPorts
-                            {
-                                port = port,
-                                protocolType = portProto[1],
-                                service = parts[2]
-                            });
-                        }
-                    }
-                }
+
 
                 lock (_lock)
                 {
@@ -227,7 +169,7 @@ namespace NetworkAPI.Services
                         existing.Hostname = hostname;
                         existing.OS = os;
                         existing.IsOnline = true;
-                        existing.Ports = ports;
+                        existing.Ports = NetworkTasks.GetOpenPorts(nmapData);
                     }
                     else
                     {
@@ -237,7 +179,7 @@ namespace NetworkAPI.Services
                             Hostname = hostname,
                             OS = os,
                             IsOnline = true,
-                            Ports = ports
+                            Ports = NetworkTasks.GetOpenPorts(nmapData)
                         });
                     }
                 }
