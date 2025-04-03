@@ -72,12 +72,10 @@ To access the API from another device in your local network, make sure port 5050
 ```sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT```                             # Fallback (legacy systems)<br>
 
 If you want to use the included localSystems.html template for visualizing the API data,
-please make sure to adjust the IP address in the following line:
+please make sure to adjust the IP address to match the device where your API is hosted in the following line (line 1) in the `./JS/script.js` file:
 
 ```var localHostIP = "192.168.178.10";```
 
-Change the IP (192.168.178.10) to match the device where your API is hosted.
-This line is located line 1 in the `./JS/script.js` file.
 
 ### Available parameters:
        
