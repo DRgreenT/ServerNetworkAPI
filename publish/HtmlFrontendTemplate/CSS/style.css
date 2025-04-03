@@ -1,0 +1,54 @@
+body {
+    font-family: sans-serif;
+    background-color: #171717;
+    color: lightgray;
+    margin: 0;
+    padding: 2em;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #1e1e1e;
+    color: lightgray;
+    font-size: 0.9em;
+  }
+
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+  }
+
+  th {
+    background-color: #222;
+    font-weight: bold;
+  }
+
+  .online {
+    background-color: green;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .offline {
+    background-color: red;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  details summary {
+    cursor: pointer;
+    color: orange;
+    font-weight: bold;
+  }
+
+  .port-entry {
+    margin-left: 10px;
+    font-size: 0.85em;
+    color: #bbb;
+}
