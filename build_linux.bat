@@ -6,7 +6,7 @@ setlocal
 set PROJECT_NAME=ServerNetworkAPI
 set CONFIG=Release
 set RUNTIME=linux-x64
-set FRONTEND_SOURCE=WebFrontEnd
+set FRONTEND_SOURCE=dev\WebFrontEnd
 
 :: === OUTPUT PATHS ===
 set OUTPUT=publish
