@@ -48,7 +48,7 @@ public class NetworkTasks{
             await Task.WhenAll(pingTasks);
             return activeIps;
         }
-                public static List<OpenPorts> GetOpenPorts(List<string> nmapData)
+        public static List<OpenPorts> GetOpenPorts(List<string> nmapData)
         {
                 var ports = new List<OpenPorts>();
                 foreach (var line in nmapData)
@@ -122,6 +122,7 @@ public class NetworkTasks{
                     FileName = "/bin/bash",
                     Arguments = $"-c \"sudo nmap -O -Pn {ip}\"",
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
