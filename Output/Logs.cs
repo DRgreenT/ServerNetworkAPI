@@ -28,7 +28,7 @@ namespace NetworkAPI.Outputs
         public static void OverrideConsoleLine(int lineNumber)
         {
             Console.SetCursorPosition(0, lineNumber);
-            Console.Write(new string(' ', Console.WindowWidth)); // löscht die Zeile
+            Console.Write(new string(' ', Console.WindowWidth)); 
             Console.SetCursorPosition(0, lineNumber);           
         }
     }

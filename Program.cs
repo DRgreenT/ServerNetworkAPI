@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseCors("AllowAll"); // Wichtig: Muss VOR UseAuthorization stehen
+app.UseCors("AllowAll"); 
 
 app.UseAuthorization();
 app.MapControllers();
