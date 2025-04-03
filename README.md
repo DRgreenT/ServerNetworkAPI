@@ -60,15 +60,15 @@ chmod +x ServerNetworkAPI
 ./ServerNetworkAPI
 ```
 To run the program [nmap] is mandator, you can check with ```nmap --version```; in case its not installed than:<br>
-sudo apt install nmap    # Debian, Ubuntu, Raspberry Pi OS<br>
-sudo pacman -S nmap      # Arch Linux, Manjaro<br>
-sudo dnf install nmap    # Fedora<br>
-sudo zypper install nmap # openSUSE<br>
+```sudo apt install nmap```    # Debian, Ubuntu, Raspberry Pi OS<br>
+```sudo pacman -S nmap```      # Arch Linux, Manjaro<br>
+```sudo dnf install nmap```    # Fedora<br>
+```sudo zypper install nmap``` # openSUSE<br>
 
 To access the API from another device in your local network, make sure port 5050 is open:<br>
-sudo ufw allow 5050                                                              # Debian/Ubuntu (with UFW enabled)<br>
-sudo firewall-cmd --add-port=5050/tcp --permanent && sudo firewall-cmd --reload  # Fedora/CentOS<br>
-sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT                             # Fallback (legacy systems)<br>
+```sudo ufw allow 5050```                                                              # Debian/Ubuntu (with UFW enabled)<br>
+```sudo firewall-cmd --add-port=5050/tcp --permanent && sudo firewall-cmd --reload```  # Fedora/CentOS<br>
+```sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT```                             # Fallback (legacy systems)<br>
 
 If you want to use the included localSystems.html template for visualizing the API data,
 please make sure to adjust the IP address in the following line:
@@ -81,9 +81,10 @@ This line is located around line 71 in the localSystems.html file.
 ---
 
 ## Build (Net9.0 SDK required)
-git clone https://github.com/DRgreenT/ServerNetworkAPI.git<br>
-cd ServerNetworkAPI<br>
-dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true<br>
+
+```git clone https://github.com/DRgreenT/ServerNetworkAPI.git```<br>
+```cd ServerNetworkAPI```<br>
+```dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true```<br>
 
 ---
 
