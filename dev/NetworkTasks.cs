@@ -162,7 +162,7 @@ public class NetworkTasks
         return os;
     }
 
-    public static System.Diagnostics.ProcessStartInfo CmdNmap(string ip, string parameter = "-O -Pn")
+    public static System.Diagnostics.ProcessStartInfo CmdNmap(string ip, string parameter = "-O -Pn --host-timeout 5s")
     {
         try
         {
@@ -184,29 +184,46 @@ public class NetworkTasks
 
     public static async Task<string> GetNmapRawData(string ip)
     {
-        if (Init.isNmapScanActive)
+        if (!Init.isNmapScanActive)
+            return "";
+
+        var psi = CmdNmap(ip);
+        if (psi == null) return "";
+
+        try
         {
-            try
+            using var process = System.Diagnostics.Process.Start(psi);
+            if (process == null) return "";
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)); // Timeout 
+            var readTask = process.StandardOutput.ReadToEndAsync();
+            var waitTask = process.WaitForExitAsync(cts.Token);
+
+            var completed = await Task.WhenAny(waitTask, Task.Delay(-1, cts.Token));
+
+            if (completed != waitTask)
             {
-                var psi = CmdNmap(ip);
-                if (psi != null)
+                try
                 {
-                    using var process = System.Diagnostics.Process.Start(psi);
-                    string output = await process!.StandardOutput.ReadToEndAsync();
-                    await process.WaitForExitAsync();
-                    return output;
+                    process.Kill(entireProcessTree: true); //  
+                    Output.Log($"nmap scan for {ip} timed out and was killed.", false);
+                    OutputManager.EditRow(18, $"# nmap scan for {ip} timed out and was killed");
                 }
-                else
+                catch (Exception ex)
                 {
-                    return "";
+                    Output.Log($"Error killing timed out process: {ex.Message}", false);
+                    OutputManager.EditRow(18, $"# Error killing timed out process: {ex.Message}");
                 }
-            }
-            catch (Exception ex)
-            {
-                Output.Log("Error executing nmap: " + ex.Message);
+                
                 return "";
             }
+
+            return await readTask;
         }
-        return "";
+        catch (Exception ex)
+        {
+            Output.Log("Error executing nmap: " + ex.Message, false);
+            return "";
+        }
     }
 }
