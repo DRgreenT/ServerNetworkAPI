@@ -48,7 +48,7 @@ At shutdown, all scan results are saved to disk and restored at the next start.
 
 - Linux x64 System
 - [.NET 9.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) (only needed if you build it your self)
-- [nmap](https://nmap.org/) installed and accessible via command line
+- [nmap](https://nmap.org/) installed and accessible via command line (typically requires sudo privileges to run correctly)
 
 ## Run
 You can download the **latest prebuilt Linux release** here:  
@@ -60,7 +60,7 @@ Simply copy the binary to your Linux machine, unpack and execute it:
 chmod +x ServerNetworkAPI
 ./ServerNetworkAPI
 ```
-To run the program [nmap] is mandator, you can check with ```nmap --version```; in case its not installed than:<br>
+To run the program [nmap] is mandator, you can check with ```nmap --version``` in case its not installed than:<br>
 ```sudo apt install nmap```    # Debian, Ubuntu, Raspberry Pi OS<br>
 ```sudo pacman -S nmap```      # Arch Linux, Manjaro<br>
 ```sudo dnf install nmap```    # Fedora<br>
@@ -71,7 +71,7 @@ To access the API from another device in your local network, make sure port 5050
 ```sudo firewall-cmd --add-port=5050/tcp --permanent && sudo firewall-cmd --reload```  # Fedora/CentOS<br>
 ```sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT```                             # Fallback (legacy systems)<br>
 
-If you want to use the included localSystems.html template for visualizing the API data,
+If you want to use the included [Downlaod Html template](https://github.com/DRgreenT/ServerNetworkAPI/blob/main/publish/zip/frontEndTemplate.zip) for visualizing the API data,
 please make sure to adjust the IP address to match the device where your API is hosted in the following line (line 1) in the `./JS/script.js` file:
 
 ```var localHostIP = "192.168.178.10";```
