@@ -83,7 +83,7 @@ please make sure to adjust the IP address to match the device where your API is 
 `--t {int}`              Delay between loops in seconds (default: 5 min: 1 max:3600)<br>
 `--p {int}`              Web API port (default: 5050)<br>
 `--c {string}`           Controller name (default: 'network')<br>
-`--nmap`                 Set nmap scan inactive (ping only)<br>
+`--nmap`                 Set nmap scan active (default ping only)<br>
 `--fip {string}`         Default fallback IP mask 192.168.178.<br> 
 
 ---
