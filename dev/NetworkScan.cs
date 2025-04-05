@@ -5,11 +5,11 @@ namespace ServerNetworkAPI.dev
 {
     public class NetworkScan : BackgroundService
     {
-        
         private readonly object _lock = new();
-        
         private bool isOnExit = false;
         private string localIP = "";
+
+        private CancellationTokenSource _displayTokenSource = new();
 
         public List<Device> GetDevices()
         {
@@ -29,117 +29,100 @@ namespace ServerNetworkAPI.dev
                     .ToList();
             }
         }
+
+        public static List<string> GetLocalIPv4Addresses()
+        {
+            return Dns.GetHostEntry(Dns.GetHostName())
+                .AddressList
+                .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                .Select(ip => ip.ToString())
+                .ToList();
+        }
+
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            localIP = NetworkTasks.GetLocalNetworkPrefix();
-            if (File.Exists(Init.SaveFilePath))
-            {
-                try
-                {
-                    var json = await File.ReadAllTextAsync(Init.SaveFilePath);
-                    var loaded = JsonSerializer.Deserialize<List<Device>>(json);
-                    if (loaded != null)
-                    {
-                        lock (_lock)
-                        {
-                            Init.devices.Clear();
-                            Init.devices.AddRange(loaded);
-                        }
+            _ = Task.Run(() => Output.DisplayLoop(_displayTokenSource.Token));
 
-                        Output.Log("Device list loaded.");
 
-                        var localIPs = Dns.GetHostEntry(Dns.GetHostName())
-                            .AddressList
-                            .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                            .Select(ip => ip.ToString());
-
-                        Console.WriteLine("\nAPI is now online!");
-
-                        foreach (var ip in localIPs)
-                        {
-                            Console.WriteLine($"->  http://{ip}:{Init.WebApiPort}/{Init.WebApiName}");
-                        }
-                        Console.WriteLine($"Make sure port {Init.WebApiPort} is not blocked by firewall!\n");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Output.Log($"Error while loading device list: {ex.Message}");
-                }
-            }
-
-            bool isInitialScan = true;
+            localIP = Init.GetLocalNetworkPrefix();
+            await FileSystem.LoadDeviceFromJson(_lock);
             int scanCount = 0;
-            Console.Write("\nInitial scan...");
-            int coursorRow = Console.CursorTop;
+
+            OutputManager.EditRow(10, "#");
+            OutputManager.EditRow(11,"# Initial scan...");
             TimeSpan totalScanTime = TimeSpan.Zero;
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 var scanStart = DateTime.Now;
-                await ScanNetwork();
+                var activeIps = await NetworkTasks.GetActiveDevices(localIP);
+                await ScanNetwork(activeIps);
+
                 var scanDuration = DateTime.Now - scanStart;
                 totalScanTime += scanDuration;
                 scanCount++;
 
                 var avgDuration = TimeSpan.FromSeconds(totalScanTime.TotalSeconds / scanCount);
 
-                if (isInitialScan)
+                if (Init.isInitialScan)
                 {
-                    isInitialScan = false;
-                    Console.Write("done!\n");
+                    OutputManager.EditRow(11, "# Initial scan...done!");
+                    Init.isInitialScan = false;
                 }
-                if(!isOnExit)
+
+                if (!isOnExit)
                 {
-                    if(coursorRow <= Console.CursorTop)
-                    {
-                        for(int i = Console.CursorTop; i > coursorRow; i--) 
-                        {
-                            Output.OverrideConsoleLine(coursorRow);
-                        }
-                    }
-                    Output.OverrideConsoleLine(coursorRow);
-                    Console.Write($"Scans: {scanCount}, Devices found: {Init.devices.Count}, avg scan time: {avgDuration.TotalSeconds:F1}s");
+                    OutputManager.EditRow(Output.totalScanStatusRow, $"# Scans: {scanCount}, Devices found: {Init.devices.Count}, avg scan time: {avgDuration.TotalSeconds:F1}s");
                     Output.Log($"Scan #{scanCount} completed in {scanDuration.TotalSeconds:F1}s. Devices found: {Init.devices.Count}", false);
                 }
-                await Task.Delay(TimeSpan.FromSeconds(Init.timeOut), stoppingToken);
+                
+                // Countdown bis zum nächsten Scan
+                for (int i = Init.timeOut; i > 0; i--)
+                {
+                    if (stoppingToken.IsCancellationRequested) break;
+
+                    OutputManager.EditRow(Output.nextScanStatusRow,$"# Next scan in {i} seconds...");
+                    await Task.Delay(1000, stoppingToken);
+                    if(i == 1) OutputManager.EditRow(Output.nextScanStatusRow, $"# Scanning..." + new string(' ',Console.WindowWidth));
+                }
+                
             }
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            if(!isOnExit)
+            if (!isOnExit)
             {
                 isOnExit = true;
             }
+
             List<Device> snapshot;
             lock (_lock)
             {
                 snapshot = Init.devices.ToList();
             }
-            Console.WriteLine("\n");
-            Output.OverrideConsoleLine(Console.CursorTop);
-            try
-            {
-                var json = JsonSerializer.Serialize(snapshot, new JsonSerializerOptions { WriteIndented = true });
-                await File.WriteAllTextAsync(Init.SaveFilePath, json);
-                Output.Log(" Device list saved.\n");
-            }
-            catch (Exception ex)
-            {
-                Output.Log($" Error while saving device list: {ex.Message}");
-            }
+            _displayTokenSource.Cancel(); // Anzeige-Loop beenden
+            await FileSystem.SaveDevicesToJson(snapshot);
             await base.StopAsync(cancellationToken);
         }
-        
-        private async Task ScanNetwork()
-        {                     
-            var activeIps = await NetworkTasks.GetActiveDevices(localIP);
+
+        private int _completedScans = 0;
+
+        private async Task ScanNetwork(HashSet<string> activeIps)
+        {
+            int total = activeIps.Count;
+            _completedScans = 0;
+
             var detailTasks = activeIps.Select(async ip =>
             {
                 string nmapRaw = await NetworkTasks.GetNmapRawData(ip);
-                var nmapData = NetworkTasks.GetNmapData(nmapRaw);
-                if (nmapData.Count == 0) return;
+                var nmapData = NetworkTasks.RefineNmapData(nmapRaw);
+                if (nmapData.Count == 0)
+                {
+                    Output.UpdateProgress(Output.nmapStatusRow, total, "nmap progress", total);
+                    return;
+                }
 
                 string hostname = "-";
                 try
@@ -171,11 +154,14 @@ namespace ServerNetworkAPI.dev
                             Ports = NetworkTasks.GetOpenPorts(nmapData)
                         });
                     }
+                    _completedScans++;
                 }
+
+                Output.UpdateProgress(Output.nmapStatusRow,total, "nmap progress", _completedScans);
             });
 
             await Task.WhenAll(detailTasks);
-
+            Output.UpdateProgress(Output.nmapStatusRow, total, "nmap progress", total);
             lock (_lock)
             {
                 foreach (var dev in Init.devices)
@@ -185,5 +171,7 @@ namespace ServerNetworkAPI.dev
                 }
             }
         }
+
+
     }
 }

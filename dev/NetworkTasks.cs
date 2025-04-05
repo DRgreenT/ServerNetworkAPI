@@ -2,36 +2,15 @@ using System.Net;
 using ServerNetworkAPI.dev;
 public class NetworkTasks
 {
-    public static string GetLocalNetworkPrefix()
-    {
-        var localIPs = Dns.GetHostEntry(Dns.GetHostName())
-            .AddressList
-            .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip))
-            .Select(ip => ip.ToString())
-            .ToList();
 
-        var firstIp = localIPs.FirstOrDefault();
-        string fallbackIP = Init.fallbackIpMask;
-        if (string.IsNullOrEmpty(firstIp))
-        {
-            Output.Log("Using fallback IP: " + fallbackIP);
-            return fallbackIP;
-        }
-
-        var parts = firstIp.Split('.');
-        if (parts.Length >= 3)
-        {
-            string str = $"{parts[0]}.{parts[1]}.{parts[2]}.";
-            Output.Log("Using IP-mask: " + str);
-            return str;
-        }
-        Output.Log("Using fallback IP: " + fallbackIP);
-        return fallbackIP;
-    }
     public static async Task<HashSet<string>> GetActiveDevices(string ipMask)
     {
         var activeIps = new HashSet<string>();
-        var pingTasks = Enumerable.Range(1, 254).Select(async i =>
+        int totalIps = 254;
+        int scannedCount = 0;
+        object consoleLock = new();
+
+        var pingTasks = Enumerable.Range(1, totalIps).Select(async i =>
         {
             string ip = ipMask + i;
             using var ping = new System.Net.NetworkInformation.Ping();
@@ -40,57 +19,108 @@ public class NetworkTasks
                 var reply = await ping.SendPingAsync(ip, 500);
                 if (reply.Status == System.Net.NetworkInformation.IPStatus.Success)
                 {
-                    activeIps.Add(ip);
+                    lock (activeIps)
+                        activeIps.Add(ip);
                 }
             }
-            catch { }
+            catch(Exception ex) 
+            {
+                Output.Log("Error while ping: " + ex.Message);
+            }
+            finally
+            {
+                int current = Interlocked.Increment(ref scannedCount);
+                double percent = (double)current / totalIps * 100;
+
+                lock (consoleLock)
+                {
+                    try
+                    {
+                        Output.UpdateProgress(Output.pingStatusRow, totalIps, "pinging IPs  ", current);
+                        Output.UpdateProgress(Output.nmapStatusRow, 100, "nmap progress", 0);
+                    }
+                    catch(Exception ex)
+                    {
+                        Output.Log("Error clac. update progress?!" + ex.Message);
+                    }
+                }
+            }
         });
+
         await Task.WhenAll(pingTasks);
+
+        lock (consoleLock)
+        {
+            try
+            {
+                Output.UpdateProgress(Output.pingStatusRow, totalIps, "pinging IPs  ", totalIps);
+            }
+            catch (Exception ex)
+            { 
+                Output.Log("Error clac. update progress?!" + ex.Message); 
+            }
+        }
+
         return activeIps;
     }
+
+
     public static List<OpenPorts> GetOpenPorts(List<string> nmapData)
     {
         var ports = new List<OpenPorts>();
-        foreach (var line in nmapData)
+        try
         {
-            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length >= 3 && parts[0].Contains("/") && parts[1] == "open")
+            foreach (var line in nmapData)
             {
-                var portProto = parts[0].Split('/');
-                if (portProto.Length == 2 && int.TryParse(portProto[0], out var port))
+                var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 3 && parts[0].Contains("/") && parts[1] == "open")
                 {
-                    ports.Add(new OpenPorts
+                    var portProto = parts[0].Split('/');
+                    if (portProto.Length == 2 && int.TryParse(portProto[0], out var port))
                     {
-                        port = port,
-                        protocolType = portProto[1],
-                        service = parts[2]
-                    });
+                        ports.Add(new OpenPorts
+                        {
+                            port = port,
+                            protocolType = portProto[1],
+                            service = parts[2]
+                        });
+                    }
                 }
             }
         }
+        catch (Exception ex)
+        {   
+            Output.Log("Error getting port data: " + ex.Message); 
+        }
         return ports;
     }
-    public static List<string> GetNmapData(string nmapInfo)
+    public static List<string> RefineNmapData(string nmapInfo)
     {
         var info = new List<string>();
 
         if (string.IsNullOrWhiteSpace(nmapInfo) || nmapInfo.Contains("Note: Host seems down"))
             return info;
-
-        var lines = nmapInfo.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var line in lines)
+        try
         {
-            var trimmed = line.Trim();
+            var lines = nmapInfo.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
-            if (trimmed.StartsWith("Running:") ||
-                trimmed.StartsWith("OS details:") ||
-                trimmed.StartsWith("MAC Address:") ||
-                trimmed.StartsWith("Aggressive OS guesses:") ||
-                trimmed.Contains("open"))
+            foreach (var line in lines)
             {
-                info.Add(trimmed);
+                var trimmed = line.Trim();
+
+                if (trimmed.StartsWith("Running:") ||
+                    trimmed.StartsWith("OS details:") ||
+                    trimmed.StartsWith("MAC Address:") ||
+                    trimmed.StartsWith("Aggressive OS guesses:") ||
+                    trimmed.Contains("open"))
+                {
+                    info.Add(trimmed);
+                }
             }
+        }
+        catch(Exception ex)
+        {
+            Output.Log("Error refining nmap data: " + ex.Message);
         }
         return info;
     }
@@ -134,8 +164,9 @@ public class NetworkTasks
                 await process.WaitForExitAsync();
                 return output;
             }
-            catch
+            catch(Exception ex)
             {
+                Output.Log("Error refining nmap data: " + ex.Message);
                 return "";
             }
         }
