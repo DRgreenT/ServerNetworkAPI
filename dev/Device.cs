@@ -3,7 +3,6 @@ namespace ServerNetworkAPI.dev
 {
     public class Device
     {
-
         public string IP { get; set; } = "";
         public string Hostname { get; set; } = "";
         public string OS { get; set; } = "";
