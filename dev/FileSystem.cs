@@ -29,7 +29,7 @@ namespace ServerNetworkAPI.dev
                             Init.devices.AddRange(loaded);
                         }
 
-                        Output.Log(" Device list loaded.");
+                        Output.Log("Device list loaded.");
                         
 
                         List<string> localIPs = NetworkScan.GetLocalIPv4Addresses();
@@ -42,7 +42,7 @@ namespace ServerNetworkAPI.dev
                 }
                 catch (Exception ex)
                 {
-                    Output.Log($"# Error while loading device list: {ex.Message}");
+                    Output.Log($"Error while loading device list: {ex.Message}");
                 }
             }
         }
@@ -52,11 +52,18 @@ namespace ServerNetworkAPI.dev
             {
                 var json = JsonSerializer.Serialize(snapshot, new JsonSerializerOptions { WriteIndented = true });
                 await File.WriteAllTextAsync(Init.SaveFilePath, json);
-                Output.Log("# Device list saved.");
+                Output.Log("Device list saved.",false);
+                Console.SetCursorPosition(0,19);
+                Console.Write("# Device list saved.");
+                Console.SetCursorPosition(0, 25);
+
             }
             catch (Exception ex)
             {
-                Output.Log($"# Error saving device list: {ex.Message}");
+                Output.Log($"Error saving device list: {ex.Message}");
+                Console.SetCursorPosition(0, 19);
+                Console.Write("# # Error saving device list: {ex.Message}");
+                Console.SetCursorPosition(0, 25);
             }
         }
     }
