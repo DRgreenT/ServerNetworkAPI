@@ -15,7 +15,7 @@ else
     Init.WebApiName = startArgs.ControllerName;
     Init.isNmapScanActive = startArgs.NmapScanActive;
     Init.fallbackIpMask = startArgs.FallbackIpMask;
-
+    OutputManager.EditRow(4,Init.GetParameterValues());
     var builder = WebApplication.CreateBuilder(args);
     builder.Logging.SetMinimumLevel(LogLevel.Error);
     builder.Services.AddControllers();

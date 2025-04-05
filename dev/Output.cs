@@ -8,7 +8,7 @@ namespace ServerNetworkAPI.dev
         public static readonly int nmapStatusRow = 22;
         public static readonly int totalScanStatusRow = 23;
         public static readonly int nextScanStatusRow = 24;
-        static int row = 4;
+        static int row = 5;
         public static void Log(string message, bool isDisplayMessage = true)
         {
             if (row >= 18) row = 12;
@@ -50,7 +50,8 @@ namespace ServerNetworkAPI.dev
             int barLength = 30;
             int filledLength = (int)(percent / 100 * barLength);
             string bar = new string('=', filledLength).PadRight(barLength);
-            OutputManager.EditRow(row, $"# {progressTyp}: [{bar}] {percent:F1}%");
+            string formattedPercent = percent.ToString("000.0").PadLeft(6);
+            OutputManager.EditRow(row, $"# {progressTyp}: [{bar}] {formattedPercent}%");
         }
 
         public static void UpdateDisplay()
@@ -134,9 +135,11 @@ namespace ServerNetworkAPI.dev
             ToOutputList(3, (new string('#', 1)));
         }
 
+
         private static void CreateBody()
         {
-            for (int i = 4; i < Output.pingStatusRow - 2; i++)
+            ToOutputList(4, "");
+            for (int i = 5; i < Output.pingStatusRow - 2; i++)
             {
                 ToOutputList(i, "# "); //Data
             }
