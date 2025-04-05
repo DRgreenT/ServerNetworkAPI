@@ -9,7 +9,7 @@ namespace ServerNetworkAPI.dev
         --t {int}              Delay between loops in seconds (default: 5 min: 1 max:3600)
         --p {int}              Web API port (default: 5050)
         --c {string}           Controller name (default: 'network')
-        --nmap                 Set nmap scan inactive
+        --nmap                 Set nmap scan active (default ping only)
         --fip {string}         Fallback IP mask 192.168.178. 
         ";
 
@@ -48,7 +48,7 @@ namespace ServerNetworkAPI.dev
 
                     case "--nmap":
                     case "-nm":
-                        result.NmapScanActive = false;
+                        result.NmapScanActive = true;
                         break;
 
                     case "--t":

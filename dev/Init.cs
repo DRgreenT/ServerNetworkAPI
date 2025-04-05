@@ -18,7 +18,7 @@ namespace ServerNetworkAPI.dev
         public static string WebApiPort = "5050";
         public static string WebApiName = "network";
         public static int timeOut = 15;
-        public static bool isNmapScanActive = true;
+        public static bool isNmapScanActive = false;
         public static string fallbackIpMask = "192.168.178.";
 
         public static bool isLogInitialized = false;
