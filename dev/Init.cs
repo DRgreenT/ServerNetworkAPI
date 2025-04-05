@@ -23,6 +23,17 @@ namespace ServerNetworkAPI.dev
 
         public static bool isLogInitialized = false;
         public static bool isInitialScan = true;
+
+        public static string values = "";
+        public static string GetParameterValues()
+        {
+            return $"# " +
+                $"Parameters: nmap: {isNmapScanActive}, " +
+                $"delay: {timeOut}s, " +
+                $"port: {WebApiPort}, " +
+                $"controller: {WebApiName}, " +
+                $"fallback IP: {fallbackIpMask}";
+        }
         public static string GetLocalNetworkPrefix()
         {
             var localIPs = Dns.GetHostEntry(Dns.GetHostName())
