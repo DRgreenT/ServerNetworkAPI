@@ -49,7 +49,7 @@ At shutdown, all scan results are saved to disk and restored at the next start.
 - Linux x64 System
 - [.NET 9.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) (only needed if you build it your self)
 - [nmap](https://nmap.org/) installed and accessible via command line (typically requires sudo privileges to run correctly)
-
+- //not implented yet [Arp] (sudo apt install arp-scan)
 ## Run
 You can download the **latest prebuilt Linux release** here:  
 [Download from GitHub](https://github.com/DRgreenT/ServerNetworkAPI/blob/main/publish/linux.zip)
