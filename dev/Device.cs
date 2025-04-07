@@ -12,6 +12,24 @@ namespace ServerNetworkAPI.dev
 
         [JsonIgnore]
         public int index { get; set; }
+        public static List<Device> GetOrderedDevices(object _lock)
+        {
+            lock (_lock)
+            {
+                return Init.devices
+                    .Select(d => new Device
+                    {
+                        IP = d.IP,
+                        Hostname = d.Hostname,
+                        OS = d.OS,
+                        IsOnline = d.IsOnline,
+                        Ports = d.Ports,
+                        index = int.TryParse(d.IP[(d.IP.LastIndexOf('.') + 1)..], out var idx) ? idx : 0
+                    })
+                    .OrderBy(x => x.index)
+                    .ToList();
+            }
+        }
     }
 
     public class OpenPorts
