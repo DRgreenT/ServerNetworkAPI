@@ -27,7 +27,7 @@
             Add(21, "#");
             Add(22, "# Nmap Scan: ");
             Add(23, "# Total Scans: ");
-            Add(24, "# Next scan in: ");
+            Add(24, "# Scanning...");
         }
 
         public static void UpdateRow(int row, string content)

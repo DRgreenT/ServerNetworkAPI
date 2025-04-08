@@ -22,11 +22,12 @@ namespace ServerNetworkAPI.dev.UI
         {
             string timestamp = hasTimeInfo ? $"[{DateTime.Now:HH:mm:ss}]" : "";
             int row = MessageRows[_messageIndex % MessageRows.Length];
-            if (row < 6 && hasTimeInfo) row = 6;
+            if (row < 7 && hasTimeInfo) row = 7;
             if (row == MessageRows.Length - 1)
             {
                 ClearMessageArea();
-                row = 6; 
+                _messageIndex = 7;
+                row = 7;
             }
             if (color.HasValue)
             {
@@ -54,7 +55,8 @@ namespace ServerNetworkAPI.dev.UI
         public static void PrintDeviceSummary()
         {
             var devices = Core.NetworkContext.GetDevices();
-            Console.SetCursorPosition(0, 28);
+            Console.SetCursorPosition(0, 26);
+            Console.WriteLine(new string('#', 20) + "< SUMMARY >" + new string('#', 20));
             Console.WriteLine($"Total devices: {devices.Count}");
             Console.WriteLine("IP".PadRight(16) + "| " + "Hostname".PadRight(24) + "| " + "OS".PadRight(10) + "| Status");
             Console.WriteLine(new string('-', 65));
