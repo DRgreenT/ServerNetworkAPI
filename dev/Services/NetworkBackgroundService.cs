@@ -25,13 +25,13 @@ namespace ServerNetworkAPI.dev.Services
 
             await DeviceRepository.SaveAsync();
             OutputFormatter.PrintMessage("Network scan service stopped.", ConsoleColor.Yellow);
-            OutputFormatter.PrintDeviceSummary();
-
+            
             Console.TreatControlCAsInput = true;
             Console.CursorVisible = true;
-            Console.WriteLine();
 
             await base.StopAsync(cancellationToken);
+            OutputFormatter.PrintDeviceSummary();
+            Console.WriteLine();
         }
 
         private static async Task DisplayLoop(CancellationToken token)
