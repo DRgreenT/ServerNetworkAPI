@@ -38,16 +38,21 @@ namespace ServerNetworkAPI.dev.Core
                     existing.OS = updatedDevice.OS;
                     existing.IsOnline = updatedDevice.IsOnline;
                     existing.Ports = updatedDevice.Ports;
+
+                    if(IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
+                    {
+                        Logger.Log($"[NetworkContext] Non administrated IP detected: {updatedDevice.IP}", true, ConsoleColor.Red);
+                    }
                 }
                 else
                 {
                     if (IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
                     {
-                        Logger.Log($"[NetworkContext] Non DHCP registered device detected: {updatedDevice.IP}", true, ConsoleColor.Red);
+                        Logger.Log($"[NetworkContext] New non administrated IP detected: {updatedDevice.IP}", true, ConsoleColor.Red);
                     }
                     else
                     {
-                        Logger.Log($"[NetworkContext] Device detected: {updatedDevice.IP}", true, ConsoleColor.Yellow);
+                        Logger.Log($"[NetworkContext] New device detected: {updatedDevice.IP}", true, ConsoleColor.Yellow);
                     }
                    
                     _devices.Add(updatedDevice);
