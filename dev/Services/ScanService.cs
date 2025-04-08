@@ -28,6 +28,9 @@ namespace ServerNetworkAPI.dev.Services
 
                 foreach (var ip in activeIps)
                 {
+                    if (token.IsCancellationRequested)
+                        return;
+
                     if (AppConfig.IsNmapEnabled)
                     {
                         await DeviceProcessor.ProcessAsync(ip, total, _ =>
@@ -42,6 +45,9 @@ namespace ServerNetworkAPI.dev.Services
                         progress++;
                     }
                 }
+
+                if (token.IsCancellationRequested)
+                    return;
 
                 NetworkContext.MarkInactiveDevices(activeIps);
 
