@@ -2,13 +2,13 @@
 cls
 setlocal
 
-:: === CONFIGURATION ===
+ === CONFIGURATION ===
 set PROJECT_NAME=ServerNetworkAPI
 set CONFIG=Release
 set RUNTIME=linux-x64
 set FRONTEND_SOURCE=dev\WebFrontEnd
 
-:: === OUTPUT PATHS ===
+ === OUTPUT PATHS ===
 set OUTPUT=publish
 set OUTPUT_API=%OUTPUT%\linux
 set OUTPUT_FE=%OUTPUT%\WebFrontEnd
@@ -48,7 +48,7 @@ if exist %OUTPUT_API%\publish (
     rd /s /q %OUTPUT_API%\publish
 )
 
-:: === Ensure ZIP folder exists ===
+ === Ensure ZIP folder exists ===
 if not exist %OUTPUT_ZIP_FOLDER% (
     echo Creating ZIP folder: %OUTPUT_ZIP_FOLDER%
     mkdir %OUTPUT_ZIP_FOLDER%
