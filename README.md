@@ -1,4 +1,4 @@
-# 💻 ServerNetworkAPI (v0.2.1b)
+# ServerNetworkAPI (v0.2.1b)
 
 A minimalistic Web API that scans your local IPv4 network and provides information like IP, OS, and open ports of all reachable devices.
 
@@ -6,7 +6,7 @@ Built with **.NET 9.0**
 
 ---
 
-## 🚀 Features
+## Features
 
 - Automatic local network scan using `arp-scan`
 - Optional detailed device scan via `nmap`
@@ -19,14 +19,14 @@ Built with **.NET 9.0**
 - Offline detection & live status
 - Logfile creation
 - Statically assigned IP detection (highlighted)
-- 🔔 **Webhook notifications** for new devices
-- 🧩 **External Config Files**:
+- **Webhook notifications** for new devices and service status changes (started/terminated)
+- **External Config Files**:
   - `NotificationConfig.json` for webhooks
   - `AppConfig.json` for persistent settings (overridable by CLI)
 
 ---
 
-## 🖥️ Preview
+## Preview
 
 ### Terminal Output (Linux)
 <img src="./docs/networkAPI_1.png" alt="Linux Output" width="800"/>
@@ -37,9 +37,12 @@ Built with **.NET 9.0**
 ### Web Output (HTML Frontend)
 <img src="./docs/networkAPI_3_FrontEnd.png" alt="Web Output(HTML)" width="800"/>
 
+### Discord Webhook (Notifications)
+<img src="./docs/networkAPI_4_discordWebhook_example" alt="Discord Webhook (Notifications)" width="250"/>
+
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 The app continuously scans your local network (e.g. `192.168.x.x`) via ARP ping to find active devices.  
 For each active IP, it performs (optional) detailed scans via `nmap` to retrieve:
@@ -53,16 +56,19 @@ If the last octet of a device IP exceeds a defined threshold, it's flagged as *n
 
 ---
 
-## 🔧 Requirements
+## Requirements
 
+- root or sudo privileges (for `arp-scan` and `nmap` commands)
 - Linux x64 system
 - [.NET 9.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) (only if building yourself)
+- [.NET NuGet]```dotnet add package Microsoft.Extensions.Hosting``` (only if building yourself)
+- [.NET NuGet]```dotnet add package Microsoft.AspNetCore.Mvc.Core``` (only if building yourself)
 - [`nmap`](https://nmap.org/) (optional but recommended)
 - [`arp-scan`](https://linux.die.net/man/1/arp-scan) – must be installed (`sudo apt install arp-scan`)
 
 ---
 
-## 🧪 How to Run
+## How to Run
 
 Download the [latest Linux build](https://github.com/DRgreenT/ServerNetworkAPI/blob/main/publish/linux.zip), then:
 
@@ -90,17 +96,17 @@ sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT                            
 
 ---
 
-### 📢 Device Notifications via Webhook
+### Device Notifications via Webhook
 
 Starting with version `v0.2.1b`, you can enable push-style notifications when a **new device** is detected on the network.
 
 This is done using simple **webhooks**, such as:
 
-- ✅ Discord Webhooks (custom channel alerts)
-- ✅ [IFTTT Webhooks](https://ifttt.com/maker_webhooks) (e.g. push, email, SMS)
-- ✅ Any URL that accepts JSON POST
+- Discord Webhooks (custom channel alerts)
+- [IFTTT Webhooks](https://ifttt.com/maker_webhooks) (e.g. push, email, SMS)
+- Any URL that accepts JSON POST
 
-#### 🔧 Notifications config:
+#### Notifications config:
 
 ```
 ./Configs/NotificationConfig.json
@@ -118,7 +124,7 @@ This is done using simple **webhooks**, such as:
 
 From now on, every time a **new device is detected**, a notification will be sent automatically 🎉
 
-#### 💬 Discord Notes
+#### Discord Notes
 
 If you're using Discord and want push notifications on mobile:
 
@@ -128,7 +134,7 @@ If you're using Discord and want push notifications on mobile:
 
 ---
 
-### 🧩 Application Configuration
+### Application Configuration
 
 The runtime settings (like port, controller, timeout, etc.) are stored in:
 
@@ -164,7 +170,7 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
 
 ---
 
-## 🔨 Build Instructions (Requires .NET 9.0 SDK)
+## Build Instructions (Requires .NET 9.0 SDK)
 
 ```bash
 git clone https://github.com/DRgreenT/ServerNetworkAPI.git
@@ -174,7 +180,7 @@ dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFil
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This project is intended for **educational and local testing purposes only**.  
 Using tools like `nmap` or `arp-scan` on networks outside your own may **violate local laws, ISP policies, or institutional rules**.
