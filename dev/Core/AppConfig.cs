@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Net;
 using ServerNetworkAPI.dev.IO;
+using ServerNetworkAPI.dev.Models;
 
 namespace ServerNetworkAPI.dev.Core
 {
@@ -26,7 +27,8 @@ namespace ServerNetworkAPI.dev.Core
 
         private static void LoadExternalSettings()
         {
-            ConfigManager.LoadOrCreateNotificationConfig();
+            ConfigManager.NotificationConfig = NoteConfigBuilder.LoadOrCreate();
+
         }
         public static void InitializeFromArgs(CLI.ParsedArgs args)
         {
