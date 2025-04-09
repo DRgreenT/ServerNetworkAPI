@@ -73,7 +73,7 @@ who joins my WiFi or wired LAN – from any device via the built-in Web API or p
 <img src="./docs/networkAPI_3_FrontEnd.png" alt="Web Output(HTML)" width="800"/>
 
 ### Discord Webhook (Notifications)
-<img src="./docs/networkAPI_4_discordWebhook_example" alt="Discord Webhook (Notifications)" width="250"/>
+<img src="./docs/networkAPI_4_discordWebhook_example.png" alt="Discord Webhook (Notifications)" width="250"/>
 
 ---
 
