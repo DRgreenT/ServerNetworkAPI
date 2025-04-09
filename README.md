@@ -5,12 +5,37 @@ A minimalistic Web API that scans your local IPv4 network and provides informati
 Built with **.NET 9.0**
 
 ---
+## Why This Tool Exists
 
-## Features
+Since I´m learning programming C#, Linux handling and networking, I wanted to create a simple tool that helps me understand how devices communicate on a local network.
+I also wanted to learn how to create a **Web API** and how to use **webhooks** for notifications.
+
+So I developed this tool to monitor all active devices in my **private network**, specifically on a **headless Linux server**. 
+I wanted an always-on **local Web API** that gives me live access to all devices on the network – including:
+
+- IP addresses
+- Hostnames
+- OS guesses
+- Open ports
+
+In my setup, my DHCP server assigns IPs **from `192.168.178.190` upwards** to any **new/unregistered device**.
+
+Whenever this tool detects a new IP in that range, 
+it sends me a **webhook notification** (e.g. to Discord), allowing me to check immediately:
+
+- Is this a device I expect?
+- Or is someone unauthorized on my network?
+
+This lightweight scanner gives me **peace of mind** and an easy way to monitor
+who joins my WiFi or wired LAN – from any device via the built-in Web API or push alert.
+
+---
+
+## Current Features
 
 - Automatic local network scan using `arp-scan`
 - Optional detailed device scan via `nmap`
-- Basic OS recognition
+- Basic OS recognition (not working as intended yet)
 - CLI argument support
 - RESTful Web API (JSON output)
 - HTML frontend template (optional)
@@ -23,6 +48,16 @@ Built with **.NET 9.0**
 - **External Config Files**:
   - `NotificationConfig.json` for webhooks
   - `AppConfig.json` for persistent settings (overridable by CLI)
+
+## Upcoming Features
+
+- Mac address recognition
+- Device type recognition (e.g. phone, computer, etc.)
+- Improved OS recognition
+- More detailed `nmap` scan options
+- better error handling
+- more robust code
+- and some other stuff...
 
 ---
 
