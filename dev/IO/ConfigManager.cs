@@ -9,7 +9,7 @@ namespace ServerNetworkAPI.dev.IO
         
         private static readonly string ConfigPath = Path.Combine(AppConfig.ConfigBasePath, "NotificationConfig.json");
 
-        public static NotificationConfig NotificationConfig { get; private set; } = new();
+        public static NotificationConfig NotificationConfig { get; set; } = new();
 
 
         public static void LoadOrCreateNotificationConfig()
