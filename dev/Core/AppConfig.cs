@@ -8,6 +8,8 @@ namespace ServerNetworkAPI.dev.Core
     {
         public static string Version { get; } = "0.2b";
         public static string BaseDirectory { get; } = AppContext.BaseDirectory;
+
+        public static string ConfigBasePath = Path.Combine(BaseDirectory, "Configs");
         public static string LogDirectory => Path.Combine(BaseDirectory, "Log");
         public static string LogFilePath => Path.Combine(LogDirectory, "scanlog.txt");
         public static string SaveFilePath => Path.Combine(BaseDirectory, "devices.json");
@@ -22,6 +24,10 @@ namespace ServerNetworkAPI.dev.Core
 
         public static string LocalIpMask { get; private set; } = "";
 
+        private static void LoadExternalSettings()
+        {
+            ConfigManager.LoadOrCreateNotificationConfig();
+        }
         public static void InitializeFromArgs(CLI.ParsedArgs args)
         {
             FallbackIpMask = args.FallbackIpMask;
@@ -31,6 +37,7 @@ namespace ServerNetworkAPI.dev.Core
             WebApiControllerName = args.ControllerName;
 
             LocalIpMask = CalculateLocalNetworkPrefix() ?? FallbackIpMask;
+            LoadExternalSettings();
         }
 
         private static string? CalculateLocalNetworkPrefix()

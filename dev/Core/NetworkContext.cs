@@ -1,5 +1,6 @@
 ﻿using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.IO;
+using ServerNetworkAPI.dev.Services;
 namespace ServerNetworkAPI.dev.Core
 {
     public class NetworkContext
@@ -49,6 +50,7 @@ namespace ServerNetworkAPI.dev.Core
                     if (IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
                     {
                         Logger.Log($"[NetworkContext] New non administrated IP detected: {updatedDevice.IP}", true, ConsoleColor.Red);
+                        _ = NotificationService.SendDeviceNotificationAsync(updatedDevice);
                     }
                     else
                     {

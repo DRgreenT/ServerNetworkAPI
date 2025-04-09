@@ -11,6 +11,7 @@ namespace ServerNetworkAPI.dev.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            NotificationService.SendMessage("@everyone Network scan service started.");
             _ = Task.Run(() => DisplayLoop(_displayTokenSource.Token));
 
             Console.TreatControlCAsInput = false;
@@ -25,13 +26,14 @@ namespace ServerNetworkAPI.dev.Services
 
             await DeviceRepository.SaveAsync();
             OutputFormatter.PrintMessage("Network scan service stopped.", ConsoleColor.Yellow);
-            
+            NotificationService.SendMessage("@everyone Network scan service terminated.");
             Console.TreatControlCAsInput = true;
             Console.CursorVisible = true;
 
             await base.StopAsync(cancellationToken);
             OutputFormatter.PrintDeviceSummary();
             Console.WriteLine();
+            
         }
 
         private static async Task DisplayLoop(CancellationToken token)
