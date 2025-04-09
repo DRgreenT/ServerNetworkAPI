@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.IO;
@@ -8,15 +7,22 @@ namespace ServerNetworkAPI.dev.Services
 {
     public class NotificationService
     {
-
         private static readonly HttpClient _httpClient = new();
-        public static void SendMessage(string message)
+
+        public static void SendMessage(string message, bool isWarning)
         {
             var config = ConfigManager.NotificationConfig;
 
             if (!config.EnableNotifications || string.IsNullOrWhiteSpace(config.WebhookUrl) || config.WebhookUrl.Contains("YOUR_IFTTT_KEY"))
             {
                 Logger.Log("[NotificationService] SendMessage skipped (not configured).", false, ConsoleColor.Yellow);
+                return;
+            }
+
+            // 💡 Level-Auswertung
+            if (config.NotificationLevel == Models.Enums.NotificationLevel.Warnings && !isWarning)
+            {
+                Logger.Log("[NotificationService] Skipped (level = warnings, but message is not warning).", false, ConsoleColor.DarkGray);
                 return;
             }
 
@@ -46,6 +52,7 @@ namespace ServerNetworkAPI.dev.Services
                 Logger.Log($"[Notification] Exception: {ex.Message}", true, ConsoleColor.Red);
             }
         }
+
         public static async Task SendDeviceNotificationAsync(Device device)
         {
             var config = ConfigManager.NotificationConfig;
@@ -56,32 +63,33 @@ namespace ServerNetworkAPI.dev.Services
                 return;
             }
 
-            var payload = new
+            if (config.NotificationLevel == Models.Enums.NotificationLevel.Warnings|| config.NotificationLevel == Models.Enums.NotificationLevel.All)
             {
-                content = $"@everyone 📡 New device detected:\nIP: {device.IP}\nHostname: {device.Hostname}\nOS: {device.OS}"
-            };
-
-            string json = JsonSerializer.Serialize(payload);
-
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            try
-            {
-                var response = await _httpClient.PostAsync(config.WebhookUrl, content);
-                if (response.IsSuccessStatusCode)
+                var payload = new
                 {
-                    Logger.Log($"[Notification] Webhook sent: {device.IP}", true, ConsoleColor.Green);
-                }
-                else
+                    content = $"@everyone 📡 New device detected:\nIP: {device.IP}\nHostname: {device.Hostname}\nOS: {device.OS}"
+                };
+
+                string json = JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                try
                 {
-                    Logger.Log($"[Notification] Failed: {response.StatusCode}", true, ConsoleColor.Red);
+                    var response = await _httpClient.PostAsync(config.WebhookUrl, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Logger.Log($"[Notification] Webhook sent: {device.IP}", true, ConsoleColor.Green);
+                    }
+                    else
+                    {
+                        Logger.Log($"[Notification] Failed: {response.StatusCode}", true, ConsoleColor.Red);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log($"[Notification] Exception: {ex.Message}", true, ConsoleColor.Red);
+                catch (Exception ex)
+                {
+                    Logger.Log($"[Notification] Exception: {ex.Message}", true, ConsoleColor.Red);
+                }
             }
         }
     }
-    
 }
