@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+    <Compile Remove="dev\tmp\**" />
+    <Content Remove="dev\tmp\**" />
+    <EmbeddedResource Remove="dev\tmp\**" />
+    <None Remove="dev\tmp\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="dev\tmp\" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
   </ItemGroup>
 
 </Project>
