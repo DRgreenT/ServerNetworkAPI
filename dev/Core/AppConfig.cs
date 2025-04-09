@@ -19,7 +19,7 @@ namespace ServerNetworkAPI.dev.Core
         public static bool IsNmapEnabled { get; private set; } = false;
         public static int WebApiPort { get; private set; } = 5050;
         public static string WebApiControllerName { get; private set; } = "network";
-        public static int MaxIPv4AddressWithoutWarning { get; private set; } = 190;
+        public static int MaxIPv4AddressWithoutWarning { get; private set; } = 190; // e.g. 192.168.178.190 to 192.168.178.255 will generate a warning and dicord message
 
         public static string LocalIpMask { get; private set; } = "";
 
