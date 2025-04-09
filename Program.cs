@@ -52,3 +52,7 @@ namespace ServerNetworkAPI
         }
     }
 }
+
+// ServerNetworkAPI
+// Copyright (C) 2024 Thomas Just
+// Licensed under AGPL v3 – see LICENSE file

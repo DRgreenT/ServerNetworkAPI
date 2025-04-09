@@ -229,3 +229,9 @@ The developer assumes **no responsibility** for:
 - Any **malfunction** due to system incompatibilities or environmental factors  
 
 By using this software, you agree to use it **at your own risk**.
+
+## License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.  
+You may freely use, modify, and distribute it under the same license –  
+as long as the resulting version remains open-source and AGPL-compatible.
