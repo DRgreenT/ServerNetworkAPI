@@ -1,63 +1,27 @@
-name: Build, Version, Release, Update README
+name: Build
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
-  build-release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    - name: Setup .NET 9
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '9.0.x'
 
     - name: Extract version from AppConfig.cs
-      id: version
+      id: get_version
       run: |
-        VERSION=$(grep 'public static string Version' ServerNetworkAPI/dev/Core/AppConfig.cs | grep -oE '[0-9]+\.[0-9]+[a-zA-Z0-9]*')
+        VERSION=$(grep 'public static string Version' dev/Core/AppConfig.cs | grep -oE '[0-9]+\.[0-9]+[a-zA-Z0-9]*')
         echo "VERSION_TAG=$VERSION" >> $GITHUB_ENV
-        echo "Version: $VERSION"
 
-    - name: Update version in README.md
-      run: |
-        sed -i -E "s/(ServerNetworkAPI \(v)[^\)]+(\))/\1$VERSION_TAG\2/" README.md
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git commit -am "Update README.md version to v$VERSION_TAG" || echo "No changes to commit"
-        git push || echo "No push needed"
-
-    - name: Clean build artifacts
-      run: rm -rf ./publish
-
-    - name: Build ServerNetworkAPI for Linux
+    - name: Build project for Linux
       run: dotnet publish ServerNetworkAPI.csproj -c Release -r linux-x64 --self-contained true -o ./publish/linux
-
-    - name: Remove bin/obj and nested publish
-      run: rm -rf bin obj publish/linux/publish
-
-    - name: Create ZIP folders and files
-      run: |
-        mkdir -p publish/zip
-        cd publish/linux
-        zip -r ../zip/ServerNetworkAPI.zip .
-        cd ../..
-        zip -r publish/zip/frontEndTemplate.zip WebFrontEnd
-        cp -r WebFrontEnd publish/WebFrontEnd
-
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        name: ServerNetworkAPI ${{ env.VERSION_TAG }}
-        tag_name: v${{ env.VERSION_TAG }}
-        files: |
-          publish/zip/ServerNetworkAPI.zip
-          publish/zip/frontEndTemplate.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
