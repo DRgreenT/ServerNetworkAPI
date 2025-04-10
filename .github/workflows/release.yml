@@ -11,16 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Check token exists
-        run: 'echo Token length: ${#GH_PAT}'
+      - name: Check if GH_PAT is set
+        run: |
+          if [ -z "$GH_PAT" ]; then
+            echo "::error ::GH_PAT is empty or not set!"
+            exit 1
+          else
+            echo "GH_PAT length: ${#GH_PAT}"
+          fi
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
-
-      - name: Debug token usage
-        run: |
-          curl -H "Authorization: token $GH_PAT" https://api.github.com/rate_limit
-          env:
-            GH_PAT: ${{ secrets.GH_PAT }}
 
       - name: Extract version from AppConfig.cs
         run: |
@@ -35,4 +35,4 @@ jobs:
           files: |
             publish/zip/ServerNetworkAPI.zip
             publish/zip/frontEndTemplate.zip
-            token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}
