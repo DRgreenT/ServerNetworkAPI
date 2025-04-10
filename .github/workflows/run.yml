@@ -18,29 +18,24 @@ jobs:
       run: |
         ./publish/linux/ServerNetworkAPI --nmap > run120.log 2>&1 &
         PID=$!
-        echo "Started with PID: $PID"
-        sleep 120
-        kill -SIGINT $PID
-        echo "Sent SIGINT to process"
-
-    - name: Run ServerNetworkAPI for 360s and log output
-      run: |
-        ./publish/linux/ServerNetworkAPI --nmap > run360.log 2>&1 &
-        PID=$!
-        echo "Started with PID: $PID"
-        sleep 360
-        kill -SIGINT $PID
-        echo "Sent SIGINT to process"
+        echo 'Started with PID $PID'
+        sleep 10
+        if ps -p $PID > /dev/null; then
+          echo "Process is still running after 10s. Continuing to wait."
+          sleep 110
+          kill -SIGINT $PID
+          echo "Sent SIGINT to process"
+        else
+          echo "::error ::Process $PID already exited. Probably crashed."
+          cat run120.log
+          exit 1
+        fi
 
     - name: Show full log of run120.log
       run: |
         echo "========== FULL LOG: run120.log =========="
         cat run120.log || echo "run120.log not found."
 
-    - name: Show full log of run360.log
-      run: |
-        echo "========== FULL LOG: run360.log =========="
-        cat run360.log || echo "run360.log not found."
 
 
 
