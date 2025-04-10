@@ -13,7 +13,7 @@ jobs:
 
     - name: Extract version from AppConfig.cs
       run: |
-        VERSION=$(grep 'public static string Version' dev/Core/AppConfig.cs | grep -oE '[0-9]+\\.[0-9]+(\\.[0-9]+)?[a-zA-Z0-9]*')
+        VERSION=$(grep 'public static string Version' dev/Core/AppConfig.cs | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?[a-zA-Z0-9]*')
         echo "VERSION_TAG=$VERSION" >> $GITHUB_ENV
 
     - name: Create GitHub Release
