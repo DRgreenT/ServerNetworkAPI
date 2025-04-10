@@ -29,6 +29,9 @@ it sends me a **webhook notification** (e.g. to Discord), allowing me to check i
 This lightweight scanner gives me **peace of mind** and an easy way to monitor
 who joins my WiFi or wired LAN – from any device via the built-in Web API or push alert.
 
+I know this isn't a perfect security solution — but it’s definitely better than nothing :D
+And for me, it’s a great learning project to grow my understanding of networks, APIs, and server monitoring.
+
 ---
 
 ## Current Features
@@ -95,6 +98,15 @@ If the last octet of a device IP exceeds a defined threshold, it's flagged as *n
 
 - root or sudo privileges (for `arp-scan` and `nmap` commands)
 - Linux x64 system
+
+### Dependencies:
+
+use: 
+- [Dependencies installer] (./setup_dependencies.sh)
+- ```chmod +x setup-dependencies.sh```
+- ```./setup-dependencies.sh```
+
+or manual:
 - [.NET 9.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) (only if building yourself)
 - [.NET NuGet]```dotnet add package Microsoft.Extensions.Hosting``` (only if building yourself)
 - [.NET NuGet]```dotnet add package Microsoft.AspNetCore.Mvc.Core``` (only if building yourself)
