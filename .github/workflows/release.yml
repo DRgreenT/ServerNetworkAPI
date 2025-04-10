@@ -27,6 +27,10 @@ jobs:
           VERSION=$(grep 'public static string Version' dev/Core/AppConfig.cs | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?[a-zA-Z0-9]*')
           echo "VERSION_TAG=$VERSION" >> $GITHUB_ENV
 
+      - name: Show GitHub API Rate Limit
+        run: |
+          curl -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/rate_limit
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -36,3 +40,6 @@ jobs:
             publish/zip/ServerNetworkAPI.zip
             publish/zip/frontEndTemplate.zip
           token: ${{ secrets.GH_PAT }}
+          target_commitish: ${{ github.sha }}
+          # dry_run: true
+          # draft: true
