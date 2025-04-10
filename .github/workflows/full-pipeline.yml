@@ -19,6 +19,6 @@ jobs:
     needs: cleanup
     uses: ./.github/workflows/release.yml
 
-  deploy:
-    needs: release
-    uses: ./.github/workflows/deploy.yml
+  #deploy:
+  #  needs: release
+  #  uses: ./.github/workflows/deploy.yml
