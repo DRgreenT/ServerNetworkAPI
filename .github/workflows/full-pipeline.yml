@@ -8,10 +8,6 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
 
-  zip:
-    needs: build
-    uses: ./.github/workflows/zip.yml
-
   cleanup:
     needs: build
     uses: ./.github/workflows/cleanup.yml
