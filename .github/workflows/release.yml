@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Extract version from AppConfig.cs
+      run: |
+        VERSION=$(grep 'public static string Version' dev/Core/AppConfig.cs | grep -oE '[0-9]+\.[0-9]+[a-zA-Z0-9]*')
+        echo "VERSION_TAG=$VERSION" >> $GITHUB_ENV
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: ServerNetworkAPI ${{ env.VERSION_TAG }}
+        tag_name: v${{ env.VERSION_TAG }}
+        files: |
+          publish/zip/ServerNetworkAPI.zip
+          publish/zip/frontEndTemplate.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

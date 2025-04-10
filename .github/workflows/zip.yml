@@ -1,0 +1,28 @@
+name: Zip
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Create zip folders
+      run: mkdir -p publish/zip
+
+    - name: Zip API
+      run: |
+        cd publish/linux
+        zip -r ../zip/ServerNetworkAPI.zip .
+        cd ../..
+
+    - name: Zip frontend
+      run: |
+        zip -r publish/zip/frontEndTemplate.zip WebFrontEnd
+
+    - name: Copy frontend to publish
+      run: cp -r WebFrontEnd publish/WebFrontEnd

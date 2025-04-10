@@ -1,0 +1,25 @@
+name: Full CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  zip:
+    needs: build
+    uses: ./.github/workflows/zip.yml
+
+  cleanup:
+    needs: zip
+    uses: ./.github/workflows/cleanup.yml
+
+  release:
+    needs: cleanup
+    uses: ./.github/workflows/release.yml
+
+  #deploy:
+  #  needs: release
+  #  uses: ./.github/workflows/deploy.yml
