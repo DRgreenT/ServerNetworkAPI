@@ -13,9 +13,11 @@ jobs:
     uses: ./.github/workflows/zip.yml
 
   cleanup:
-    needs: zip
+    needs: build
     uses: ./.github/workflows/cleanup.yml
 
-  #deploy:
-  #  needs: release
-  #  uses: ./.github/workflows/deploy.yml
+  runIt:
+    needs: cleanup
+    uses: ./.github/workflows/run.yml
+
+
