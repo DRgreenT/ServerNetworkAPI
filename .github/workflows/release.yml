@@ -16,6 +16,12 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
 
+      - name: Debug token usage
+        run: |
+          curl -H "Authorization: token $GH_PAT" https://api.github.com/rate_limit
+          env:
+            GH_PAT: ${{ secrets.GH_PAT }}
+
       - name: Extract version from AppConfig.cs
         run: |
           VERSION=$(grep 'public static string Version' dev/Core/AppConfig.cs | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?[a-zA-Z0-9]*')
@@ -29,5 +35,4 @@ jobs:
           files: |
             publish/zip/ServerNetworkAPI.zip
             publish/zip/frontEndTemplate.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+            token: ${{ secrets.GH_PAT }}
