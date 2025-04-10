@@ -42,10 +42,5 @@ jobs:
         echo "========== FULL LOG: run360.log =========="
         cat run360.log || echo "run360.log not found."
 
-    - name: Upload logs as artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: servernetworkapi-logs
-        path: |
-          run120.log
-          run360.log
+
+
