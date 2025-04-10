@@ -43,7 +43,7 @@ jobs:
         cat run360.log || echo "run360.log not found."
 
     - name: Upload logs as artifacts
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v2
       with:
         name: servernetworkapi-logs
         path: |
