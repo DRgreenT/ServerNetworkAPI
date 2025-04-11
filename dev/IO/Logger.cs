@@ -14,7 +14,6 @@ namespace ServerNetworkAPI.dev.IO
         {
             lock (_lock)
             {
-                
                 string logLine = message;
 
                 if (!_logInitialized)
@@ -33,11 +32,11 @@ namespace ServerNetworkAPI.dev.IO
                 }
             }
         }
+
         public static void Log(LogData data)
         {
             var color = GetColorByType(data.MessageType);
 
-            
             string exceptionInfo = string.IsNullOrWhiteSpace(data.ExeptionMessage)
                 ? string.Empty
                 : $" Exception: {RemoveNewLineSymbolFromString(data.ExeptionMessage)}";
@@ -49,21 +48,35 @@ namespace ServerNetworkAPI.dev.IO
             string logLine = $"[{data.TimeStamp}] [{data.Source}]: {message}{exceptionInfo}";
 
             string displayLine;
-            int prefixLength = data.TimeStamp!.Length + 3; 
-            int maxLength = Console.WindowWidth - 3;
+            int windowWidth = GetConsoleWidth();
+            int prefixLength = data.TimeStamp!.Length + 3; // Nur Zeitstempel (nicht Quelle)
+            int maxLength = (windowWidth - 3) > 60 ? windowWidth - 3 : 80;
+
             if (logLine.Length > prefixLength + maxLength)
             {
                 displayLine = logLine.Substring(prefixLength, maxLength) + "...";
             }
             else
             {
-                displayLine = logLine.Substring(prefixLength);
+                displayLine = logLine.Length < prefixLength ? logLine : logLine.Substring(prefixLength);
             }
 
             OutputFormatter.PrintMessage(displayLine, color);
             Write(logLine, false);
         }
 
+        private static int GetConsoleWidth()
+        {
+            try
+            {
+                int width = Console.WindowWidth;
+                return width < 10 ? 80 : width;
+            }
+            catch
+            {
+                return 80;
+            }
+        }
 
         private static ConsoleColor GetColorByType(MessageType type)
         {
@@ -86,6 +99,5 @@ namespace ServerNetworkAPI.dev.IO
             int index = input.IndexOf('\n');
             return index >= 0 ? input.Substring(0, index) : input;
         }
-
     }
 }
