@@ -13,7 +13,7 @@ namespace ServerNetworkAPI.dev.UI
         public static void PrintStartupInfo()
         {
             PrintMessage($"Server NetworkAPI v{AppConfig.Version} started.", ConsoleColor.Green, false);
-            PrintMessage($"");
+            PrintMessage($"",null,false);
             PrintMessage($"IP-Mask: {AppConfig.LocalIpMask}, Nmap enabled: {AppConfig.IsNmapEnabled}, Scan Interval: {AppConfig.ScanIntervalSeconds}s",ConsoleColor.Yellow,false);
             PrintMessage($"API running at: http://{localIp}:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false);
             PrintMessage($"API running at: http://127.0.0.1:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false);

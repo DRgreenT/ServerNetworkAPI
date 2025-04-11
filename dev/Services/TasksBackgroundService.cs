@@ -12,7 +12,7 @@ namespace ServerNetworkAPI.dev.Services
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             NotificationService.SendMessage("@everyone Network scan service started.", false);
-            //_ = Task.Run(() => DisplayLoop(_displayTokenSource.Token));
+
             _ = Task.Run(() => UpdateLogData(_displayTokenSource.Token));
             _ = Task.Run(() => PreventKeyInputByUser(_displayTokenSource.Token));
 
@@ -43,14 +43,6 @@ namespace ServerNetworkAPI.dev.Services
                 LogData.GetLogData();
             }
         }
-        //private static async Task DisplayLoop(CancellationToken token)
-        //{
-        //    while (!token.IsCancellationRequested)
-        //    {
-        //        await Task.Delay(200, token);
-        //    }
-        //}
-
         private static async Task PreventKeyInputByUser(CancellationToken token)
         {
             SetConsoleKeySettings(false);
