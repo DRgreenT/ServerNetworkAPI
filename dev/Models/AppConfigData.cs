@@ -6,7 +6,6 @@
         public int ScanIntervalSeconds { get; set; } = 15;
         public bool IsNmapEnabled { get; set; } = false;
         public int WebApiPort { get; set; } = 5050;
-        public string WebApiControllerName { get; set; } = "network";
         public int MaxIPv4AddressWithoutWarning { get; set; } = 190;
     }
 }

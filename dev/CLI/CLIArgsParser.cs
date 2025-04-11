@@ -50,15 +50,6 @@
                             i++;
                         }
                         break;
-
-                    case "--c":
-                    case "-c":
-                        if (i + 1 < args.Length)
-                        {
-                            result.ControllerName = args[i + 1];
-                            i++;
-                        }
-                        break;
                 }
             }
 
@@ -72,7 +63,6 @@
             --help/-help           Shows this help message
             --t {int}              Delay between scans in seconds (1–3600)
             --p {int}              Web API port (default: 5050)
-            --c {string}           Controller name (default: 'network')
             --nmap                 Enable nmap scan mode
             --fip {string}         Fallback IP mask (e.g., 192.168.178.)
             ");
@@ -85,7 +75,6 @@
         public bool NmapScanActive { get; set; } = false;
         public int TimeoutSeconds { get; set; } = 15;
         public int Port { get; set; } = 5050;
-        public string ControllerName { get; set; } = "network";
         public string FallbackIpMask { get; set; } = "192.168.178.";
     }
 }

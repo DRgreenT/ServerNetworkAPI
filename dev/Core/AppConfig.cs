@@ -9,7 +9,7 @@ namespace ServerNetworkAPI.dev.Core
 {
     public class AppConfig
     {
-        public static string Version { get; } = "0.2.1b";
+        public static string Version { get; } = "0.2.2b";
         public static string BaseDirectory { get; } = AppContext.BaseDirectory;
 
         public static string ConfigBasePath { get; } = Path.Combine(BaseDirectory, "Configs");
@@ -21,7 +21,6 @@ namespace ServerNetworkAPI.dev.Core
         public static int ScanIntervalSeconds { get; private set; } = 15;
         public static bool IsNmapEnabled { get; private set; } = false;
         public static int WebApiPort { get; private set; } = 5050;
-        public static string WebApiControllerName { get; private set; } = "network";
         public static int MaxIPv4AddressWithoutWarning { get; private set; } = 190; // e.g. 192.168.178.190 to 192.168.178.255 will generate a warning and dicord message
 
         public static string LocalIpMask { get; private set; } = "";
@@ -41,14 +40,12 @@ namespace ServerNetworkAPI.dev.Core
             ScanIntervalSeconds = cfg.ScanIntervalSeconds;
             IsNmapEnabled = cfg.IsNmapEnabled;
             WebApiPort = cfg.WebApiPort;
-            WebApiControllerName = cfg.WebApiControllerName;
             MaxIPv4AddressWithoutWarning = cfg.MaxIPv4AddressWithoutWarning;
 
             // Override with CLI args if available
             if (!string.IsNullOrWhiteSpace(args.FallbackIpMask)) FallbackIpMask = args.FallbackIpMask;
             if (args.TimeoutSeconds > 0) ScanIntervalSeconds = args.TimeoutSeconds;
             if (args.Port > 0) WebApiPort = args.Port;
-            if (!string.IsNullOrWhiteSpace(args.ControllerName)) WebApiControllerName = args.ControllerName;
             if (args.NmapScanActive) IsNmapEnabled = true;
 
             // Calculate IP Mask
@@ -114,7 +111,7 @@ namespace ServerNetworkAPI.dev.Core
 
         public static string GetStartupParameterSummary()
         {
-            return $"# Parameters: nmap={IsNmapEnabled}, delay={ScanIntervalSeconds}s, port={WebApiPort}, controller={WebApiControllerName}, fallback IP={FallbackIpMask}";
+            return $"# Parameters: nmap={IsNmapEnabled}, delay={ScanIntervalSeconds}s, port={WebApiPort}, fallback IP={FallbackIpMask}";
         }
     }
 }
