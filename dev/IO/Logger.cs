@@ -7,7 +7,7 @@ namespace ServerNetworkAPI.dev.IO
 {
     public class Logger
     {
-        private static readonly object _lock = new();
+        private static readonly Lock _lock = new();
         private static bool _logInitialized = false;
 
         public static void Write(string message, bool alsoConsole = true)
@@ -36,33 +36,43 @@ namespace ServerNetworkAPI.dev.IO
         public static void Log(LogData data)
         {
             var color = GetColorByType(data.MessageType);
-
-            string exceptionInfo = string.IsNullOrWhiteSpace(data.ExeptionMessage)
-                ? string.Empty
-                : $" Exception: {RemoveNewLineSymbolFromString(data.ExeptionMessage)}";
-
-            string message = RemoveNewLineSymbolFromString(data.Message);
-            if (!string.IsNullOrEmpty(exceptionInfo) && exceptionInfo.Contains(message))
-                exceptionInfo = string.Empty;
-
-            string logLine = $"[{data.TimeStamp}] [{data.Source}]: {message}{exceptionInfo}";
-
-            string displayLine;
-            int windowWidth = GetConsoleWidth();
-            int prefixLength = data.TimeStamp!.Length + 3; // Nur Zeitstempel (nicht Quelle)
-            int maxLength = (windowWidth - 3) > 60 ? windowWidth - 3 : 80;
-
-            if (logLine.Length > prefixLength + maxLength)
-            {
-                displayLine = logLine.Substring(prefixLength, maxLength) + "...";
-            }
-            else
-            {
-                displayLine = logLine.Length < prefixLength ? logLine : logLine.Substring(prefixLength);
-            }
+            string logLine = BuildFullLogLine(data);
+            string displayLine = BuildDisplayLine(logLine, data.TimeStamp!.Length);
 
             OutputFormatter.PrintMessage(displayLine, color);
             Write(logLine, false);
+        }
+
+        private static string BuildFullLogLine(LogData data)
+        {
+            string message = RemoveNewLineSymbolFromString(data.Message);
+            string exceptionInfo = FormatExceptionInfo(data.ExeptionMessage, message);
+
+            return $"[{data.TimeStamp}] [{data.Source}]: {message}{exceptionInfo}";
+        }
+
+        private static string FormatExceptionInfo(string? exceptionMessage, string baseMessage)
+        {
+            if (string.IsNullOrWhiteSpace(exceptionMessage)) return string.Empty;
+
+            string cleaned = RemoveNewLineSymbolFromString(exceptionMessage);
+            return cleaned.Contains(baseMessage) ? string.Empty : $" Exception: {cleaned}";
+        }
+
+        private static string BuildDisplayLine(string fullLogLine, int timeStampLength)
+        {
+            int windowWidth = GetConsoleWidth();
+            int prefixLength = timeStampLength + 3;
+            int maxLength = (windowWidth - 3) > 60 ? windowWidth - 3 : 80;
+
+            if (fullLogLine.Length > prefixLength + maxLength)
+            {
+                return string.Concat(fullLogLine.AsSpan(prefixLength, maxLength), "...");
+            }
+
+            return fullLogLine.Length < prefixLength
+                ? fullLogLine
+                : fullLogLine[prefixLength..];
         }
 
         private static int GetConsoleWidth()
@@ -87,7 +97,7 @@ namespace ServerNetworkAPI.dev.IO
                 MessageType.Warning => ConsoleColor.Yellow,
                 MessageType.Success => ConsoleColor.Green,
                 MessageType.Standard => ConsoleColor.White,
-                _ => ConsoleColor.Gray
+                _ => ConsoleColor.White
             };
         }
 
@@ -96,8 +106,17 @@ namespace ServerNetworkAPI.dev.IO
             if (string.IsNullOrEmpty(input))
                 return string.Empty;
 
-            int index = input.IndexOf('\n');
-            return index >= 0 ? input.Substring(0, index) : input;
+            ReadOnlySpan<char> span = input.AsSpan();
+
+            for (int i = 0; i < span.Length; i++)
+            {
+                if (span.Length == 0)
+                    break;
+                if (span[i] == '\r' || span[i] == '\n')
+                    return span[.. i].ToString();
+            }
+
+            return input;
         }
     }
 }

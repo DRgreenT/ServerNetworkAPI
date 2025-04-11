@@ -52,7 +52,6 @@ namespace ServerNetworkAPI.dev.Network.Scanner
                 }
                 catch (Exception ex)
                 {
-                    string exeptionMessage = Logger.RemoveNewLineSymbolFromString(ex.Message);
                     output.AppendLine($"[EXCEPTION] Adapter: {adapter} → {ex.Message}");
 
                     log = LogData.NewData(
@@ -100,7 +99,7 @@ namespace ServerNetworkAPI.dev.Network.Scanner
 
             foreach (var line in lines)
             {
-                var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length >= 1 && IsValidIPv4(parts[0]))
                 {
                     ips.Add(parts[0]);

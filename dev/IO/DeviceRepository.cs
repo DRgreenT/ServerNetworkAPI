@@ -7,17 +7,17 @@ namespace ServerNetworkAPI.dev.IO
 {
     public class DeviceRepository
     {
+        private static JsonSerializerOptions JSerializeOption { get;} = new JsonSerializerOptions { WriteIndented = true };
         public static async Task LoadAsync()
         {
-            LogData log = new();
             if (!File.Exists(AppConfig.SaveFilePath))
             {
-                log = LogData.NewData(
+                Logger.Log(
+                    LogData.NewData(
                     "DeviceRepository",
                     $"No device file found at {AppConfig.SaveFilePath}",
-                    MessageType.Warning
-                );
-                Logger.Log(log);
+                    MessageType.Warning 
+                    ));
                 return;
             }
 
@@ -29,51 +29,50 @@ namespace ServerNetworkAPI.dev.IO
                 if (devices != null)
                 {
                     NetworkContext.SetDevices(devices);
-                    log = LogData.NewData(
+
+                    Logger.Log(
+                        LogData.NewData(
                         "DeviceRepository",
                         $"Loaded {devices.Count} devices from {AppConfig.SaveFilePath}",
                         MessageType.Success
-                    );
-                    Logger.Log(log);
+                        ));
                 }
             }
             catch (Exception ex)
             {
-                log = LogData.NewData(
+                Logger.Log(
+                    LogData.NewData(
                     "DeviceRepository",
                     $"Failed to load devices from {AppConfig.SaveFilePath}",
                     MessageType.Exception,
                     Logger.RemoveNewLineSymbolFromString(ex.Message)
-                );
-                Logger.Log(log);
+                    ));
             }
         }
 
         public static async Task SaveAsync()
         {
-            LogData log = new();
             try
             {
                 var snapshot = NetworkContext.Snapshot();
-                var json = JsonSerializer.Serialize(snapshot, new JsonSerializerOptions { WriteIndented = true });
+                var json = JsonSerializer.Serialize(snapshot, JSerializeOption);
                 await File.WriteAllTextAsync(AppConfig.SaveFilePath, json);
 
-                log = LogData.NewData(
+                Logger.Log(LogData.NewData(
                     "DeviceRepository",
                     $"Saved {snapshot.Count} devices to {AppConfig.SaveFilePath}",
                     MessageType.Success
-                );
-                Logger.Log(log);
+                     ));
             }
             catch (Exception ex)
-            {
-                log = LogData.NewData(
+            { 
+                Logger.Log(
+                    LogData.NewData(
                     "DeviceRepository",
                     $"Failed to save devices to {AppConfig.SaveFilePath}",
                     MessageType.Exception,
                     Logger.RemoveNewLineSymbolFromString(ex.Message)
-                );
-                Logger.Log(log);
+                    ));
             }
         }
 

@@ -59,16 +59,15 @@ namespace ServerNetworkAPI
         private static void ConfigureStaticWebUI(WebApplication app)
         {
             string wwwRootPath = Path.Combine(AppContext.BaseDirectory, "wwwRoot");
-            LogData log = new();
 
             if (!Directory.Exists(wwwRootPath))
             {
-                log = LogData.NewData(
+                Logger.Log(
+                    LogData.NewData(
                     "WebUI",
                     $"wwwRoot not found! ({wwwRootPath})",
                     MessageType.Error
-                );
-                Logger.Log(log);
+                ));
                 return;
             }
 
@@ -85,12 +84,13 @@ namespace ServerNetworkAPI
                 FileProvider = fileProvider,
                 RequestPath = ""
             });
-            log = LogData.NewData(
+ 
+            Logger.Log(
+                LogData.NewData(
                 "WebUI",
                 $"WebUI @ {LocalAdapterService.GetLocalIPv4Address()}:{AppConfig.WebApiPort}",
                 MessageType.Success
-            );
-            Logger.Log(log);
+                ));
         }
     }
 }
