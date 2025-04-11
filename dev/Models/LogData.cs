@@ -11,6 +11,21 @@ namespace ServerNetworkAPI.dev.Models
         public string ExeptionMessage { get; set; } = "";
         public MessageType MessageType { get; set; }
 
+        //[JsonIgnore]
+        public static List<LogData> logDatas { get; private set; } = [];
+
+        public static List<LogData> GetLogData()
+        {
+            return logDatas;
+        }
+        public static void ClearLog()
+        {
+            logDatas.Clear();
+        }
+        public static void AddLog(LogData logData)
+        {
+            logDatas.Add(logData);
+        }
         public static LogData NewData(string source, string message, MessageType messageType, string exeption = "")
         {
             return new LogData
