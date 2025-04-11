@@ -1,3 +1,4 @@
 /.vs
 /obj
 /dev/WebUI
+/build_linux.bat
