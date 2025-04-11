@@ -41,6 +41,7 @@ namespace ServerNetworkAPI.dev.IO
 
             OutputFormatter.PrintMessage(displayLine, color);
             Write(logLine, false);
+            LogData.AddLog(data);
         }
 
         private static string BuildFullLogLine(LogData data)
