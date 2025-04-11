@@ -2,7 +2,7 @@
 using ServerNetworkAPI.dev.Core;
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Models;
-
+using ServerNetworkAPI.dev.Models.Enums;
 namespace ServerNetworkAPI.dev.Network.Scanner
 {
     public class NmapScanner
@@ -14,6 +14,8 @@ namespace ServerNetworkAPI.dev.Network.Scanner
 
             var psi = BuildNmapCommand(ip, parameter);
             if (psi == null) return new();
+
+            LogData log = new LogData();
 
             try
             {
@@ -27,9 +29,28 @@ namespace ServerNetworkAPI.dev.Network.Scanner
                 var completed = await Task.WhenAny(waitTask, Task.Delay(-1, cts.Token));
 
                 if (completed != waitTask)
-                {
-                    try { process.Kill(entireProcessTree: true); } catch { }
-                    Logger.Log($"[NmapScanner] Timeout on {ip}", false);
+                {                  
+                    try 
+                    { 
+                        process.Kill(entireProcessTree: true);
+
+                        log = LogData.NewData(
+                            "NmapScanner",
+                            $"Process killed for {ip}",
+                            MessageType.Warning,
+                            ""
+                        );
+                    } 
+                    catch(Exception ex)
+                    {
+                        log = LogData.NewData(
+                            "NmapScanner",
+                            $"Error killing process for {ip}",
+                            MessageType.Exception,
+                            Logger.RemoveNewLineSymbolFromString(ex.Message)
+                        );
+                    }
+                    Logger.Log(log);
                     return new();
                 }
 
@@ -39,7 +60,15 @@ namespace ServerNetworkAPI.dev.Network.Scanner
             catch (Exception ex)
             {
                 string exMessage = Logger.RemoveNewLineSymbolFromString(ex.Message);
-                Logger.Log($"[NmapScanner] Error scanning {ip}: {exMessage}",false);
+
+                log = LogData.NewData(
+                    "NmapScanner",
+                    $"Error scanning {ip}",
+                    MessageType.Exception,
+                    Logger.RemoveNewLineSymbolFromString(ex.Message)
+                );
+                
+                Logger.Log(log);
                 return new();
             }
         }

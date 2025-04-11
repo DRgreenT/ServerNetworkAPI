@@ -1,6 +1,7 @@
 ﻿using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Services;
+using ServerNetworkAPI.dev.Models.Enums;
 namespace ServerNetworkAPI.dev.Core
 {
     public class NetworkContext
@@ -32,6 +33,7 @@ namespace ServerNetworkAPI.dev.Core
         {
             lock (_lock)
             {
+                LogData log = new();
                 var existing = _devices.FirstOrDefault(d => d.IP == updatedDevice.IP);
                 if (existing != null)
                 {
@@ -42,21 +44,35 @@ namespace ServerNetworkAPI.dev.Core
 
                     if(IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
                     {
-                        Logger.Log($"[NetworkContext] Non administrated IP detected: {updatedDevice.IP}", true, ConsoleColor.Red);
+                        log = LogData.NewData(
+                            "NetworkContext",
+                            $"Non administrated IP detected: {updatedDevice.IP}",
+                            MessageType.HardWarning
+                        );
+                        Logger.Log(log);
                     }
                 }
                 else
                 {
                     if (IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
                     {
-                        Logger.Log($"[NetworkContext] New non administrated IP detected: {updatedDevice.IP}", true, ConsoleColor.Red);
+                        log = LogData.NewData(
+                            "NetworkContext",
+                            $"Non administrated IP detected: {updatedDevice.IP}",
+                            MessageType.HardWarning
+                        );
+
                         _ = NotificationService.SendDeviceNotificationAsync(updatedDevice);
                     }
                     else
                     {
-                        Logger.Log($"[NetworkContext] New device detected: {updatedDevice.IP}", true, ConsoleColor.Yellow);
+                        log = LogData.NewData(
+                            "NetworkContext",
+                            $"New device detected: {updatedDevice.IP}",
+                            MessageType.Warning
+                        );
                     }
-                   
+                    Logger.Log(log);
                     _devices.Add(updatedDevice);
                 }
             }

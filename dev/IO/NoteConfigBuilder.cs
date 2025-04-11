@@ -1,5 +1,6 @@
 ﻿using ServerNetworkAPI.dev.Core;
 using ServerNetworkAPI.dev.Models;
+using ServerNetworkAPI.dev.Models.Enums;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -18,14 +19,27 @@ namespace ServerNetworkAPI.dev.IO
 
         public static NotificationConfig LoadOrCreate()
         {
+            LogData log = new();
+
             if (!Directory.Exists(ConfigDir))
             {
                 Directory.CreateDirectory(ConfigDir);
-                Logger.Log($"[NoteConfigBuilder] Created config directory: {ConfigDir}", false, ConsoleColor.Yellow);
+                log = LogData.NewData(
+                    "NoteConfigBuilder",
+                    $"Created config directory: {ConfigDir}",
+                    MessageType.Warning
+                );
+
+                Logger.Log(log);
             }
             if (!File.Exists(ConfigFile))
             {
-                Logger.Log($"[NoteConfigBuilder] Config file not found, creating default: {ConfigFile}", false, ConsoleColor.Yellow);
+                log = LogData.NewData(
+                    "NoteConfigBuilder",
+                    $"Config file not found, creating default: {ConfigFile}",
+                    MessageType.Warning
+                );
+                Logger.Log(log);
                 return CreateDefault();
             }
 
@@ -36,15 +50,33 @@ namespace ServerNetworkAPI.dev.IO
 
                 if (config == null)
                 {
-                    Logger.Log($"[NoteConfigBuilder] Config file is empty or invalid, creating default: {ConfigFile}", false, ConsoleColor.Yellow);
+                    log = LogData.NewData(
+                        "NoteConfigBuilder",
+                        $"Config file is empty or invalid, creating default: {ConfigFile}",
+                        MessageType.Warning
+                    );
+                    Logger.Log(log);
                     return CreateDefault();
                 }
-                Logger.Log($"[NoteConfigBuilder] Loaded config from: {ConfigFile}", false, ConsoleColor.Green);
+
+                log = LogData.NewData(
+                    "NoteConfigBuilder",
+                    $"Loaded config from: {ConfigFile}",
+                    MessageType.Success
+                );
+
+                Logger.Log(log);
                 return config;
             }
             catch(Exception ex)
             {
-                Logger.Log($"[NoteConfigBuilder] {ex} -> Delault created!", false, ConsoleColor.Red);
+                log = LogData.NewData(
+                    "NoteConfigBuilder",
+                    $"Error loading config (default created!))",
+                    MessageType.Error,
+                    Logger.RemoveNewLineSymbolFromString(ex.Message)
+                );
+                Logger.Log(log);
                 return CreateDefault();
             }
         }

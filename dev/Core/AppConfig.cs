@@ -1,6 +1,9 @@
 ﻿using System.Net.Sockets;
 using System.Net;
 using ServerNetworkAPI.dev.IO;
+using ServerNetworkAPI.dev.Models;
+using ServerNetworkAPI.dev.Models.Enums;
+using System.Threading.Tasks;
 
 namespace ServerNetworkAPI.dev.Core
 {
@@ -66,9 +69,19 @@ namespace ServerNetworkAPI.dev.Core
                 .ToList();
 
             var firstIp = localIPs.FirstOrDefault();
+
+            LogData log = new();
+
             if (string.IsNullOrEmpty(firstIp))
             {
-                Logger.Log($"[AppConfig] Using fallback IP mask: {FallbackIpMask}", false);
+                log = LogData.NewData(
+                    "AppConfig",
+                    $"No valid local IP found. Using fallback IP mask: {FallbackIpMask}",
+                    MessageType.Warning,
+                    ""
+                );
+                Logger.Log(log);
+
                 return null;
             }
 
@@ -76,11 +89,26 @@ namespace ServerNetworkAPI.dev.Core
             if (parts.Length >= 3)
             {
                 var mask = $"{parts[0]}.{parts[1]}.{parts[2]}.";
-                Logger.Log($"[AppConfig] Using detected IP mask: {mask}", true);
+
+                log = LogData.NewData(
+                    "AppConfig",
+                    $"Using detected IP mask: {mask}",
+                    MessageType.Success,
+                    ""
+                );
+                Logger.Log(log);
+
                 return mask;
             }
 
-            Logger.Log($"[AppConfig] Invalid IP format. Using fallback: {FallbackIpMask}", false);
+            log = LogData.NewData(
+                "AppConfig",
+                $"Invalid IP format: {firstIp}. Using fallback IP mask: {FallbackIpMask}",
+                MessageType.Warning,
+                ""
+            );
+            
+            Logger.Log(log);
             return null;
         }
 

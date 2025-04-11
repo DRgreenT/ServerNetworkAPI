@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Net;
 using System.Text;
 using ServerNetworkAPI.dev.IO;
+using ServerNetworkAPI.dev.Models;
+using ServerNetworkAPI.dev.Models.Enums;
 
 namespace ServerNetworkAPI.dev.Network.Scanner
 {
@@ -12,9 +14,13 @@ namespace ServerNetworkAPI.dev.Network.Scanner
         {
             var output = new StringBuilder();
 
+
             var adapters = LocalAdapterService.GetActiveAdapterNames();
+
+
             foreach (var adapter in adapters)
             {
+                LogData log = new();
                 var psi = BuildArpScanCommand(adapter, ipPrefix);
                 if (psi == null) continue;
 
@@ -32,7 +38,15 @@ namespace ServerNetworkAPI.dev.Network.Scanner
                         if (!string.IsNullOrWhiteSpace(stdErr))
                         {
                             output.AppendLine($"[ERROR] {stdErr}");
-                            Logger.Log($"[ERROR] {Logger.RemoveNewLineSymbolFromString(stdErr)}", false);
+
+                            log = LogData.NewData(
+                                "ArpScanner",
+                                $"Adapter: {adapter} → {stdErr}",
+                                MessageType.Error,
+                                ""
+                            );
+
+                            Logger.Log(log);
                         }
                     }
                 }
@@ -40,8 +54,17 @@ namespace ServerNetworkAPI.dev.Network.Scanner
                 {
                     string exeptionMessage = Logger.RemoveNewLineSymbolFromString(ex.Message);
                     output.AppendLine($"[EXCEPTION] Adapter: {adapter} → {ex.Message}");
-                    Logger.Log($"[EXCEPTION] Adapter: {adapter} → {exeptionMessage}", false);
+
+                    log = LogData.NewData(
+                        "ArpScanner",
+                        $"Adapter: {adapter}",
+                        MessageType.Exception,
+                        Logger.RemoveNewLineSymbolFromString(ex.Message)
+                    );
+
+                    Logger.Log(log);
                 }
+
             }
 
             return ParseIpAddresses(output.ToString());
