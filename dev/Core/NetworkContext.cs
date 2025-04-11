@@ -6,17 +6,16 @@ namespace ServerNetworkAPI.dev.Core
 {
     public class NetworkContext
     {
-        private static readonly object _lock = new();
-        private static readonly List<Device> _devices = new();
+        private static readonly Lock _lock = new();
+        private static readonly List<Device> _devices = [];
 
         public static IReadOnlyList<Device> GetDevices()
         {
             lock (_lock)
             {
-                return _devices
+                return [.. _devices
                     .Select(d => d.CloneWithIndex())
-                    .OrderBy(d => d.Index)
-                    .ToList();
+                    .OrderBy(d => d.Index)];
             }
         }
 
@@ -98,7 +97,7 @@ namespace ServerNetworkAPI.dev.Core
                     {
                         device.IsOnline = false;
                         device.OS = "";
-                        device.Ports = new List<OpenPorts>();
+                        device.Ports = [];
                     }
                 }
             }
@@ -108,7 +107,7 @@ namespace ServerNetworkAPI.dev.Core
         {
             lock (_lock)
             {
-                return _devices.Select(d => d.Clone()).ToList();
+                return [.. _devices.Select(d => d.Clone())];
             }
         }
     }
