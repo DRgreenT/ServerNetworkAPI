@@ -13,8 +13,15 @@ namespace ServerNetworkAPI.dev.Services
         {
             NotificationService.SendMessage("@everyone Network scan service started.", false);
 
-            _ = Task.Run(() => UpdateLogData(_displayTokenSource.Token));
-            _ = Task.Run(() => PreventKeyInputByUser(_displayTokenSource.Token));
+            _ = Task.Factory.StartNew(() => UpdateLogData(_displayTokenSource.Token),
+                                  _displayTokenSource.Token,
+                                  TaskCreationOptions.LongRunning,
+                                  TaskScheduler.Default);
+
+            _ = Task.Factory.StartNew(() => PreventKeyInputByUser(_displayTokenSource.Token),
+                                  _displayTokenSource.Token,
+                                  TaskCreationOptions.LongRunning,
+                                  TaskScheduler.Default);
 
             await _scanService.RunAsync(stoppingToken);
         }
@@ -23,18 +30,16 @@ namespace ServerNetworkAPI.dev.Services
         {
             _displayTokenSource.Cancel();
 
-
             OutputFormatter.PrintMessage("Network scan service stopped.", ConsoleColor.Yellow);
             NotificationService.SendMessage("@everyone Network scan service terminated.", true);
 
             await base.StopAsync(cancellationToken);
             await DeviceRepository.SaveAsync();
 
-           
             OutputFormatter.PrintDeviceSummary();
             Console.WriteLine();
-
         }
+
         private static async Task UpdateLogData(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
@@ -43,27 +48,37 @@ namespace ServerNetworkAPI.dev.Services
                 LogData.GetLogData();
             }
         }
+
         private static async Task PreventKeyInputByUser(CancellationToken token)
         {
-            SetConsoleKeySettings(false);
+            DisableConsoleInput();
 
-            while (!token.IsCancellationRequested)
+            try
             {
-                while (Console.KeyAvailable)
+                while (!token.IsCancellationRequested)
                 {
-                    Console.ReadKey(intercept: true);
+                    while (Console.KeyAvailable)
+                        Console.ReadKey(intercept: true);
+
+                    await Task.Delay(200, token);
                 }
-
-                await Task.Delay(200, token); ;
             }
-
-            SetConsoleKeySettings(true);
+            finally
+            {
+                EnableConsoleInput();
+            }
         }
 
-        private static void SetConsoleKeySettings(bool isState)
+        private static void DisableConsoleInput()
         {
-            Console.TreatControlCAsInput = isState;
-            Console.CursorVisible = isState;
+            Console.TreatControlCAsInput = false;
+            Console.CursorVisible = false;
+        }
+
+        private static void EnableConsoleInput()
+        {
+            Console.TreatControlCAsInput = true;
+            Console.CursorVisible = true;
         }
     }
 }
