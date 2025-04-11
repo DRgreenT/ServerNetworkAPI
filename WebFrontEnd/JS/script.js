@@ -1,6 +1,6 @@
 var localHostIP = "192.168.178.10";
 var localHostApiPort = "5050";
-var ApiControllerName = "network"
+var ApiControllerName = "api/network"
 
 async function fetchDevices() {
     try {
