@@ -1,4 +1,4 @@
-# ServerNetworkAPI (v0.2.1b)
+# ServerNetworkAPI (v0.2.2b)
 
 A minimalistic Web API that scans your local IPv4 network and provides information like IP, OS, and open ports of all reachable devices.
 
@@ -41,7 +41,7 @@ And for me, it’s a great learning project to grow my understanding of networks
 - Basic OS recognition (not working as intended yet)
 - CLI argument support
 - RESTful Web API (JSON output)
-- HTML frontend template (optional)
+- HTML frontend template for API values (optional)
 - Persistent device data between restarts
 - Color-coded terminal output
 - Offline detection & live status
@@ -57,6 +57,7 @@ And for me, it’s a great learning project to grow my understanding of networks
 - Mac address recognition
 - Device type recognition (e.g. phone, computer, etc.)
 - Improved OS recognition
+- propper WebUI as a seperate project
 - More detailed `nmap` scan options
 - better error handling
 - more robust code
