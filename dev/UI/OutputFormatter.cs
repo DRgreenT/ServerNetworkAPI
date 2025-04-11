@@ -1,5 +1,6 @@
 ﻿using ServerNetworkAPI.dev.Core;
 using ServerNetworkAPI.dev.Network.Adapter;
+using ServerNetworkAPI.dev.WebAPI;
 
 namespace ServerNetworkAPI.dev.UI
 {
@@ -12,10 +13,10 @@ namespace ServerNetworkAPI.dev.UI
         public static void PrintStartupInfo()
         {
             PrintMessage($"Server NetworkAPI v{AppConfig.Version} started.", ConsoleColor.Green, false);
-            PrintMessage($"Port: {AppConfig.WebApiPort}, Controller: /{AppConfig.WebApiControllerName}", ConsoleColor.Yellow,false);
+            PrintMessage($"");
             PrintMessage($"IP-Mask: {AppConfig.LocalIpMask}, Nmap enabled: {AppConfig.IsNmapEnabled}, Scan Interval: {AppConfig.ScanIntervalSeconds}s",ConsoleColor.Yellow,false);
-            PrintMessage($"API running at: http://{localIp}:{AppConfig.WebApiPort}/{AppConfig.WebApiControllerName}", ConsoleColor.Yellow, false);
-            PrintMessage($"API running at: http://127.0.0.1:{AppConfig.WebApiPort}/{AppConfig.WebApiControllerName}", ConsoleColor.Yellow, false);
+            PrintMessage($"API running at: http://{localIp}:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false);
+            PrintMessage($"API running at: http://127.0.0.1:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false);
         }
 
         public static void PrintMessage(string message, ConsoleColor? color = null, bool hasTimeInfo = true)
@@ -54,7 +55,7 @@ namespace ServerNetworkAPI.dev.UI
 
         public static void PrintDeviceSummary()
         {
-            var devices = Core.NetworkContext.GetDevices();
+            var devices = NetworkContext.GetDevices();
             Console.SetCursorPosition(0, 26);
             Console.WriteLine(new string('#', 20) + "< SUMMARY >" + new string('#', 20));
             Console.WriteLine($"Total devices: {devices.Count}");
