@@ -31,7 +31,7 @@ namespace ServerNetworkAPI
             builder.Logging.SetMinimumLevel(LogLevel.Error);
 
             builder.Services.AddControllers();
-            builder.Services.AddHostedService<NetworkBackgroundService>();
+            builder.Services.AddHostedService<TasksBackgroundService>();
 
             builder.Services.AddCors(options =>
             {
