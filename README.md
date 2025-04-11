@@ -45,7 +45,7 @@ And for me, it’s a great learning project to grow my understanding of networks
 - Persistent device data between restarts
 - Color-coded terminal output
 - Offline detection & live status
-- Logfile creation
+- Logfile creation and api with logs 
 - Statically assigned IP detection (highlighted)
 - **Webhook notifications** for new devices and service status changes (started/terminated)
 - **External Config Files**:
@@ -196,7 +196,6 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
   "ScanIntervalSeconds": 15,
   "IsNmapEnabled": true,
   "WebApiPort": 5050,
-  "WebApiControllerName": "network",
   "MaxIPv4AddressWithoutWarning": 190
 }
 ```
@@ -211,7 +210,6 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
 --help / -help           Show help and usage info
 --t {int}                Scan interval in seconds (default: 5, min: 1, max: 3600)
 --p {int}                Web API port (default: 5050)
---c {string}             Controller name (default: 'network')
 --nmap                   Enable nmap scanning (optional)
 --fip {string}           Fallback IP mask (default: 192.168.178.)
 ```
