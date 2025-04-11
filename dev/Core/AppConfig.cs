@@ -12,10 +12,10 @@ namespace ServerNetworkAPI.dev.Core
         public static string Version { get; } = "0.2.1b";
         public static string BaseDirectory { get; } = AppContext.BaseDirectory;
 
-        public static string ConfigBasePath = Path.Combine(BaseDirectory, "Configs");
-        public static string LogDirectory => Path.Combine(BaseDirectory, "Log");
-        public static string LogFilePath => Path.Combine(LogDirectory, "scanlog.txt");
-        public static string SaveFilePath => Path.Combine(BaseDirectory, "devices.json");
+        public static string ConfigBasePath { get; } = Path.Combine(BaseDirectory, "Configs");
+        public static string LogDirectory { get; } = Path.Combine(BaseDirectory, "Log");
+        public static string LogFilePath { get; } = Path.Combine(LogDirectory, "scanlog.txt");
+        public static string SaveFilePath { get; } = Path.Combine(BaseDirectory, "devices.json");
 
         public static string FallbackIpMask { get; private set; } = "192.168.178.";
         public static int ScanIntervalSeconds { get; private set; } = 15;
