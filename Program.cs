@@ -1,7 +1,9 @@
-
+using Microsoft.Extensions.FileProviders;
 using ServerNetworkAPI.dev.CLI;
 using ServerNetworkAPI.dev.Core;
 using ServerNetworkAPI.dev.IO;
+using ServerNetworkAPI.dev.Models;
+using ServerNetworkAPI.dev.Models.Enums;
 using ServerNetworkAPI.dev.Network.Adapter;
 using ServerNetworkAPI.dev.Services;
 using ServerNetworkAPI.dev.UI;
@@ -47,12 +49,48 @@ namespace ServerNetworkAPI
             app.UseAuthorization();
             app.MapControllers();
 
+            // Serve static web UI files
+            ConfigureStaticWebUI(app);
+
             var url = $"http://0.0.0.0:{AppConfig.WebApiPort}";
             app.Run(url);
         }
+
+        private static void ConfigureStaticWebUI(WebApplication app)
+        {
+            string wwwRootPath = Path.Combine(AppContext.BaseDirectory, "wwwRoot");
+            LogData log = new();
+
+            if (!Directory.Exists(wwwRootPath))
+            {
+                log = LogData.NewData(
+                    "WebUI",
+                    $"wwwRoot not found! ({wwwRootPath})",
+                    MessageType.Error
+                );
+                Logger.Log(log);
+                return;
+            }
+
+            var fileProvider = new PhysicalFileProvider(wwwRootPath);
+
+            app.UseDefaultFiles(new DefaultFilesOptions
+            {
+                FileProvider = fileProvider,
+                RequestPath = ""
+            });
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = fileProvider,
+                RequestPath = ""
+            });
+            log = LogData.NewData(
+                "WebUI",
+                $"WebUI @ {LocalAdapterService.GetLocalIPv4Address()}:{AppConfig.WebApiPort}",
+                MessageType.Success
+            );
+            Logger.Log(log);
+        }
     }
 }
-
-// ServerNetworkAPI
-// Copyright (C) 2024 Thomas Just
-// Licensed under AGPL v3 – see LICENSE file
