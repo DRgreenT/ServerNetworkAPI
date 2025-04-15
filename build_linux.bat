@@ -6,13 +6,10 @@ setlocal
 set PROJECT_NAME=ServerNetworkAPI
 set CONFIG=Release
 set RUNTIME=linux-x64
-set FRONTEND_SOURCE=dev\WebUI
 
 :: === OUTPUT PATHS ===
 set OUTPUT=publish
 set OUTPUT_API=%OUTPUT%\linux
-set OUTPUT_WEBUI=%OUTPUT_API%\wwwRoot
-
 
 
 echo ========================
@@ -45,13 +42,7 @@ if exist %OUTPUT_API%\publish (
     echo Deleting %OUTPUT_API%\publish ...
     rd /s /q %OUTPUT_API%\publish
 )
-echo ========================
-echo COPYING FRONTEND TO PUBLISH FOLDER
-echo ========================
-if exist %OUTPUT_WEBUI% (
-    rd /s /q %OUTPUT_WEBUI%
-)
-xcopy /e /i /y %FRONTEND_SOURCE% %OUTPUT_WEBUI%
+
 echo ========================
 echo ALL DONE
 echo ========================
