@@ -56,6 +56,15 @@ namespace ServerNetworkAPI.dev.Services
                         $"Webhook sent: {message}",
                         Models.Enums.MessageType.Success
                     ));
+
+                    if (payload != null)
+                    {
+                        NotificationData.AddNotification(
+                            new NotificationData
+                            {
+                                Message = payload.ToString()!,
+                            });
+                    }
                 }
                 else
                 {
@@ -116,6 +125,14 @@ namespace ServerNetworkAPI.dev.Services
                             $"Webhook sent: {payload.content}",
                             Models.Enums.MessageType.Success
                         ));
+                        if(payload != null)
+                        {
+                            NotificationData.AddNotification(
+                                new NotificationData
+                                {
+                                    Message = payload.ToString()!,
+                                });
+                        }
                     }
                     else
                     {
