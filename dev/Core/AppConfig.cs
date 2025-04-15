@@ -9,7 +9,7 @@ namespace ServerNetworkAPI.dev.Core
 {
     public class AppConfig
     {
-        public static string Version { get; } = "0.2.2b";
+        public static string Version { get; } = "0.2.5b";
         public static string BaseDirectory { get; } = AppContext.BaseDirectory;
 
         public static string ConfigBasePath { get; } = Path.Combine(BaseDirectory, "Configs");
@@ -32,26 +32,21 @@ namespace ServerNetworkAPI.dev.Core
 
         public static void InitializeFromArgs(CLI.ParsedArgs args)
         {
-            // Load settings from config file first
             var cfg = AppConfigBuilder.LoadOrCreate();
 
-            // Apply config file defaults
             FallbackIpMask = cfg.FallbackIpMask;
             ScanIntervalSeconds = cfg.ScanIntervalSeconds;
             IsNmapEnabled = cfg.IsNmapEnabled;
             WebApiPort = cfg.WebApiPort;
             MaxIPv4AddressWithoutWarning = cfg.MaxIPv4AddressWithoutWarning;
 
-            // Override with CLI args if available
             if (!string.IsNullOrWhiteSpace(args.FallbackIpMask)) FallbackIpMask = args.FallbackIpMask;
             if (args.TimeoutSeconds > 0) ScanIntervalSeconds = args.TimeoutSeconds;
             if (args.Port > 0) WebApiPort = args.Port;
             if (args.NmapScanActive) IsNmapEnabled = true;
 
-            // Calculate IP Mask
             LocalIpMask = CalculateLocalNetworkPrefix() ?? FallbackIpMask;
 
-            // Load additional configs (notifications etc.)
             LoadExternalSettings();
         }
 
