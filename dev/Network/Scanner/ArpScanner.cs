@@ -10,6 +10,7 @@ namespace ServerNetworkAPI.dev.Network.Scanner
 {
     public class ArpScanner
     {
+        public static DateTime LastScanTime = DateTime.Now;
         public static HashSet<string> Scan(string ipPrefix)
         {
             var output = new StringBuilder();
@@ -65,7 +66,7 @@ namespace ServerNetworkAPI.dev.Network.Scanner
                 }
 
             }
-
+            LastScanTime = DateTime.Now;
             return ParseIpAddresses(output.ToString());
         }
 
