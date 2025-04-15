@@ -19,6 +19,7 @@ namespace ServerNetworkAPI.dev.Network.Processor
                 Hostname = hostname,
                 OS = os,
                 IsOnline = true,
+                LastSeen = DateTime.Now.ToString("dd-MM-yy HH:ss"),
                 Ports = ports
             };
 
@@ -35,6 +36,7 @@ namespace ServerNetworkAPI.dev.Network.Processor
                 Hostname = "-",
                 OS = "",
                 IsOnline = true,
+                LastSeen = DateTime.Now.ToString("dd-MM-yy HH:ss"),
                 Ports = new List<OpenPorts>()
             };
 

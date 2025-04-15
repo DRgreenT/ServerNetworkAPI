@@ -7,7 +7,7 @@ namespace ServerNetworkAPI.dev.Models
         public string Hostname { get; set; } = "-";
         public string OS { get; set; } = string.Empty;
         public bool IsOnline { get; set; } = false;
-
+        public string LastSeen { get; set; } = string.Empty;
         public List<OpenPorts> Ports { get; set; } = new();
 
         [JsonIgnore]
@@ -21,6 +21,7 @@ namespace ServerNetworkAPI.dev.Models
                 Hostname = Hostname,
                 OS = OS,
                 IsOnline = IsOnline,
+                LastSeen = LastSeen,
                 Ports = new List<OpenPorts>(Ports),
             };
         }

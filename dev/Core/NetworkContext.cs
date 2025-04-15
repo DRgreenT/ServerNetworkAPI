@@ -9,6 +9,10 @@ namespace ServerNetworkAPI.dev.Core
         private static readonly Lock _lock = new();
         private static readonly List<Device> _devices = [];
 
+        public static IReadOnlyList<Device> GetActiveDevices()
+        {
+            return GetDevices().Where(d => d.IsOnline).ToList();
+        }
         public static IReadOnlyList<Device> GetDevices()
         {
             lock (_lock)
@@ -39,6 +43,7 @@ namespace ServerNetworkAPI.dev.Core
                     existing.Hostname = updatedDevice.Hostname;
                     existing.OS = updatedDevice.OS;
                     existing.IsOnline = updatedDevice.IsOnline;
+                    existing.LastSeen = updatedDevice.LastSeen;
                     existing.Ports = updatedDevice.Ports;
 
                     if(IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
