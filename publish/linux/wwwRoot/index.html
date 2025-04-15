@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServerNetworkAPI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./CSS/main.css">
+    <link rel="stylesheet" href="./CSS/contentArea.css">
+    <link rel="stylesheet" href="./CSS/filter.css">
+    <link rel="stylesheet" href="./CSS/tables.css">
+    <link rel="stylesheet" href="./CSS/about.css">
+    <link rel="stylesheet" href="./CSS/dashboard.css">
+    <script src="./JS/app.js" defer></script>
+</head>
+<body>
+    <header>
+        ServerNetworkAPI - WebUI
+    </header>
+    <nav>
+        <div class="menu-item">
+            <a href="#" onclick="loadDashboard()">HOME</a>
+        </div>
+        <div class="menu-item">
+            LOG
+            <div class="dropdown">
+                <a href="#" onclick="loadLogs()">API Logs</a>
+                <a href="#" onclick="loadNotes()">Notification Logs</a>
+            </div>
+        </div>
+        <div class="menu-item">
+            About
+            <div class="dropdown">
+                <a href="#" onclick="loadAbout()">About</a>
+            </div>
+        </div>
+    </nav>
+    <main id="content">
+        <h2>Welcome to ServerNetworkAPI UI</h2>
+        <p>Select a menu item to begin.</p>
+    </main>
+    <footer>
+        &copy; 2025 ServerNetworkAPI | Web UI
+    </footer>
+</body>
+</html>

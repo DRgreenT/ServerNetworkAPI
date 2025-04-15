@@ -1,0 +1,130 @@
+﻿#dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    font-family: 'Roboto', sans-serif;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 10px;
+    margin-top: 1rem;
+    box-shadow: 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card a {
+    color: rgb(255, 174, 0);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.card a:hover {
+    color: rgb(173, 118, 0);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.card-icon {
+    font-size: 2rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+    color: #333;
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.card-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    background-color: grey;
+}
+
+.card-subtext {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.card-content {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.online {
+    background-color: green;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.offline {
+    background-color: red;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dash-deviceList-Grid {
+    width: 100%;
+}
+
+.dashboardChart {
+    background: #ffffff;
+    border-radius: 10px;
+    margin-top: 1rem;
+    box-shadow: 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+.dashCartTitle{
+    text-align: center;
+    width: 100%; 
+}
+.dashboardChart .dashChartInner {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    height: 128px;
+    overflow: hidden;
+}
+.dashboardFooter {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    width: 100%;
+    font-size: xx-small;
+}
+
+
+.dashCartLowerLeft {
+    display: flex;
+    justify-content: flex-start; /* Links ausrichten */
+    align-items: center; /* Vertikal zentrieren */
+    width: 10%;
+}
+
+.dashCartLowerRight {
+    display: flex;
+    justify-content: flex-end; /* Rechts ausrichten */
+    align-items: center; /* Vertikal zentrieren */
+    width: 10%;
+}

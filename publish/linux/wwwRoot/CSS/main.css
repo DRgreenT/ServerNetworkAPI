@@ -1,0 +1,88 @@
+﻿body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+body h2 {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    margin-left: 5rem;
+}
+
+header {
+    font-family: 'Roboto', sans-serif;
+    background-color: #222;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+nav {
+    font-family: 'Roboto', sans-serif;
+    background-color: #444;
+    color: white;
+    display: flex;
+    padding: 0.5rem 1rem;
+    z-index: 15;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+nav .menu-item {
+    margin-right: 2rem;
+    position: relative;
+    cursor: pointer;
+    padding-bottom: 0.25rem;
+}
+
+nav .menu-item:hover .dropdown {
+    display: block;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    background-color: #555;
+    top: 105%;
+    left: -0.1rem;
+    min-width: 150px;
+    z-index: 10;
+    padding-top: 0.25rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown a:hover {
+    background-color: #666;
+}
+
+main {
+    font-family: 'Roboto', sans-serif;
+    flex: 1;
+    padding: 1rem;
+    background-color: #f5f5f5;
+}
+
+footer {
+    font-family: 'Roboto', sans-serif;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.menu-item a {
+    color: white;
+    text-decoration: none;
+}
