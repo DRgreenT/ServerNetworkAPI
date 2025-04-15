@@ -11,9 +11,9 @@ namespace ServerNetworkAPI.dev.Models
         public string ExeptionMessage { get; set; } = "";
         public MessageType MessageType { get; set; }
 
-        public static List<LogData> logDatas { get; private set; } = [];
+        public static Stack<LogData> logDatas { get; private set; } = [];
 
-        public static List<LogData> GetLogData()
+        public static Stack<LogData> GetLogData()
         {
             return logDatas;
         }
@@ -23,13 +23,13 @@ namespace ServerNetworkAPI.dev.Models
         }
         public static void AddLog(LogData logData)
         {
-            logDatas.Add(logData);
+            logDatas.Push(logData);
         }
         public static LogData NewData(string source, string message, MessageType messageType, string exeption = "")
         {
             return new LogData
             {
-                TimeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                TimeStamp = DateTime.Now.ToString("dd-MM-yy HH:mm:ss"),
                 Source = source,
                 Message = message,
                 ExeptionMessage = exeption,
