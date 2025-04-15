@@ -1,0 +1,31 @@
+﻿#about-section {
+    display: flex;
+    flex-direction: column;
+    margin-left: 6rem;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem;
+    text-align: left;
+}
+
+#about-section ul {
+    text-align: left;
+    margin-top: 1rem;
+    max-width: 600px;
+}
+
+#about-section h2 {
+    margin-bottom: 1rem;
+}
+
+#about-section a {
+    margin-top: 1rem;
+    display: inline-block;
+    color: #32a84c;
+    text-decoration: none;
+}
+
+#about-section a:hover {
+    color: #32a885;
+    text-decoration: none;
+}

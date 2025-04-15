@@ -1,6 +1,6 @@
-# ServerNetworkAPI (v0.2.2b)
+# ServerNetworkAPI (v0.2.5b)
 
-A minimalistic Web API that scans your local IPv4 network and provides information like IP, OS, and open ports of all reachable devices.
+A minimalistic Web API with a CLI and WebUI interface, that scans your local IPv4 network and provides information like IP, OS, and open ports of all reachable devices.
 
 Built with **.NET 9.0**
 
@@ -41,7 +41,7 @@ And for me, it’s a great learning project to grow my understanding of networks
 - Basic OS recognition (not working as intended yet)
 - CLI argument support
 - RESTful Web API (JSON output)
-- HTML frontend template for API values (optional)
+- HTML WebUI
 - Persistent device data between restarts
 - Color-coded terminal output
 - Offline detection & live status
@@ -57,7 +57,7 @@ And for me, it’s a great learning project to grow my understanding of networks
 - Mac address recognition
 - Device type recognition (e.g. phone, computer, etc.)
 - Improved OS recognition
-- propper WebUI as a seperate project
+- WebUI overhaul
 - More detailed `nmap` scan options
 - better error handling
 - more robust code
@@ -74,7 +74,7 @@ And for me, it’s a great learning project to grow my understanding of networks
 <img src="./docs/networkAPI_2.png" alt="Web Output(JSON)" width="800"/>
 
 ### Web Output (HTML Frontend)
-<img src="./docs/networkAPI_3_FrontEnd.png" alt="Web Output(HTML)" width="800"/>
+<img src="./docs/networkAPI_3_webUI.png" alt="Web Output(HTML)" width="800"/>
 
 ### Discord Webhook (Notifications)
 <img src="./docs/networkAPI_4_discordWebhook_example.png" alt="Discord Webhook (Notifications)" width="250"/>
@@ -99,6 +99,7 @@ If the last octet of a device IP exceeds a defined threshold, it's flagged as *n
 
 - root or sudo privileges (for `arp-scan` and `nmap` commands)
 - Linux x64 system
+- Web browser (for WebUI)
 
 ### Dependencies:
 
@@ -215,7 +216,11 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
 ```
 
 ---
+### WebUI
 
+The WebUI is accessible via the Web API at the IP and port of the local host where the tool is running: e.g.`http:\\192.168.178.10:5050` via web browser.
+
+---
 ## Build Instructions (Requires .NET 9.0 SDK)
 
 ```bash
