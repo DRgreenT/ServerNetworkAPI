@@ -3,6 +3,8 @@
     public enum NotificationLevel
     {
         All,
-        Warnings
+        Warnings,
+        HardWarnings,
+        Errors
     }
 }
