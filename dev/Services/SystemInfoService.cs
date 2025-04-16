@@ -1,0 +1,170 @@
+﻿using ServerNetworkAPI.dev.IO;
+using ServerNetworkAPI.dev.Models;
+using ServerNetworkAPI.dev.Models.Enums;
+using System.Diagnostics;
+using System.Globalization;
+
+namespace ServerNetworkAPI.dev.Services
+{
+    public class SystemInfoService
+    {
+        public string CpuUsage { get; private set; } = "0.0";
+        public string MemoryUsage { get; private set; } = "-";
+        public string Uptime { get; private set; } = "-";
+
+        private static readonly int ProcessorCores = Environment.ProcessorCount;
+
+        public static SystemInfoService GetProcessStats()
+        {
+            return new SystemInfoService
+            {
+                CpuUsage = GetCpuUsage(),
+                MemoryUsage = GetMemoryUsage(),
+                Uptime = GetUptime()
+            };
+        }
+
+        private static string GetMemoryUsage()
+        {
+            try
+            {
+                var memLines = File.ReadAllLines("/proc/meminfo");
+                int totalMem = ExtractMB(memLines, "MemTotal");
+                int availableMem = ExtractMB(memLines, "MemAvailable");
+
+                int usedMem = totalMem - availableMem;
+
+                // Optional: RAM-Auslastung in %
+                // double usedPercent = 100.0 * usedMem / totalMem;
+                // return $"{usedMem} MB / {totalMem} MB ({usedPercent:0.0}%)";
+
+                return $"{usedMem} MB / {totalMem} MB";
+            }
+            catch
+            {
+                Logger.Log(LogData.NewData(
+                    "SystemInfoService",
+                    "Error reading /proc/meminfo",
+                    MessageType.Exception,
+                    ""));
+                return "-";
+            }
+        }
+
+        private static int ExtractMB(string[] lines, string key)
+        {
+            var line = lines.FirstOrDefault(l => l.StartsWith(key));
+            if (line != null)
+            {
+                var parts = line.Split(':');
+                if (parts.Length > 1)
+                {
+                    string numberPart = parts[1].Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+                    if (int.TryParse(numberPart, out int kb))
+                    {
+                        return kb / 1024; // Umrechnung in MB
+                    }
+                }
+            }
+            else
+            {
+                Logger.Log(LogData.NewData(
+                    "SystemInfoService",
+                    $"Key '{key}' not found in /proc/meminfo",
+                    MessageType.Exception,
+                    ""));
+            }
+            return 0;
+        }
+
+        private static string GetUptime()
+        {
+            var oldestOutput = RunBashCommand("ps -eo lstart,pid,comm --sort=start_time --no-headers | head -n 1");
+            if (string.IsNullOrEmpty(oldestOutput))
+            {
+                Logger.Log(LogData.NewData(
+                    "SystemInfoService",
+                    "Error reading process start time",
+                    MessageType.Exception,
+                    ""));
+                return "-";
+            }
+
+            string oldestProcess = oldestOutput.Substring(0, 24).Trim();
+
+            if (DateTime.TryParseExact(oldestProcess, "ddd MMM d HH:mm:ss yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startTime))
+            {
+                TimeSpan uptime = DateTime.Now - startTime;
+                string days = (uptime.Days > 0) ? $"{uptime.Days}d " : "";
+                string hours = (uptime.Hours > 0) ? $"{uptime.Hours.ToString().PadLeft(2,'0')}h " : "00h";
+                string minutes = (uptime.Minutes > 0) ? $"{uptime.Minutes.ToString().PadLeft(2, '0')}m " : "00m";
+                string seconds = (uptime.Seconds > 0) ? $"{uptime.Seconds.ToString().PadLeft(2, '0')}s" : "00s";
+                return days + hours + minutes + seconds;
+            }
+            else
+            {
+                Logger.Log(LogData.NewData(
+                    "SystemInfoService",
+                    "Failed to parse process start time",
+                    MessageType.Exception,
+                    oldestProcess));
+                return "-";
+            }
+        }
+
+        private static string GetCpuUsage()
+        {
+            var cpuOutput = RunBashCommand("ps -eo %cpu --no-headers");
+            if (string.IsNullOrEmpty(cpuOutput))
+            {
+                Logger.Log(LogData.NewData(
+                    "SystemInfoService",
+                    "Error reading CPU usage",
+                    MessageType.Exception,
+                    ""));
+                return "0.0";
+            }
+
+            double processorUsage = 0.0d;
+            foreach (var line in cpuOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+            {
+                processorUsage += double.TryParse(line.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out double cpu) ? cpu : 0.0d;
+            }
+
+            processorUsage = processorUsage / ProcessorCores;
+            return processorUsage.ToString("0.0", CultureInfo.InvariantCulture);
+        }
+
+        private static string RunBashCommand(string command)
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"{command}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var process = Process.Start(psi)!;
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+
+                return output;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogData.NewData(
+                    "SystemInfoService",
+                    $"Error executing command: {command}",
+                    MessageType.Exception,
+                    Logger.RemoveNewLineSymbolFromString(ex.Message)
+                ));
+                return string.Empty;
+            }
+        }
+    }
+}

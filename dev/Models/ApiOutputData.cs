@@ -6,22 +6,24 @@ namespace ServerNetworkAPI.dev.Models
 {
     public class ApiOutputData
     {
-        public string Version { get; private set; } = AppConfig.Version;
+        public string Version { get; private set; } = string.Empty;
         public int ActiveDeviceCount { get; private set; } = 0;
         public int TotalDeviceCount { get; private set; } = 0;
         public string LastUpdateTime { get; private set; } = string.Empty;
         public string Uptime { get; private set; } = string.Empty;
         public bool IsInternetAvailable { get; private set; } = false;
         public bool IsNmapEnabled { get; private set; } = false;
+        public SystemInfoService SystemInfo { get; private set; } = new SystemInfoService();
         public List<Device> Devices { get; private set; } = [];
         public Stack<LogData> Log { get; private set; } = [];
         public Stack<NotificationData> Notifications { get; private set; } = [];
-        public int[] activeDevicesCounts { get; private set; } = [];
+        public int[] ActiveDevicesCounts { get; private set; } = [];
 
         public static ApiOutputData GetData()
         {
             return new ApiOutputData
             {
+                Version = AppConfig.Version,
                 ActiveDeviceCount = NetworkContext.GetActiveDevices().Count(),
                 TotalDeviceCount = NetworkContext.GetDevices().Count(),
                 LastUpdateTime = ArpScanner.LastScanTime.ToString("HH:mm:ss"),
@@ -30,8 +32,11 @@ namespace ServerNetworkAPI.dev.Models
                 Devices = NetworkContext.GetDevices().ToList(),
                 IsNmapEnabled = AppConfig.IsNmapEnabled,
                 Log = LogData.GetLogData(),
-                activeDevicesCounts = GetLastScanCounts(),
+
                 Notifications = NotificationData.GetNotificationData(),
+                SystemInfo = SystemInfoService.GetProcessStats(),
+
+                ActiveDevicesCounts = GetLastScanCounts(),
 
             };
         }
