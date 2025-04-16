@@ -3,13 +3,13 @@ using System.Net;
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.Models.Enums;
-using System.Threading.Tasks;
+
 
 namespace ServerNetworkAPI.dev.Core
 {
     public class AppConfig
     {
-        public static string Version { get; } = "0.2.5b";
+        public static string Version { get; } = "0.2.6b";
         public static string BaseDirectory { get; } = AppContext.BaseDirectory;
 
         public static string ConfigBasePath { get; } = Path.Combine(BaseDirectory, "Configs");

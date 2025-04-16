@@ -1,4 +1,4 @@
-# ServerNetworkAPI (v0.2.5b)
+# ServerNetworkAPI (v0.2.6b)
 
 A minimalistic Web API with a CLI and WebUI interface, that scans your local IPv4 network and provides information like IP, OS, and open ports of all reachable devices.
 
