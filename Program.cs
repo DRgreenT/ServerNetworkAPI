@@ -12,6 +12,9 @@ namespace ServerNetworkAPI
 {
     public class Program
     {
+        public static string InitPassword = "";
+        public static bool isInitArp = true;
+        public static bool isInitNmap = true;
         public static void Main(string[] args)
         {
             var parsedArgs = CLIArgsParser.Parse(args);
@@ -21,9 +24,11 @@ namespace ServerNetworkAPI
                 CLIArgsParser.PrintHelp();
                 return;
             }
+            InitPassword = PasswortHandler.PasswordInput();
 
             FileHelper.EnsureApplicationDirectories();
             AppConfig.InitializeFromArgs(parsedArgs);
+            
             OutputLayout.Initialize();
             OutputFormatter.PrintStartupInfo();
 
