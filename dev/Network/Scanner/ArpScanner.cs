@@ -22,49 +22,9 @@ namespace ServerNetworkAPI.dev.Network.Scanner
 
             foreach (var adapter in adapters)
             {
-                LogData log = new();
-                var psi = BuildArpScanCommand(adapter, ipPrefix);
-                if (psi == null) continue;
 
-                try
-                {
-                    using var process = Process.Start(psi);
-                    if (process != null)
-                    {
-                        string stdOut = process.StandardOutput.ReadToEnd();
-                        string stdErr = process.StandardError.ReadToEnd();
-                        process.WaitForExit();
-
-                        output.AppendLine(stdOut);
-
-                        if (!string.IsNullOrWhiteSpace(stdErr))
-                        {
-                            output.AppendLine($"[ERROR] {stdErr}");
-
-                            log = LogData.NewData(
-                                "ArpScanner",
-                                $"Adapter: {adapter} → {stdErr}",
-                                MessageType.Error,
-                                ""
-                            );
-
-                            Logger.Log(log);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    output.AppendLine($"[EXCEPTION] Adapter: {adapter} → {ex.Message}");
-
-                    log = LogData.NewData(
-                        "ArpScanner",
-                        $"Adapter: {adapter}",
-                        MessageType.Exception,
-                        Logger.RemoveNewLineSymbolFromString(ex.Message)
-                    );
-
-                    Logger.Log(log);
-                }
+                string cmd = BuildArpScanCommand(adapter, ipPrefix);
+                output.AppendLine(BashCmd.ExecuteCmd(cmd,"ArpScanner"));
 
             }
             LastScanTime = DateTime.Now;
@@ -72,40 +32,21 @@ namespace ServerNetworkAPI.dev.Network.Scanner
         }
 
 
-
-        private static ProcessStartInfo? BuildArpScanCommand(string interfaceName, string ipPrefix)
+        private static string BuildArpScanCommand(string interfaceName, string ipPrefix)
         {
-            string cmd = "";
             if(Program.isInitArp)
             {
-                string passwordEscaped = Program.InitPassword.Replace("'", "'\\''");
-                cmd = $"echo '{passwordEscaped}' | sudo -S arp-scan --interface={interfaceName} {ipPrefix}0/24";
                 Program.isInitArp = false;
+                string passwordEscaped = Program.InitPassword.Replace("'", "'\\''");
+                return $"echo '{passwordEscaped}' | sudo -S arp-scan --interface={interfaceName} {ipPrefix}0/24";               
             }
             else
             {
-                cmd = $"sudo arp-scan --interface={interfaceName} {ipPrefix}0/24";
-            }
-            if(!Program.isInitNmap && !Program.isInitArp)
-            {
-                Program.InitPassword = PasswortHandler.PasswordOverrided();
-            }
-            try
-            {
-                ipPrefix = ipPrefix.TrimEnd('.');
-                return new ProcessStartInfo
+                if (!Program.isInitNmap)
                 {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{cmd}\"",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-            }
-            catch
-            {
-                return null;
+                    Program.InitPassword = PasswortHandler.PasswordOverrided();
+                }
+                return $"sudo arp-scan --interface={interfaceName} {ipPrefix}0/24";
             }
         }
 

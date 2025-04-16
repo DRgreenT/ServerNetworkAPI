@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿
 using ServerNetworkAPI.dev.Core;
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Models;
@@ -12,96 +12,46 @@ namespace ServerNetworkAPI.dev.Network.Scanner
             if (!AppConfig.IsNmapEnabled)
                 return new();
 
-            var psi = BuildNmapCommand(ip, parameter);
-            if (psi == null) return new();
-
-            LogData log = new LogData();
-
             try
             {
-                using var process = Process.Start(psi);
-                if (process == null) return new();
+                string command = BuildNmapCommand(ip, parameter);
+                var output = await BashCmd.ExecuteCmdAsync(command, "NmapScanner");
 
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                var readTask = process.StandardOutput.ReadToEndAsync();
-                var waitTask = process.WaitForExitAsync(cts.Token);
-
-                var completed = await Task.WhenAny(waitTask, Task.Delay(-1, cts.Token));
-
-                if (completed != waitTask)
-                {                  
-                    try 
-                    { 
-                        process.Kill(entireProcessTree: true);
-
-                        log = LogData.NewData(
-                            "NmapScanner",
-                            $"Process killed for {ip}",
-                            MessageType.Warning,
-                            ""
-                        );
-                    } 
-                    catch(Exception ex)
-                    {
-                        log = LogData.NewData(
-                            "NmapScanner",
-                            $"Error killing process for {ip}",
-                            MessageType.Exception,
-                            Logger.RemoveNewLineSymbolFromString(ex.Message)
-                        );
-                    }
-                    Logger.Log(log);
+                if (string.IsNullOrWhiteSpace(output))
+                {
+                    Logger.Log(LogData.NewData(
+                        "NmapScanner",
+                        $"Leere Ausgabe beim Scan von {ip}",
+                        MessageType.Warning,
+                        ""));
                     return new();
                 }
 
-                var output = await readTask;
                 return ParseNmapOutput(output);
             }
             catch (Exception ex)
             {
-                string exMessage = Logger.RemoveNewLineSymbolFromString(ex.Message);
-
-                log = LogData.NewData(
+                Logger.Log(LogData.NewData(
                     "NmapScanner",
-                    $"Error scanning {ip}",
+                    $"Fehler beim Scannen von {ip}",
                     MessageType.Exception,
                     Logger.RemoveNewLineSymbolFromString(ex.Message)
-                );
-                
-                Logger.Log(log);
+                ));
                 return new();
             }
         }
 
-        private static ProcessStartInfo? BuildNmapCommand(string ip, string parameter)
+        private static string BuildNmapCommand(string ip, string parameter)
         {
-            string cmd;
-
             if (Program.isInitNmap)
             {
                 string passwordEscaped = Program.InitPassword.Replace("'", "'\\''");
-                cmd = $"echo '{passwordEscaped}' | sudo -S nmap {parameter} {ip}";
                 Program.isInitNmap = false;
+                return $"echo '{passwordEscaped}' | sudo -S nmap {parameter} {ip}";
             }
             else
             {
-                cmd = $"sudo nmap {parameter} {ip}";
-            }
-            try
-            {
-                return new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{cmd}\"",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-            }
-            catch
-            {
-                return null;
+                return $"sudo nmap {parameter} {ip}";
             }
         }
 

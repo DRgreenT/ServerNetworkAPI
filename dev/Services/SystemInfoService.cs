@@ -79,7 +79,7 @@ namespace ServerNetworkAPI.dev.Services
 
         private static string GetUptime()
         {
-            var oldestOutput = RunBashCommand("ps -eo lstart,pid,comm --sort=start_time --no-headers | head -n 1");
+            var oldestOutput = BashCmd.ExecuteCmd("ps -eo lstart,pid,comm --sort=start_time --no-headers | head -n 1", "SystemInfoService");
             if (string.IsNullOrEmpty(oldestOutput))
             {
                 Logger.Log(LogData.NewData(
@@ -114,7 +114,7 @@ namespace ServerNetworkAPI.dev.Services
 
         private static string GetCpuUsage()
         {
-            var cpuOutput = RunBashCommand("ps -eo %cpu --no-headers");
+            var cpuOutput = BashCmd.ExecuteCmd("ps -eo %cpu --no-headers", "SystemInfoService");
             if (string.IsNullOrEmpty(cpuOutput))
             {
                 Logger.Log(LogData.NewData(
@@ -135,36 +135,6 @@ namespace ServerNetworkAPI.dev.Services
             return processorUsage.ToString("0.0", CultureInfo.InvariantCulture);
         }
 
-        private static string RunBashCommand(string command)
-        {
-            try
-            {
-                var psi = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{command}\"",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-
-                using var process = Process.Start(psi)!;
-                string output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-
-                return output;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(LogData.NewData(
-                    "SystemInfoService",
-                    $"Error executing command: {command}",
-                    MessageType.Exception,
-                    Logger.RemoveNewLineSymbolFromString(ex.Message)
-                ));
-                return string.Empty;
-            }
-        }
+       
     }
 }

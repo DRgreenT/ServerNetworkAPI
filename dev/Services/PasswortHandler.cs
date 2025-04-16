@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using ServerNetworkAPI.dev.IO;
 
 namespace ServerNetworkAPI.dev.Services
 {
@@ -10,20 +10,30 @@ namespace ServerNetworkAPI.dev.Services
             return null!;
         }
         public static string PasswordInput()
-        {   string password = string.Empty;
-            int tries = 0;
-            do
+        {
+            if (!BashCmd.IsRunningAsRoot())
             {
-                password = GetPassword();
-                tries++;
+                string password = string.Empty;
+                int tries = 0;
+                do
+                {
+                    password = GetPassword();
+                    tries++;
+                }
+                while (!BashCmd.IsValidSudoPassword(password) && tries < 4);
+                if (tries >= 3)
+                {
+                    Environment.Exit(0);
+                    return password = string.Empty;
+                }
+                return password;
             }
-            while (!IsValidPassword(password) && tries < 4);
-            if(tries >= 3)
+            else
             {
-                Environment.Exit(0);
-                return password = string.Empty;
+                Program.isInitArp = false;
+                Program.isInitNmap = false;
+                return string.Empty;
             }
-            return password;
         }
 
         private static string GetPassword()
@@ -48,44 +58,6 @@ namespace ServerNetworkAPI.dev.Services
             Console.WriteLine();
             return password;
         }
-        private static bool IsValidPassword(string password)
-        {
-            if (string.IsNullOrEmpty(password))
-            {
-                return false;
-            }
-            else
-            {
-                var psi = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"echo '{password.Replace("'", "'\\''")}' | sudo -S -v\"",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-
-                using var process = Process.Start(psi);
-                string error = process!.StandardError.ReadToEnd();
-                process.WaitForExit();
-
-                string[] errors = {"Sorry, try again.",
-                    "incorrect"
-                };
-
-                bool isError = false;
-                foreach (string err in errors)
-                {
-                    if (error.Contains(err))
-                    {
-                        isError = true;
-                        break;
-                    }
-                }
-
-                return process.ExitCode == 0 && !isError;
-            }
-        }
+       
     }
 }
