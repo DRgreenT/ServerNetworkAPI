@@ -6,6 +6,7 @@ let systemData = [];
 let arrActiveDeviceCounts = [];
 let version;
 
+
 let isGetData = true;
 
 async function getValues() {
@@ -23,11 +24,13 @@ async function fetchApiData() {
             }
 
             let allApiData = await response.json();
+
             version = allApiData.version;
             noteData = allApiData.notifications;
             devicesData = allApiData.devices;
             logData = allApiData.log;
             arrActiveDeviceCounts = allApiData.activeDevicesCounts;
+            systemData = allApiData.systemInfo;
 
             if (!uiData.activeDeviceCount) uiData.activeDeviceCount = 0;
             if (!uiData.totalDeviceCount) uiData.totalDeviceCount = 0;

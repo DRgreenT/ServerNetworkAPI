@@ -28,7 +28,7 @@ function renderDashboard() {
         ${renderDeviceCard()}
         ${renderNewDeviceCard()}
         ${renderApiStatusCard()}
-        ${renderScanStatusCard()}
+        ${renderServerStatusCard()}
       </div>
       <div class="dashboardChart">
         <div class="dashCartTitle">Scan history</div>
@@ -72,18 +72,30 @@ function renderApiStatusCard() {
       <div class="card-badge" id="apiStatus">Checking...</div>
       <div class="card-subtext">Port: <span id="apiPort">5050</span></div>
       <div class="card-subtext">Letzter Scan: <span id="lastScan">${uiData.lastUpdateTime}</span></div>
+      <div class="card-subtext">API uptime: <span id="ApiUptime">${uiData.uptime}</span></div>
       <div class="card-content" style="color:${color(uiData.isNmapEnabled)};">Nmap: ${getNmapStatusText()}</div>
     </div>`;
 }
 
-function renderScanStatusCard() {
+function renderServerStatusCard() {
   return `
     <div class="card">
       <div class="card-icon">🌐</div>
-      <div class="card-title">Scanstatus</div>
-      <div class="card-subtext">Uptime: <span id="apiUptime">${uiData.uptime}</span></div>
-      <div class="card-subtext">Internet:<span id="internetStatus" style="color:${color(uiData.isInternetAvailable)};">${getInternetStatusText()}</span>
-      </div>
+        <div class="card-title">Server status</div>
+        <div class="systemCard">
+          <div >
+            <div class="card-subtextL">Uptime:</div>
+            <div class="card-subtextL">CPU:</div>
+            <div class="card-subtextL">Memory:</div>
+            <div class="card-subtextL">Internet:</div>
+          </div>
+          <div>
+            <div class="card-subtextR"><span id="ServerUptime">${systemData.uptime}</span></div>
+            <div class="card-subtextR"><span id="CpuUsage">${systemData.cpuUsage}%</span></div>
+            <div class="card-subtextR"><span id="MemUsage">${systemData.memoryUsage}</span></div>
+            <div class="card-subtextR"><span id="internetStatus" style="color:${color(uiData.isInternetAvailable)};">${getInternetStatusText()}</span></div>
+          </div>
+        </div>
     </div>`;
 }
 

@@ -61,6 +61,30 @@
     margin-top: 0.25rem;
 }
 
+.systemCard{
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    width: 100%;
+}
+.card-subtextL {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+    display: flex;
+    justify-content: flex-start; /* Links ausrichten */
+    align-items: center; /* Vertikal zentrieren */
+
+}
+.card-subtextR {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+    display: flex;
+    justify-content: flex-end; /* Links ausrichten */
+    align-items: center; /* Vertikal zentrieren */
+}
+
 .card-content {
     font-size: 0.85rem;
     color: #666;
