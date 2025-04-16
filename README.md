@@ -73,7 +73,7 @@ And for me, it’s a great learning project to grow my understanding of networks
 ### Web Output (Raw JSON)
 <img src="./docs/networkAPI_2.png" alt="Web Output(JSON)" width="800"/>
 
-### Web Output (HTML Frontend)
+### Web Output (HTML/JS Frontend)
 <img src="./docs/networkAPI_3_webUI.png" alt="Web Output(HTML)" width="800"/>
 
 ### Discord Webhook (Notifications)
