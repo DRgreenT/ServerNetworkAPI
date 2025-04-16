@@ -27,6 +27,7 @@ async function loadLogs() {
 
 function renderLogFilterUI(content) {
     content.innerHTML = `
+        <div class="logContainer">
         <h2>System Logs</h2>
         <div id="filters">
             <label>Filter Timestamp: <input type="text" id="timestampFilter" placeholder="e.g. 09:13"></label>
@@ -91,6 +92,6 @@ function renderLogTable(logs) {
         `;
     }
 
-    html += '</tbody></table>';
+    html += '</tbody></table></div>';
     container.innerHTML = html;
 }

@@ -4,6 +4,8 @@
     gap: 1rem;
     padding: 1rem;
     font-family: 'Roboto', sans-serif;
+    align-self: stretch;
+    width: 98%;
 }
 
 .card {
@@ -112,6 +114,8 @@
 }
 
 .dashboardChart {
+    width: 95%;
+    margin-left: 0.4rem;
     background: #ffffff;
     border-radius: 10px;
     margin-top: 1rem;

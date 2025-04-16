@@ -1,7 +1,6 @@
 ﻿#filters {
     margin: 1rem auto;
-    margin-left: 6rem;
-    width: 100%;
+    width: 90%;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -25,4 +24,8 @@
     font-size: 0.85rem;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.logContainer h2{
+    margin-left: 3rem;
 }

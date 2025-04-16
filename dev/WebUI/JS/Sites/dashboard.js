@@ -23,7 +23,7 @@ function renderDashboard() {
   const content = document.getElementById('content');
 
   content.innerHTML = `
-    <div>
+    <div style="display: flex; flex-direction: column; align-items: center;">
       <div id="dashboard" class="dashboard-grid">
         ${renderDeviceCard()}
         ${renderNewDeviceCard()}
@@ -71,9 +71,19 @@ function renderApiStatusCard() {
       <div class="card-title">API Status</div>
       <div class="card-badge" id="apiStatus">Checking...</div>
       <div class="card-subtext">Port: <span id="apiPort">5050</span></div>
-      <div class="card-subtext">Letzter Scan: <span id="lastScan">${uiData.lastUpdateTime}</span></div>
-      <div class="card-subtext">API uptime: <span id="ApiUptime">${uiData.uptime}</span></div>
-      <div class="card-content" style="color:${color(uiData.isNmapEnabled)};">Nmap: ${getNmapStatusText()}</div>
+      <div class="systemCard">
+        <div>
+        
+        <div class="card-subtextL"">Letzter Scan:</span></div>
+        <div class="card-subtextL"">API uptime:</div>
+        <div class="card-subtextL" >Nmap:</div>
+        </div>
+        <div>
+        <div class="card-subtextR"><span id="lastScan">${uiData.lastUpdateTime}</span></div>
+        <div class="card-subtextR"><span id="ApiUptime">${uiData.uptime}</span></div>
+        <div class="card-subtextR" style="color:${color(uiData.isNmapEnabled)};">${getNmapStatusText()}</div>
+        </div>
+      </div>
     </div>`;
 }
 
