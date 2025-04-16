@@ -33,7 +33,10 @@ namespace ServerNetworkAPI
             OutputFormatter.PrintStartupInfo();
 
             var builder = WebApplication.CreateBuilder(args);
-            builder.Logging.SetMinimumLevel(LogLevel.Error);
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.None);
+
 
             builder.Services.AddControllers();
             builder.Services.AddHostedService<TasksBackgroundService>();
