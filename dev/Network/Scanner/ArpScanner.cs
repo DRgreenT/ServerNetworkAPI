@@ -5,6 +5,7 @@ using System.Text;
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.Models.Enums;
+using ServerNetworkAPI.dev.Services;
 
 namespace ServerNetworkAPI.dev.Network.Scanner
 {
@@ -74,13 +75,28 @@ namespace ServerNetworkAPI.dev.Network.Scanner
 
         private static ProcessStartInfo? BuildArpScanCommand(string interfaceName, string ipPrefix)
         {
+            string cmd = "";
+            if(Program.isInitArp)
+            {
+                string passwordEscaped = Program.InitPassword.Replace("'", "'\\''");
+                cmd = $"echo '{passwordEscaped}' | sudo -S arp-scan --interface={interfaceName} {ipPrefix}0/24";
+                Program.isInitArp = false;
+            }
+            else
+            {
+                cmd = $"sudo arp-scan --interface={interfaceName} {ipPrefix}0/24";
+            }
+            if(!Program.isInitNmap && !Program.isInitArp)
+            {
+                Program.InitPassword = PasswortHandler.PasswordOverrided();
+            }
             try
             {
                 ipPrefix = ipPrefix.TrimEnd('.');
                 return new ProcessStartInfo
                 {
                     FileName = "/bin/bash",
-                    Arguments = $"-c \"sudo arp-scan --interface={interfaceName} {ipPrefix}.0/24\"",
+                    Arguments = $"-c \"{cmd}\"",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,

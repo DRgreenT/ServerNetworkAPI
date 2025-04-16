@@ -75,12 +75,24 @@ namespace ServerNetworkAPI.dev.Network.Scanner
 
         private static ProcessStartInfo? BuildNmapCommand(string ip, string parameter)
         {
+            string cmd;
+
+            if (Program.isInitNmap)
+            {
+                string passwordEscaped = Program.InitPassword.Replace("'", "'\\''");
+                cmd = $"echo '{passwordEscaped}' | sudo -S nmap {parameter} {ip}";
+                Program.isInitNmap = false;
+            }
+            else
+            {
+                cmd = $"sudo nmap {parameter} {ip}";
+            }
             try
             {
                 return new ProcessStartInfo
                 {
                     FileName = "/bin/bash",
-                    Arguments = $"-c \"sudo nmap {parameter} {ip}\"",
+                    Arguments = $"-c \"{cmd}\"",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
