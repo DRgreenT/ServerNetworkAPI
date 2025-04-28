@@ -12,5 +12,7 @@ jobs:
     needs: build
     uses: ./.github/workflows/cleanup.yml
 
-
+  analyze:
+    needs: cleanup
+    uses: ./.github/workflows/codeql.yml
 
