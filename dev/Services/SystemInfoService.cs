@@ -18,39 +18,29 @@ namespace ServerNetworkAPI.dev.Services
         {
             try
             {
-                bool noInput = Console.IsInputRedirected;
-                bool enviroment = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
-                bool noKey = false;
+                bool inputRedirected = Console.IsInputRedirected;
+                bool githubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
+                bool keyAvailableFails = false;
+                bool noUserInteraction = !Environment.UserInteractive;
 
                 try
                 {
-                    noKey = Console.KeyAvailable;
+                    var _ = Console.KeyAvailable;
                 }
-                catch (IOException ex)
+                catch (Exception)
                 {
-                    noKey = true;
-                    Logger.Log(LogData.NewLogEvent(
+                    keyAvailableFails = true;
+                }
+
+                bool isHeadless = inputRedirected || githubActions || keyAvailableFails || noUserInteraction;
+
+                Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
-                    $"Error checking headless mode: {ex.Message}",
-                    MessageType.Exception,
+                    $"Headless mode check -> InputRedirected:{inputRedirected}, GitHubActions:{githubActions}, KeyAvailableFails:{keyAvailableFails}, NoUserInteraction:{noUserInteraction}",
+                    MessageType.Standard,
                     ""));
-                }
 
-                bool noTTY = !File.Exists("/dev/tty");
-                bool notInteractive = !Environment.UserInteractive;
-
-                bool isHeadlessMode = noInput || enviroment || noKey || noTTY || notInteractive;
-
-                if (isHeadlessMode)
-                { 
-                    Logger.Log(LogData.NewLogEvent(
-                           "SystemInfoService",
-                            $"Headless mode: inputRedirected:{noInput}, GitAction{enviroment}, noKeyAvailable{noKey}, noTTy{noTTY}, noUsrInteract{notInteractive}",
-                            MessageType.Standard,
-                            ""));
-                }
-                return isHeadlessMode;
-
+                return isHeadless;
             }
             catch (Exception ex)
             {
@@ -62,6 +52,7 @@ namespace ServerNetworkAPI.dev.Services
                 return true;
             }
         }
+
 
 
         public static SystemInfoService GetProcessStats()
