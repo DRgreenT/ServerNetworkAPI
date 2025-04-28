@@ -2,6 +2,7 @@
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Services;
 using ServerNetworkAPI.dev.Models.Enums;
+
 namespace ServerNetworkAPI.dev.Core
 {
     public class NetworkContext
@@ -48,7 +49,7 @@ namespace ServerNetworkAPI.dev.Core
 
                     if(IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
                     {
-                        log = LogData.NewData(
+                        log = LogData.NewLogEvent(
                             "NetworkContext",
                             $"Non administrated IP detected: {updatedDevice.IP}",
                             MessageType.HardWarning
@@ -60,7 +61,7 @@ namespace ServerNetworkAPI.dev.Core
                 {
                     if (IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
                     {
-                        log = LogData.NewData(
+                        log = LogData.NewLogEvent(
                             "NetworkContext",
                             $"Non administrated IP detected: {updatedDevice.IP}",
                             MessageType.HardWarning
@@ -70,7 +71,7 @@ namespace ServerNetworkAPI.dev.Core
                     }
                     else
                     {
-                        log = LogData.NewData(
+                        log = LogData.NewLogEvent(
                             "NetworkContext",
                             $"New device detected: {updatedDevice.IP}",
                             MessageType.Warning
@@ -89,7 +90,7 @@ namespace ServerNetworkAPI.dev.Core
             {
                 return lastPart;
             }
-            return -1; // Invalid IP format
+            return -1; 
         }
 
         public static void MarkInactiveDevices(HashSet<string> activeIps)

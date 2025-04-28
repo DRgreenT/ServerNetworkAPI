@@ -24,7 +24,7 @@ namespace ServerNetworkAPI.dev.IO
             if (!Directory.Exists(ConfigDir))
             {
                 Directory.CreateDirectory(ConfigDir);
-                log = LogData.NewData(
+                log = LogData.NewLogEvent(
                     "NoteConfigBuilder",
                     $"Created config directory: {ConfigDir}",
                     MessageType.Warning
@@ -34,7 +34,7 @@ namespace ServerNetworkAPI.dev.IO
             }
             if (!File.Exists(ConfigFile))
             {
-                log = LogData.NewData(
+                log = LogData.NewLogEvent(
                     "NoteConfigBuilder",
                     $"Config file not found, creating default: {ConfigFile}",
                     MessageType.Warning
@@ -50,7 +50,7 @@ namespace ServerNetworkAPI.dev.IO
 
                 if (config == null)
                 {
-                    log = LogData.NewData(
+                    log = LogData.NewLogEvent(
                         "NoteConfigBuilder",
                         $"Config file is empty or invalid, creating default: {ConfigFile}",
                         MessageType.Warning
@@ -59,7 +59,7 @@ namespace ServerNetworkAPI.dev.IO
                     return CreateDefault();
                 }
 
-                log = LogData.NewData(
+                log = LogData.NewLogEvent(
                     "NoteConfigBuilder",
                     $"Loaded config from: {ConfigFile}",
                     MessageType.Success
@@ -70,7 +70,7 @@ namespace ServerNetworkAPI.dev.IO
             }
             catch(Exception ex)
             {
-                log = LogData.NewData(
+                log = LogData.NewLogEvent(
                     "NoteConfigBuilder",
                     $"Error loading config (default created!))",
                     MessageType.Error,

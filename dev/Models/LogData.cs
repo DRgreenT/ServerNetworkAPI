@@ -1,6 +1,5 @@
 ﻿using ServerNetworkAPI.dev.Models.Enums;
 
-
 namespace ServerNetworkAPI.dev.Models
 {
     public class LogData
@@ -25,7 +24,7 @@ namespace ServerNetworkAPI.dev.Models
         {
             logDatas.Push(logData);
         }
-        public static LogData NewData(string source, string message, MessageType messageType, string exeption = "")
+        public static LogData NewLogEvent(string source, string message, MessageType messageType, string exeption = "")
         {
             return new LogData
             {

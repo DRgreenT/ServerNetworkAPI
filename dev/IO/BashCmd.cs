@@ -17,14 +17,14 @@ namespace ServerNetworkAPI.dev.IO
 
                 if (!string.IsNullOrWhiteSpace(error))
                 {
-                    LogError(modul, $"stderr: {error.Trim()}", MessageType.Warning);
+                    LogData.NewLogEvent(modul, $"stderr: {error.Trim()}", MessageType.Warning);
                 }
 
                 return output.Trim();
             }
             catch (Exception ex)
             {
-                LogError(modul, $"Error executing command: {ex.Message}", MessageType.Exception);
+                LogData.NewLogEvent(modul, $"Error executing command: {ex.Message}", MessageType.Exception);
                 return string.Empty;
             }
         }
@@ -54,33 +54,16 @@ namespace ServerNetworkAPI.dev.IO
 
                 if (!string.IsNullOrWhiteSpace(error))
                 {
-                    LogError(modul, $"stderr: {error.Trim()}", MessageType.Warning);
+                    LogData.NewLogEvent(modul, $"{error.Trim()}", MessageType.Warning);
                 }
 
                 return output.Trim();
             }
             catch (Exception ex)
             {
-                LogError(modul, $"Error executing command: {ex.Message}", MessageType.Exception);
+                LogData.NewLogEvent(modul, $"Error executing command: {ex.Message}", MessageType.Exception);
                 return string.Empty;
             }
-        }
-
-        public static bool IsValidSudoPassword(string password)
-        {
-            if (string.IsNullOrWhiteSpace(password))
-                return false;
-
-            var command = $"echo '{password.Replace("'", "'\\''")}' | sudo -S -v";
-            using var process = Process.Start(CreateBashProcessStartInfo(command));
-
-            string error = process!.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            string[] knownErrors = { "Sorry, try again.", "incorrect" };
-            bool isError = knownErrors.Any(err => error.Contains(err));
-
-            return process.ExitCode == 0 && !isError;
         }
 
         public static bool IsRunningAsRoot()
@@ -94,12 +77,13 @@ namespace ServerNetworkAPI.dev.IO
             }
             catch
             {
+                LogData.NewLogEvent("BashCmd", "Error checking if running as root.", MessageType.Exception);
                 return false;
             }
         }
 
 
-        private static ProcessStartInfo CreateBashProcessStartInfo(string command)
+        public static ProcessStartInfo CreateBashProcessStartInfo(string command)
         {
             return new ProcessStartInfo
             {
@@ -108,17 +92,9 @@ namespace ServerNetworkAPI.dev.IO
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
-                CreateNoWindow = true
+                CreateNoWindow = true,
+                WorkingDirectory = "/tmp"
             };
-        }
-
-        private static void LogError(string modul, string message, MessageType type)
-        {
-            Logger.Log(LogData.NewData(
-                $"BashCmd [{modul}]",
-                message,
-                type,
-                ""));
         }
 
         private static void TryKillProcess(Process process, string modul)
@@ -126,11 +102,11 @@ namespace ServerNetworkAPI.dev.IO
             try
             {
                 process.Kill(entireProcessTree: true);
-                LogError(modul, "Process timeout, killed.", MessageType.Warning);
+                LogData.NewLogEvent(modul, "Process timeout, killed.", MessageType.Warning);
             }
             catch (Exception killEx)
             {
-                LogError(modul, $"Error killing process: {killEx.Message}", MessageType.Exception);
+                LogData.NewLogEvent(modul, $"Error killing process: {killEx.Message}", MessageType.Exception);
             }
         }
     }

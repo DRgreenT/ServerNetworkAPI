@@ -50,7 +50,7 @@ namespace ServerNetworkAPI.dev.WebAPI
             }
             catch(Exception ex)
             {
-                LogData.NewData("DataApiController","[Exeption -> ApiData]", MessageType.Exception,ex.Message);
+                LogData.NewLogEvent("DataApiController","[Exeption -> ApiData]", MessageType.Exception,ex.Message);
                 return BadRequest(ex.Message);
             }
 

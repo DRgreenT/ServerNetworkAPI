@@ -13,7 +13,7 @@ namespace ServerNetworkAPI.dev.IO
             if (!File.Exists(AppConfig.SaveFilePath))
             {
                 Logger.Log(
-                    LogData.NewData(
+                    LogData.NewLogEvent(
                     "DeviceRepository",
                     $"No device file found at {AppConfig.SaveFilePath}",
                     MessageType.Warning 
@@ -31,7 +31,7 @@ namespace ServerNetworkAPI.dev.IO
                     NetworkContext.SetDevices(devices);
 
                     Logger.Log(
-                        LogData.NewData(
+                        LogData.NewLogEvent(
                         "DeviceRepository",
                         $"Loaded {devices.Count} devices from {AppConfig.SaveFilePath}",
                         MessageType.Success
@@ -41,7 +41,7 @@ namespace ServerNetworkAPI.dev.IO
             catch (Exception ex)
             {
                 Logger.Log(
-                    LogData.NewData(
+                    LogData.NewLogEvent(
                     "DeviceRepository",
                     $"Failed to load devices from {AppConfig.SaveFilePath}",
                     MessageType.Exception,
@@ -58,7 +58,7 @@ namespace ServerNetworkAPI.dev.IO
                 var json = JsonSerializer.Serialize(snapshot, JSerializeOption);
                 await File.WriteAllTextAsync(AppConfig.SaveFilePath, json);
 
-                Logger.Log(LogData.NewData(
+                Logger.Log(LogData.NewLogEvent(
                     "DeviceRepository",
                     $"Saved {snapshot.Count} devices to {AppConfig.SaveFilePath}",
                     MessageType.Success
@@ -67,7 +67,7 @@ namespace ServerNetworkAPI.dev.IO
             catch (Exception ex)
             { 
                 Logger.Log(
-                    LogData.NewData(
+                    LogData.NewLogEvent(
                     "DeviceRepository",
                     $"Failed to save devices to {AppConfig.SaveFilePath}",
                     MessageType.Exception,

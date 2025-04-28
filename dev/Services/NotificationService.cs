@@ -15,7 +15,7 @@ namespace ServerNetworkAPI.dev.Services
 
             if (!config.EnableNotifications || string.IsNullOrWhiteSpace(config.WebhookUrl) || config.WebhookUrl.Contains("YOUR_IFTTT_KEY"))
             {
-                Logger.Log(LogData.NewData(
+                Logger.Log(LogData.NewLogEvent(
                     "NotificationService",
                     "Notification skipped (not configured).",
                     Models.Enums.MessageType.Warning
@@ -23,11 +23,10 @@ namespace ServerNetworkAPI.dev.Services
                 return;
             }
 
-            // 💡 Level-Auswertung
             if (config.NotificationLevel == Models.Enums.NotificationLevel.Warnings && !isWarning)
             {
                 Logger.Log(
-                    LogData.NewData(
+                    LogData.NewLogEvent(
                     "NotificationService",
                     "Skipped (level = warnings, but message is not warning).",
                     Models.Enums.MessageType.Standard
@@ -51,7 +50,7 @@ namespace ServerNetworkAPI.dev.Services
                 if (result.IsSuccessStatusCode)
                 {
                     Logger.Log(
-                        LogData.NewData(
+                        LogData.NewLogEvent(
                         "NotificationService",
                         $"Webhook sent: {message}",
                         Models.Enums.MessageType.Success
@@ -69,7 +68,7 @@ namespace ServerNetworkAPI.dev.Services
                 else
                 {
                     Logger.Log(
-                        LogData.NewData(
+                        LogData.NewLogEvent(
                         "NotificationService",
                         $"Failed: {result.StatusCode}",
                         Models.Enums.MessageType.Error
@@ -79,7 +78,7 @@ namespace ServerNetworkAPI.dev.Services
             catch (Exception ex)
             {
                 Logger.Log(
-                    LogData.NewData(
+                    LogData.NewLogEvent(
                     "NotificationService",
                     $"Exeption:",
                     Models.Enums.MessageType.Exception,
@@ -95,7 +94,7 @@ namespace ServerNetworkAPI.dev.Services
             if (!config.EnableNotifications || string.IsNullOrWhiteSpace(config.WebhookUrl) || config.WebhookUrl.Contains("YOUR_IFTTT_KEY"))
             {
                 Logger.Log(
-                    LogData.NewData(
+                    LogData.NewLogEvent(
                     "NotificationService",
                     "Notification skipped (not configured).",
                     Models.Enums.MessageType.Warning
@@ -120,7 +119,7 @@ namespace ServerNetworkAPI.dev.Services
                     if (response.IsSuccessStatusCode)
                     {
                         Logger.Log(
-                            LogData.NewData(
+                            LogData.NewLogEvent(
                             "NotificationService",
                             $"Webhook sent: {payload.content}",
                             Models.Enums.MessageType.Success
@@ -137,7 +136,7 @@ namespace ServerNetworkAPI.dev.Services
                     else
                     {
                         Logger.Log(
-                            LogData.NewData(
+                            LogData.NewLogEvent(
                             "NotificationService",
                             $"Failed: {response.StatusCode}",
                             Models.Enums.MessageType.Error
@@ -148,7 +147,7 @@ namespace ServerNetworkAPI.dev.Services
                 catch (Exception ex)
                 {
                     Logger.Log(
-                        LogData.NewData(
+                        LogData.NewLogEvent(
                         "NotificationService",
                         $"Exeption:",
                         Models.Enums.MessageType.Exception,
