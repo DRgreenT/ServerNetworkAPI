@@ -1,4 +1,5 @@
 ﻿using ServerNetworkAPI.dev.Models.Enums;
+
 namespace ServerNetworkAPI.dev.Models
 {
     public class NotificationConfig

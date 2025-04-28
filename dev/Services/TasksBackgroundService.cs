@@ -126,6 +126,6 @@ namespace ServerNetworkAPI.dev.Services
         {
             Console.TreatControlCAsInput = true;
             Console.CursorVisible = true;
-        }
+        }       
     }
 }

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+
 namespace ServerNetworkAPI.dev.Models
 {
     public class Device

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
+﻿
 namespace ServerNetworkAPI.dev.Services
 {
     public class InternetConnectivityService
@@ -30,7 +27,7 @@ namespace ServerNetworkAPI.dev.Services
                 }
                 catch
                 {
-                    // Ignore and try next
+                    // Ignore 
                 }
             }
 
