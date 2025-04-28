@@ -1,7 +1,6 @@
 ﻿using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.Models.Enums;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace ServerNetworkAPI.dev.Services
@@ -13,6 +12,45 @@ namespace ServerNetworkAPI.dev.Services
         public string Uptime { get; private set; } = "-";
 
         private static readonly int ProcessorCores = Environment.ProcessorCount;
+
+
+        public static bool IsHeadlessServer()
+        {
+            try
+            {
+                bool noInput = Console.IsInputRedirected;
+                bool noKey = false;
+
+                try
+                {
+                    //noKey = !Console.KeyAvailable;
+                }
+                catch (IOException ex)
+                {
+                    noKey = true;
+                    Logger.Log(LogData.NewLogEvent(
+                    "SystemInfoService",
+                    $"Error checking headless mode: {ex.Message}",
+                    MessageType.Exception,
+                    ""));
+                }
+
+                bool noTTY = !File.Exists("/dev/tty");
+                bool notInteractive = !Environment.UserInteractive;
+
+                return noInput || noKey || noTTY || notInteractive;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogData.NewLogEvent(
+                    "SystemInfoService",
+                    $"Error checking headless mode: {ex.Message}",
+                    MessageType.Exception,
+                    ""));
+                return true; 
+            }
+        }
+
 
         public static SystemInfoService GetProcessStats()
         {
@@ -34,15 +72,11 @@ namespace ServerNetworkAPI.dev.Services
 
                 int usedMem = totalMem - availableMem;
 
-                // Optional: RAM-Auslastung in %
-                // double usedPercent = 100.0 * usedMem / totalMem;
-                // return $"{usedMem} MB / {totalMem} MB ({usedPercent:0.0}%)";
-
                 return $"{usedMem} MB / {totalMem} MB";
             }
             catch
             {
-                Logger.Log(LogData.NewData(
+                Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
                     "Error reading /proc/meminfo",
                     MessageType.Exception,
@@ -62,13 +96,13 @@ namespace ServerNetworkAPI.dev.Services
                     string numberPart = parts[1].Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
                     if (int.TryParse(numberPart, out int kb))
                     {
-                        return kb / 1024; // Umrechnung in MB
+                        return kb / 1024; 
                     }
                 }
             }
             else
             {
-                Logger.Log(LogData.NewData(
+                Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
                     $"Key '{key}' not found in /proc/meminfo",
                     MessageType.Exception,
@@ -82,7 +116,7 @@ namespace ServerNetworkAPI.dev.Services
             var oldestOutput = BashCmd.ExecuteCmd("ps -eo lstart,pid,comm --sort=start_time --no-headers | head -n 1", "SystemInfoService");
             if (string.IsNullOrEmpty(oldestOutput))
             {
-                Logger.Log(LogData.NewData(
+                Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
                     "Error reading process start time",
                     MessageType.Exception,
@@ -103,7 +137,7 @@ namespace ServerNetworkAPI.dev.Services
             }
             else
             {
-                Logger.Log(LogData.NewData(
+                Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
                     "Failed to parse process start time",
                     MessageType.Exception,
@@ -117,7 +151,7 @@ namespace ServerNetworkAPI.dev.Services
             var cpuOutput = BashCmd.ExecuteCmd("ps -eo %cpu --no-headers", "SystemInfoService");
             if (string.IsNullOrEmpty(cpuOutput))
             {
-                Logger.Log(LogData.NewData(
+                Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
                     "Error reading CPU usage",
                     MessageType.Exception,

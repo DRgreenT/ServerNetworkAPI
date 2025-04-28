@@ -1,10 +1,7 @@
 ﻿using ServerNetworkAPI.dev.Network.Adapter;
-using System.Diagnostics;
 using System.Net;
 using System.Text;
 using ServerNetworkAPI.dev.IO;
-using ServerNetworkAPI.dev.Models;
-using ServerNetworkAPI.dev.Models.Enums;
 using ServerNetworkAPI.dev.Services;
 
 namespace ServerNetworkAPI.dev.Network.Scanner
@@ -34,21 +31,28 @@ namespace ServerNetworkAPI.dev.Network.Scanner
 
         private static string BuildArpScanCommand(string interfaceName, string ipPrefix)
         {
-            if(Program.isInitArp)
+            if (Program.isInitArp)
             {
                 Program.isInitArp = false;
-                string passwordEscaped = Program.InitPassword.Replace("'", "'\\''");
-                return $"echo '{passwordEscaped}' | sudo -S arp-scan --interface={interfaceName} {ipPrefix}0/24";               
+
+                var pw = PasswortHandler.GetPasswordArray();
+                string passwordStr = new string(pw);
+                string passwordEscaped = passwordStr.Replace("'", "'\\''");
+                string cmd = $"echo '{passwordEscaped}' | sudo -S arp-scan --interface={interfaceName} {ipPrefix}0/24";
+
+                PasswortHandler.PasswortOverride(ref passwordStr!, ref passwordEscaped!, ref pw);
+                return cmd;
             }
             else
             {
                 if (!Program.isInitNmap)
                 {
-                    Program.InitPassword = PasswortHandler.PasswordOverrided();
+                    PasswortHandler.SetPasswordArray(Array.Empty<char>());
                 }
                 return $"sudo arp-scan --interface={interfaceName} {ipPrefix}0/24";
             }
         }
+
 
         private static HashSet<string> ParseIpAddresses(string rawOutput)
         {

@@ -12,7 +12,8 @@ namespace ServerNetworkAPI
 {
     public class Program
     {
-        public static string InitPassword = "";
+        
+
         public static bool isInitArp = true;
         public static bool isInitNmap = true;
         public static void Main(string[] args)
@@ -24,7 +25,8 @@ namespace ServerNetworkAPI
                 CLIArgsParser.PrintHelp();
                 return;
             }
-            InitPassword = PasswortHandler.PasswordInput();
+            AppConfig.SetUserInterface();
+            PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput()); 
 
             FileHelper.EnsureApplicationDirectories();
             AppConfig.InitializeFromArgs(parsedArgs);
@@ -34,8 +36,6 @@ namespace ServerNetworkAPI
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Logging.ClearProviders();
-            builder.Logging.AddConsole();
-            builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.None);
 
 
             builder.Services.AddControllers();
@@ -57,7 +57,6 @@ namespace ServerNetworkAPI
             app.UseAuthorization();
             app.MapControllers();
 
-            // Serve static web UI files
             ConfigureStaticWebUI(app);
 
             var url = $"http://0.0.0.0:{AppConfig.WebApiPort}";
@@ -71,7 +70,7 @@ namespace ServerNetworkAPI
             if (!Directory.Exists(wwwRootPath))
             {
                 Logger.Log(
-                    LogData.NewData(
+                    LogData.NewLogEvent(
                     "WebUI",
                     $"wwwRoot not found! ({wwwRootPath})",
                     MessageType.Error
@@ -94,7 +93,7 @@ namespace ServerNetworkAPI
             });
  
             Logger.Log(
-                LogData.NewData(
+                LogData.NewLogEvent(
                 "WebUI",
                 $"WebUI @ {LocalAdapterService.GetLocalIPv4Address()}:{AppConfig.WebApiPort}",
                 MessageType.Success

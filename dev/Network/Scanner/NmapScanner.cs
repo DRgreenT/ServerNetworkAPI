@@ -1,8 +1,9 @@
-﻿
-using ServerNetworkAPI.dev.Core;
+﻿using ServerNetworkAPI.dev.Core;
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.Models.Enums;
+using ServerNetworkAPI.dev.Services;
+
 namespace ServerNetworkAPI.dev.Network.Scanner
 {
     public class NmapScanner
@@ -19,7 +20,7 @@ namespace ServerNetworkAPI.dev.Network.Scanner
 
                 if (string.IsNullOrWhiteSpace(output))
                 {
-                    Logger.Log(LogData.NewData(
+                    Logger.Log(LogData.NewLogEvent(
                         "NmapScanner",
                         $"Leere Ausgabe beim Scan von {ip}",
                         MessageType.Warning,
@@ -31,7 +32,7 @@ namespace ServerNetworkAPI.dev.Network.Scanner
             }
             catch (Exception ex)
             {
-                Logger.Log(LogData.NewData(
+                Logger.Log(LogData.NewLogEvent(
                     "NmapScanner",
                     $"Fehler beim Scannen von {ip}",
                     MessageType.Exception,
@@ -45,15 +46,22 @@ namespace ServerNetworkAPI.dev.Network.Scanner
         {
             if (Program.isInitNmap)
             {
-                string passwordEscaped = Program.InitPassword.Replace("'", "'\\''");
                 Program.isInitNmap = false;
-                return $"echo '{passwordEscaped}' | sudo -S nmap {parameter} {ip}";
+
+                var pw = PasswortHandler.GetPasswordArray();
+                string passwordStr = new string(pw);
+                string passwordEscaped = passwordStr.Replace("'", "'\\''");
+                string cmd = $"echo '{passwordEscaped}' | sudo -S nmap {parameter} {ip}";
+
+                PasswortHandler.PasswortOverride(ref passwordStr!, ref passwordEscaped!, ref pw);
+                return cmd;
             }
             else
             {
                 return $"sudo nmap {parameter} {ip}";
             }
         }
+
 
         private static List<string> ParseNmapOutput(string rawOutput)
         {
