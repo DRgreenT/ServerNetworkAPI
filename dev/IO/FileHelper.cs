@@ -21,7 +21,6 @@ namespace ServerNetworkAPI.dev.IO
         public static void EnsureApplicationDirectories()
         {
             EnsureDirectoryExists(AppConfig.LogDirectory);
-            // Weitere Verzeichnisse bei Bedarf ergänzen
         }
     }
 }
