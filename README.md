@@ -231,6 +231,28 @@ dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFil
 
 ---
 
+## Notes:
+
+---
+
+### Important Notice for DNS Setup
+
+If you are using a custom DNS server (e.g., AdGuard Home, Pi-hole, Unbound, etc.),
+make sure that Reverse DNS (PTR) lookups for your local network are correctly configured.
+
+Specifically:
+
+Private Reverse DNS Resolver must be active.
+
+The DNS server must be able to resolve PTR queries (reverse lookups) for local IP addresses.
+
+Otherwise, no hostnames will be available — only IP addresses will be shown.
+
+Example:
+In AdGuard Home, enable the option "Private Reverse DNS Resolver" under DNS settings.
+
+---
+
 ## Disclaimer
 
 This project is intended for **educational and local testing purposes only**.  
