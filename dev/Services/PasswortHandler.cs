@@ -33,6 +33,10 @@ namespace ServerNetworkAPI.dev.Services
         public static char[] PasswordInput()
         {
             bool isRunnerTestMode = true;
+            Console.WriteLine(isRunnerTestMode + " Testmode");
+            Console.WriteLine(SystemInfoService.IsConsoleInactive + " IsConsoleInactive");
+            Console.WriteLine(BashCmd.IsRunningAsRoot() + " IsRunningAsRoot");
+
             if (BashCmd.IsRunningAsRoot() || SystemInfoService.IsConsoleInactive || isRunnerTestMode)
             {
                 Program.isInitArp = false;
