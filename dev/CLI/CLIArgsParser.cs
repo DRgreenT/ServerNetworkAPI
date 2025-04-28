@@ -55,9 +55,11 @@ namespace ServerNetworkAPI.dev.CLI
                         break;
                     case "--headless":
                         SystemInfoService.IsHeadlessFromArgs = true;
+
                         break;
                 }
             }
+            SystemInfoService.SetConsoleState();
 
             return result;
         }

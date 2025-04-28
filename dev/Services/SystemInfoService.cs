@@ -15,7 +15,13 @@ namespace ServerNetworkAPI.dev.Services
 
         public static bool IsHeadlessFromArgs { get; set; } = false;
 
-        public static bool IsHeadlessServer()
+        public static bool IsConsoleInactive { get; private set; } = false;
+
+        public static void SetConsoleState()
+        {
+            IsConsoleInactive = IsHeadlessServer(); 
+        }
+        public static bool IsHeadlessServer(bool debugMode = true)
         {
             try
             {
@@ -35,10 +41,14 @@ namespace ServerNetworkAPI.dev.Services
                 }
 
                 isHeadless = inputRedirected || githubActions || keyAvailableFails || noUserInteraction || IsHeadlessFromArgs;
+               
+                string message = isHeadless ? "On" : "Off";
 
+                string debugMessage = debugMode ? $" -> InputRedirected:{ inputRedirected}, GitHubActions: { githubActions}, KeyAvailableFails: { keyAvailableFails}, NoUserInteraction: { noUserInteraction}, FromArgs: { IsHeadlessFromArgs}" : "";
+                
                 Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
-                    $"Headless mode check -> InputRedirected:{inputRedirected}, GitHubActions:{githubActions}, KeyAvailableFails:{keyAvailableFails}, NoUserInteraction:{noUserInteraction}",
+                    $"Headless mode {message}{debugMessage}",
                     MessageType.Standard,
                     ""));
 

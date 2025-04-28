@@ -32,7 +32,7 @@ namespace ServerNetworkAPI.dev.Services
 
         public static char[] PasswordInput()
         {
-            if (BashCmd.IsRunningAsRoot() || SystemInfoService.IsHeadlessServer())
+            if (BashCmd.IsRunningAsRoot() || SystemInfoService.IsConsoleInactive)
             {
                 Program.isInitArp = false;
                 Program.isInitNmap = false;

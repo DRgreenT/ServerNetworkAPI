@@ -19,29 +19,20 @@ namespace ServerNetworkAPI
         public static void Main(string[] args)
         {
             var parsedArgs = CLIArgsParser.Parse(args);
+            AppConfig.InitializeFromArgs(parsedArgs);
 
-            if (parsedArgs.ShowHelp && !SystemInfoService.IsHeadlessServer())
+            if (parsedArgs.ShowHelp && !SystemInfoService.IsConsoleInactive)
             {
                 CLIArgsParser.PrintHelp();
                 return;
             }
-            AppConfig.InitializeFromArgs(parsedArgs);
+            
+            AppConfig.SetUserInterface();
 
-            if (SystemInfoService.IsHeadlessServer())
-            {
-                AppConfig.SetUserInterface(true);
-                isInitArp = false;
-                isInitNmap = false;
-            }
-            else
-            {
-                AppConfig.SetUserInterface();
-                PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput());
-            }
+            PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput());
 
             FileHelper.EnsureApplicationDirectories();
-            
-            
+                        
             OutputLayout.Initialize();
             OutputFormatter.PrintStartupInfo();
 
