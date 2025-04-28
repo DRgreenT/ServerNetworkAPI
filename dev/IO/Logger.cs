@@ -26,7 +26,7 @@ namespace ServerNetworkAPI.dev.IO
 
                 File.AppendAllText(AppConfig.LogFilePath, logLine + Environment.NewLine);
 
-                if (alsoConsole)
+                if (AppConfig.ConsoleUserInterface && alsoConsole)
                 {
                     Console.WriteLine(logLine);
                 }
@@ -35,11 +35,14 @@ namespace ServerNetworkAPI.dev.IO
 
         public static void Log(LogData data)
         {
-            var color = GetColorByType(data.MessageType);
             string logLine = BuildFullLogLine(data);
-            string displayLine = BuildDisplayLine(logLine, data.TimeStamp!.Length);
-
-            OutputFormatter.PrintMessage(displayLine, color);
+            if (AppConfig.ConsoleUserInterface)
+            {
+                var color = GetColorByType(data.MessageType);
+                string displayLine = BuildDisplayLine(logLine, data.TimeStamp!.Length);
+                OutputFormatter.PrintMessage(displayLine, color);
+            }
+            
             Write(logLine, false);
             LogData.AddLog(data);
         }

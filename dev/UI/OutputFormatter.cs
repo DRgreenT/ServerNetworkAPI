@@ -6,21 +6,29 @@ namespace ServerNetworkAPI.dev.UI
 {
     public class OutputFormatter
     {
-        private static readonly int[] MessageRows = Enumerable.Range(0, 20).ToArray(); // Zeilen 0–19 für Nachrichten
+        private static readonly int[] MessageRows = Enumerable.Range(0, 20).ToArray(); 
         private static int _messageIndex = 0;
-
-        private static string localIp = LocalAdapterService.GetLocalIPv4Address(); // deine Utility aus AdapterService
+        private static string localIp = LocalAdapterService.GetLocalIPv4Address(); 
         public static void PrintStartupInfo()
         {
+            if (!AppConfig.ConsoleUserInterface)
+            {
+                return;
+            }
             PrintMessage($"Server NetworkAPI v{AppConfig.Version} started.", ConsoleColor.Green, false);
-            PrintMessage($"",null,false);
-            PrintMessage($"IP-Mask: {AppConfig.LocalIpMask}, Nmap enabled: {AppConfig.IsNmapEnabled}, Scan Interval: {AppConfig.ScanIntervalSeconds}s",ConsoleColor.Yellow,false);
+            PrintMessage($"", null, false);
+            PrintMessage($"IP-Mask: {AppConfig.LocalIpMask}, Nmap enabled: {AppConfig.IsNmapEnabled}, Scan Interval: {AppConfig.ScanIntervalSeconds}s", ConsoleColor.Yellow, false);
             PrintMessage($"API running at: http://{localIp}:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false);
             PrintMessage($"API running at: http://127.0.0.1:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false);
+
         }
 
         public static void PrintMessage(string message, ConsoleColor? color = null, bool hasTimeInfo = true)
         {
+            if (!AppConfig.ConsoleUserInterface)
+            {
+                return;
+            }
             string timestamp = hasTimeInfo ? $"[{DateTime.Now:HH:mm:ss}]" : "";
             int row = MessageRows[_messageIndex % MessageRows.Length];
             if (row < 7 && hasTimeInfo) row = 7;
@@ -44,6 +52,7 @@ namespace ServerNetworkAPI.dev.UI
 
             _messageIndex++;
         }
+        
 
         private static void ClearMessageArea()
         {
@@ -55,6 +64,10 @@ namespace ServerNetworkAPI.dev.UI
 
         public static void PrintDeviceSummary()
         {
+            if (!AppConfig.ConsoleUserInterface)
+            {
+                return;
+            }
             var devices = NetworkContext.GetDevices();
             Console.SetCursorPosition(0, 26);
             Console.WriteLine(new string('#', 20) + "< SUMMARY >" + new string('#', 20));
@@ -66,9 +79,9 @@ namespace ServerNetworkAPI.dev.UI
             {
                 string status = dev.IsOnline ? "Online" : "Offline";
 
-                string ip = dev.IP.PadRight(16);             
-                string hostname = dev.Hostname.PadRight(25); 
-                if(hostname.Length > 24) hostname = hostname.Substring(0, 21) + "...";
+                string ip = dev.IP.PadRight(16);
+                string hostname = dev.Hostname.PadRight(25);
+                if (hostname.Length > 24) hostname = hostname.Substring(0, 21) + "...";
                 string os = dev.OS.PadRight(10);
                 string line = $"{ip}| {hostname}| {os}| {status}";
 

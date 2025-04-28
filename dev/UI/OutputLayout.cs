@@ -1,4 +1,6 @@
-﻿namespace ServerNetworkAPI.dev.UI
+﻿using ServerNetworkAPI.dev.Core;
+
+namespace ServerNetworkAPI.dev.UI
 {
     public class OutputRow
     {
@@ -12,6 +14,10 @@
 
         public static void Initialize()
         {
+            if (!AppConfig.ConsoleUserInterface)
+            {
+                return;
+            }
             Console.Clear();
             Add(0, "");
             Add(1, "");
@@ -32,6 +38,10 @@
 
         public static void UpdateRow(int row, string content)
         {
+            if (!AppConfig.ConsoleUserInterface)
+            {
+                return;
+            }
             if (_rows.TryGetValue(row, out var outputRow))
             {
                 outputRow.Value = content;
@@ -42,6 +52,10 @@
 
         private static void Add(int row, string content)
         {
+            if (!AppConfig.ConsoleUserInterface)
+            {
+                return;
+            }
             _rows[row] = new OutputRow { ConsoleRow = row, Value = content };
             Console.SetCursorPosition(0, row);
             Console.Write(content.PadRight(Console.WindowWidth));
@@ -49,6 +63,10 @@
 
         public static void RedrawAll()
         {
+            if (!AppConfig.ConsoleUserInterface)
+            {
+                return;
+            }
             foreach (var (row, output) in _rows.OrderBy(r => r.Key))
             {
                 Console.SetCursorPosition(0, row);
@@ -58,6 +76,10 @@
 
         public static void Clear()
         {
+            if (!AppConfig.ConsoleUserInterface)
+            {
+                return;
+            }
             Console.Clear();
             _rows.Clear();
         }

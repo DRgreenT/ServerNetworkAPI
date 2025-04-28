@@ -4,6 +4,8 @@ using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.Models.Enums;
 
+using ServerNetworkAPI.dev.Services;
+
 
 namespace ServerNetworkAPI.dev.Core
 {
@@ -21,9 +23,11 @@ namespace ServerNetworkAPI.dev.Core
         public static int ScanIntervalSeconds { get; private set; } = 15;
         public static bool IsNmapEnabled { get; private set; } = false;
         public static int WebApiPort { get; private set; } = 5050;
-        public static int MaxIPv4AddressWithoutWarning { get; private set; } = 190; // e.g. 192.168.178.190 to 192.168.178.255 will generate a warning and dicord message
+        public static int MaxIPv4AddressWithoutWarning { get; private set; } = 189; // e.g. 192.168.178.190 to 192.168.178.255 will generate a warning and dicord message
 
         public static string LocalIpMask { get; private set; } = "";
+
+        public static bool ConsoleUserInterface { get; private set; } = true;
 
         private static void LoadExternalSettings()
         {
@@ -44,10 +48,15 @@ namespace ServerNetworkAPI.dev.Core
             if (args.TimeoutSeconds > 0) ScanIntervalSeconds = args.TimeoutSeconds;
             if (args.Port > 0) WebApiPort = args.Port;
             if (args.NmapScanActive) IsNmapEnabled = true;
-
             LocalIpMask = CalculateLocalNetworkPrefix() ?? FallbackIpMask;
 
-            LoadExternalSettings();
+            LoadExternalSettings();          
+        }
+
+        public static void SetUserInterface()
+        {
+            if (SystemInfoService.IsHeadlessServer()) ConsoleUserInterface = false;
+            else ConsoleUserInterface = true;
         }
 
         private static string? CalculateLocalNetworkPrefix()
@@ -66,7 +75,7 @@ namespace ServerNetworkAPI.dev.Core
 
             if (string.IsNullOrEmpty(firstIp))
             {
-                log = LogData.NewData(
+                log = LogData.NewLogEvent(
                     "AppConfig",
                     $"No valid local IP found. Using fallback IP mask: {FallbackIpMask}",
                     MessageType.Warning,
@@ -82,7 +91,7 @@ namespace ServerNetworkAPI.dev.Core
             {
                 var mask = $"{parts[0]}.{parts[1]}.{parts[2]}.";
 
-                log = LogData.NewData(
+                log = LogData.NewLogEvent(
                     "AppConfig",
                     $"Using detected IP mask: {mask}",
                     MessageType.Success,
@@ -93,7 +102,7 @@ namespace ServerNetworkAPI.dev.Core
                 return mask;
             }
 
-            log = LogData.NewData(
+            log = LogData.NewLogEvent(
                 "AppConfig",
                 $"Invalid IP format: {firstIp}. Using fallback IP mask: {FallbackIpMask}",
                 MessageType.Warning,
