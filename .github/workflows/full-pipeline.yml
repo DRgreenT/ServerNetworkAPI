@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 jobs:
   buildmy:
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/build_my.yml
 
   cleanup:
     needs: build
