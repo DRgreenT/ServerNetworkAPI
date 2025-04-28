@@ -9,7 +9,7 @@ jobs:
     uses: ./.github/workflows/build_my.yml
 
   cleanup:
-    needs: build
+    needs: buildmy
     uses: ./.github/workflows/cleanup.yml
 
   analyze:
