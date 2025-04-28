@@ -12,6 +12,7 @@
 const scriptsToLoad = [
     "./JS/Service/apiDataLoader.js",
     "./JS/Service/autoReloadManager.js",
+    "./JS/Service/userInputEvents.js",
     "./JS/Sites/dashboard.js",
     "./JS/Sites/log.js",
     "./JS/Sites/about.js",
@@ -23,5 +24,6 @@ Promise.all(scriptsToLoad.map(loadScript))
         console.log("All scripts loaded");
         fetchApiData();
         loadDashboard();
+        UserInputEvents();
     })
     .catch(err => console.error(err));

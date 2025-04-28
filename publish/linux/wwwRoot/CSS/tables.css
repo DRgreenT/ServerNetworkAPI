@@ -18,15 +18,22 @@ thead {
 }
 
 thead th {
-    padding: 0.75rem 1rem;
+
     border-bottom: 2px solid #5b5b5b;
 }
 
 tbody td {
-    padding: 1rem 0rem;
+    padding: 5px 5px;
     color: #333;
     vertical-align: top;
 }
+
+.center-cell {
+    text-align:center; 
+    vertical-align:middle;
+    min-width: 1.5rem; 
+    max-width: 2.5rem;
+  }
 
 @media (max-width: 768px) {
     table {

@@ -82,7 +82,33 @@ footer {
     font-size: 0.8rem;
 }
 
-.menu-item a {
+.menu-item {
+    cursor: pointer;
+    position: relative;
+    padding: 0.5rem 1rem;
+    user-select: none;
+  }
+  
+  .menu-item.has-dropdown .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #555;
+    z-index: 10;
+    min-width: 150px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .menu-item.active .dropdown {
+    display: block;
+  }
+  
+  .dropdown-item {
+    padding: 0.5rem 1rem;
     color: white;
-    text-decoration: none;
-}
+  }
+  
+  .dropdown-item:hover {
+    background-color: #666;
+  }

@@ -18,23 +18,23 @@
         ServerNetworkAPI - WebUI
     </header>
     <nav>
-        <div class="menu-item">
-            <a href="#" onclick="loadDashboard()">HOME</a>
+        <div class="menu-item" data-action="loadDashboard">HOME</div>
+      
+        <div class="menu-item has-dropdown">
+          LOG
+          <div class="dropdown">
+            <div class="dropdown-item" data-action="loadLogs">API Logs</div>
+            <div class="dropdown-item" data-action="loadNotes">Notification Logs</div>
+          </div>
         </div>
-        <div class="menu-item">
-            LOG
-            <div class="dropdown">
-                <a href="#" onclick="loadLogs()">API Logs</a>
-                <a href="#" onclick="loadNotes()">Notification Logs</a>
-            </div>
+      
+        <div class="menu-item has-dropdown">
+          ABOUT
+          <div class="dropdown">
+            <div class="dropdown-item" data-action="loadAbout">About</div>
+          </div>
         </div>
-        <div class="menu-item">
-            About
-            <div class="dropdown">
-                <a href="#" onclick="loadAbout()">About</a>
-            </div>
-        </div>
-    </nav>
+      </nav>
     <main id="content">
         <h2>Welcome to ServerNetworkAPI UI</h2>
         <p>Select a menu item to begin.</p>

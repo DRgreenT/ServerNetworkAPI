@@ -129,10 +129,10 @@ function getDeviceList() {
       <table>
         <thead>
           <tr>
-            <th>Status</th>
-            <th>IP</th>
-            <th>Hostname</th>
-            <th>Last seen</th>
+            <th class="center-cell">Status</th>
+            <th style="padding:5px">IP</th>
+            <th style="padding:5px">Hostname</th>
+            <th style="padding:5px">Last seen</th>
           </tr>
         </thead>
         <tbody>${generateTableRows(devicesData)}</tbody>
@@ -146,10 +146,10 @@ function generateTableRows(devices) {
   for (let i = 0; i < devices.length; i++) {
     rows += `
       <tr style="background-color: ${i % 2 === 0 ? '#d6d4d4' : '#ffffff'};">
-        <td><span class="${devices[i].isOnline ? 'online' : 'offline'}"></span></td>
+        <td class="center-cell"><span class="${devices[i].isOnline ? 'online' : 'offline'}"></span></td>
         <td>${devices[i].ip}</td>
-        <td>${devices[i].hostname}</td>
-        <td>${devices[i].lastSeen}</td>
+        <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">${devices[i].hostname}</td>
+        <td style="max-width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: rtl; text-align: left;">${devices[i].lastSeen}</td>
       </tr>
     `;
   }
