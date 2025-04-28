@@ -15,6 +15,10 @@ jobs:
   analyze:
     needs: cleanup
     uses: ./.github/workflows/codeql.yml
+    permissions:
+      actions: read
+      security-events: write
+      contents: read
 
   build:
     needs: analyze
