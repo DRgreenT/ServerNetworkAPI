@@ -13,8 +13,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install -y arp-scan nmap
+        # sudo apt update
+        # sudo apt install -y arp-scan nmap
 
     - name: Make executable
       run: chmod +x ./publish/linux/ServerNetworkAPI
@@ -28,11 +28,9 @@ jobs:
           exit 1
         fi
 
-        # Verzeichnis erstellen, falls nicht vorhanden
         LOG_DIR="./logs"
         mkdir -p $LOG_DIR
 
-        # Log-Datei erstellen und Ausgaben mit tee aufzeichnen
         ./publish/linux/ServerNetworkAPI --headless --nmap $LOG_DIR/run120.log 2>&1 | tee $LOG_DIR/run120.log &
         PID=$!
         echo "Started with PID $PID"
@@ -51,9 +49,7 @@ jobs:
 
     - name: Show full log of run120.log
       run: |
-        # Überprüfen, ob die Log-Datei existiert
-        if [ -f $LOG_DIR/run120.log ]; then
-          echo "========== FULL LOG: run120.log =========="
+        if [ -f $LOG_DIR/run120.log ]; then         
           cat $LOG_DIR/run120.log
         else
           echo "run120.log not found."
