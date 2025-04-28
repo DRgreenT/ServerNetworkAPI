@@ -25,8 +25,19 @@ namespace ServerNetworkAPI
                 CLIArgsParser.PrintHelp();
                 return;
             }
-            AppConfig.SetUserInterface();
-            PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput()); 
+
+            bool isConsoleDisabled = false;
+            if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true")
+            {
+                isConsoleDisabled = true;
+                isInitArp = false;
+                isInitNmap = false;
+            }
+            AppConfig.SetUserInterface(isConsoleDisabled);
+            if (!isInitArp && !isInitNmap)
+            {
+                PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput());
+            }
 
             FileHelper.EnsureApplicationDirectories();
             AppConfig.InitializeFromArgs(parsedArgs);

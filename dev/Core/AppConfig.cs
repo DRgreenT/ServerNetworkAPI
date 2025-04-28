@@ -53,9 +53,12 @@ namespace ServerNetworkAPI.dev.Core
             LoadExternalSettings();          
         }
 
-        public static void SetUserInterface()
+        public static void SetUserInterface(bool isGitHubAction = false)
         {
-            if (SystemInfoService.IsHeadlessServer()) ConsoleUserInterface = false;
+            if(isGitHubAction || SystemInfoService.IsHeadlessServer())
+            {
+                ConsoleUserInterface = false;
+            }
             else ConsoleUserInterface = true;
         }
 
