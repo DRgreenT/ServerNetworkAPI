@@ -5,7 +5,7 @@ on:
   push:
     branches: [ main ]
 jobs:
-  build:
+  buildmy:
     uses: ./.github/workflows/build.yml
 
   cleanup:
@@ -16,3 +16,6 @@ jobs:
     needs: cleanup
     uses: ./.github/workflows/codeql.yml
 
+  build:
+    needs: analyze
+    uses: ./.github/workflows/dotnet.yml
