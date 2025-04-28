@@ -34,7 +34,7 @@ namespace ServerNetworkAPI
                 isInitNmap = false;
             }
             AppConfig.SetUserInterface(isConsoleDisabled);
-            if (!isInitArp && !isInitNmap)
+            if (isInitArp && isInitNmap)
             {
                 PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput());
             }
