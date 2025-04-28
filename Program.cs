@@ -20,14 +20,14 @@ namespace ServerNetworkAPI
         {
             var parsedArgs = CLIArgsParser.Parse(args);
 
-            if (parsedArgs.ShowHelp)
+            if (parsedArgs.ShowHelp && !SystemInfoService.IsHeadlessServer())
             {
                 CLIArgsParser.PrintHelp();
                 return;
             }
 
 
-            if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true")
+            if (SystemInfoService.IsHeadlessServer())
             {
                 AppConfig.SetUserInterface(true);
                 isInitArp = false;

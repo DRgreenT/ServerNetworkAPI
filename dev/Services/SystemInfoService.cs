@@ -19,11 +19,12 @@ namespace ServerNetworkAPI.dev.Services
             try
             {
                 bool noInput = Console.IsInputRedirected;
+                bool enviroment = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
                 bool noKey = false;
 
                 try
                 {
-                    //noKey = !Console.KeyAvailable;
+                    noKey = Console.KeyAvailable;
                 }
                 catch (IOException ex)
                 {
@@ -38,7 +39,7 @@ namespace ServerNetworkAPI.dev.Services
                 bool noTTY = !File.Exists("/dev/tty");
                 bool notInteractive = !Environment.UserInteractive;
 
-                return noInput || noKey || noTTY || notInteractive;
+                return noInput || enviroment || noKey || noTTY || notInteractive;
             }
             catch (Exception ex)
             {
