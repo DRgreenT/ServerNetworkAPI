@@ -13,6 +13,7 @@ namespace ServerNetworkAPI.dev.Services
 
         private static readonly int ProcessorCores = Environment.ProcessorCount;
 
+        public static bool IsHeadlessFromArgs { get; set; } = false;
 
         public static bool IsHeadlessServer()
         {
@@ -22,6 +23,7 @@ namespace ServerNetworkAPI.dev.Services
                 bool githubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
                 bool keyAvailableFails = false;
                 bool noUserInteraction = !Environment.UserInteractive;
+                bool isHeadless = false;
 
                 try
                 {
@@ -32,7 +34,7 @@ namespace ServerNetworkAPI.dev.Services
                     keyAvailableFails = true;
                 }
 
-                bool isHeadless = inputRedirected || githubActions || keyAvailableFails || noUserInteraction;
+                isHeadless = inputRedirected || githubActions || keyAvailableFails || noUserInteraction || IsHeadlessFromArgs;
 
                 Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",

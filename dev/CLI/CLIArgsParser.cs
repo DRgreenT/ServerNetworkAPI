@@ -1,4 +1,7 @@
-﻿namespace ServerNetworkAPI.dev.CLI
+﻿using ServerNetworkAPI.dev.Core;
+using ServerNetworkAPI.dev.Services;
+
+namespace ServerNetworkAPI.dev.CLI
 {
     public class CLIArgsParser
     {
@@ -49,6 +52,9 @@
                             result.Port = port;
                             i++;
                         }
+                        break;
+                    case "--headless":
+                        SystemInfoService.IsHeadlessFromArgs = true;
                         break;
                 }
             }
