@@ -39,7 +39,18 @@ namespace ServerNetworkAPI.dev.Services
                 bool noTTY = !File.Exists("/dev/tty");
                 bool notInteractive = !Environment.UserInteractive;
 
-                return noInput || enviroment || noKey || noTTY || notInteractive;
+                bool isHeadlessMode = noInput || enviroment || noKey || noTTY || notInteractive;
+
+                if (isHeadlessMode)
+                { 
+                    Logger.Log(LogData.NewLogEvent(
+                           "SystemInfoService",
+                            $"Headless mode: inputRedirected:{noInput}, GitAction{enviroment}, noKeyAvailable{noKey}, noTTy{noTTY}, noUsrInteract{notInteractive}",
+                            MessageType.Standard,
+                            ""));
+                }
+                return isHeadlessMode;
+
             }
             catch (Exception ex)
             {
@@ -48,7 +59,7 @@ namespace ServerNetworkAPI.dev.Services
                     $"Error checking headless mode: {ex.Message}",
                     MessageType.Exception,
                     ""));
-                return true; 
+                return true;
             }
         }
 
@@ -97,7 +108,7 @@ namespace ServerNetworkAPI.dev.Services
                     string numberPart = parts[1].Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
                     if (int.TryParse(numberPart, out int kb))
                     {
-                        return kb / 1024; 
+                        return kb / 1024;
                     }
                 }
             }
@@ -131,7 +142,7 @@ namespace ServerNetworkAPI.dev.Services
             {
                 TimeSpan uptime = DateTime.Now - startTime;
                 string days = (uptime.Days > 0) ? $"{uptime.Days}d " : "";
-                string hours = (uptime.Hours > 0) ? $"{uptime.Hours.ToString().PadLeft(2,'0')}h " : "00h";
+                string hours = (uptime.Hours > 0) ? $"{uptime.Hours.ToString().PadLeft(2, '0')}h " : "00h";
                 string minutes = (uptime.Minutes > 0) ? $"{uptime.Minutes.ToString().PadLeft(2, '0')}m " : "00m";
                 string seconds = (uptime.Seconds > 0) ? $"{uptime.Seconds.ToString().PadLeft(2, '0')}s" : "00s";
                 return days + hours + minutes + seconds;
@@ -170,6 +181,6 @@ namespace ServerNetworkAPI.dev.Services
             return processorUsage.ToString("0.0", CultureInfo.InvariantCulture);
         }
 
-       
+
     }
 }
