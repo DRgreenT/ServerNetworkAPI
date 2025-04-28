@@ -13,8 +13,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        # sudo apt update
-        # sudo apt install -y arp-scan nmap
+        sudo apt update
+        sudo apt install -y arp-scan nmap
 
     - name: Make executable
       run: chmod +x ./publish/linux/ServerNetworkAPI
