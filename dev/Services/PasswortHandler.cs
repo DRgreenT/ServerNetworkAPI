@@ -32,6 +32,7 @@ namespace ServerNetworkAPI.dev.Services
 
         public static char[] PasswordInput()
         {
+            SystemInfoService.SetConsoleState();
             if (BashCmd.IsRunningAsRoot() || SystemInfoService.IsConsoleInactive)
             {
                 Program.isInitArp = false;
