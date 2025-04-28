@@ -12,8 +12,5 @@ jobs:
     needs: build
     uses: ./.github/workflows/cleanup.yml
 
-  runIt:
-    needs: cleanup
-    uses: ./.github/workflows/run.yml
 
 
