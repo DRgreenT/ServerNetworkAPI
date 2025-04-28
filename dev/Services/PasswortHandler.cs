@@ -32,18 +32,21 @@ namespace ServerNetworkAPI.dev.Services
 
         public static char[] PasswordInput()
         {
-            bool isRunnerTestMode = true;
-            Console.WriteLine(isRunnerTestMode + " Testmode");
-            Console.WriteLine(SystemInfoService.IsConsoleInactive + " IsConsoleInactive");
-            Console.WriteLine(BashCmd.IsRunningAsRoot() + " IsRunningAsRoot");
+            // Dynamische Prüfung, ob wir in GitHub Actions laufen
+            bool isRunnerTestMode = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
+            Console.WriteLine("GitHub Actions Mode: " + isRunnerTestMode);  // Debug-Ausgabe
 
+            Console.WriteLine("IsConsoleInactive: " + SystemInfoService.IsConsoleInactive); // Debug-Ausgabe
+            Console.WriteLine("IsRunningAsRoot: " + BashCmd.IsRunningAsRoot()); // Debug-Ausgabe
+
+            // Überprüfe, ob wir im GitHub Actions-Mode oder Headless sind
             if (BashCmd.IsRunningAsRoot() || SystemInfoService.IsConsoleInactive || isRunnerTestMode)
             {
+                // Im Headless-Modus oder GitHub Actions wird keine Passwortabfrage gemacht
                 Program.isInitArp = false;
                 Program.isInitNmap = false;
                 return Array.Empty<char>();
             }
-               
             else
             {
                 char[] password;
@@ -64,6 +67,7 @@ namespace ServerNetworkAPI.dev.Services
                 return password;
             }
         }
+
 
         public static bool IsValidSudoPassword(char[] password)
         {
