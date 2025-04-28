@@ -28,7 +28,7 @@ jobs:
           exit 1
         fi
 
-        ./publish/linux/ServerNetworkAPI --headless --nmap  run120.log 2>&1 &
+        ./publish/linux/ServerNetworkAPI --headless --nmap run120.log 2>&1 | tee run120.log &
         PID=$!
         echo "Started with PID $PID"
         sleep 10
