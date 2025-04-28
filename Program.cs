@@ -25,7 +25,7 @@ namespace ServerNetworkAPI
                 CLIArgsParser.PrintHelp();
                 return;
             }
-
+            AppConfig.InitializeFromArgs(parsedArgs);
 
             if (SystemInfoService.IsHeadlessServer())
             {
@@ -40,7 +40,7 @@ namespace ServerNetworkAPI
             }
 
             FileHelper.EnsureApplicationDirectories();
-            AppConfig.InitializeFromArgs(parsedArgs);
+            
             
             OutputLayout.Initialize();
             OutputFormatter.PrintStartupInfo();
