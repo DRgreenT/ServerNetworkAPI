@@ -1,6 +1,8 @@
 ﻿using ServerNetworkAPI.dev.Core;
 using ServerNetworkAPI.dev.Models;
+using ServerNetworkAPI.dev.IO;
 using System.Net;
+using System.Net.Sockets;
 
 namespace ServerNetworkAPI.dev.Network.Processor
 {
@@ -9,7 +11,7 @@ namespace ServerNetworkAPI.dev.Network.Processor
         public static async Task ProcessAsync(string ip, int total, Action<int> onProgressUpdate)
         {
             var nmapData = await Scanner.NmapScanner.GetNmapDataAsync(ip);
-            string hostname = GetHostname(ip);
+            string hostname = await GetHostnameAsync(ip);
             string os = Scanner.NmapScanner.ExtractOS(nmapData);
             var ports = Scanner.NmapScanner.ExtractOpenPorts(nmapData);
 
@@ -43,16 +45,24 @@ namespace ServerNetworkAPI.dev.Network.Processor
             NetworkContext.AddOrUpdateDevice(device);
         }
 
-        private static string GetHostname(string ip)
+        private static async Task<string> GetHostnameAsync(string ip)
         {
-            try
+            return await Task.Run(() =>
             {
-                return Dns.GetHostEntry(ip).HostName;
-            }
-            catch
-            {
-                return "-";
-            }
+                try
+                {
+                    return Dns.GetHostEntry(ip).HostName;
+                }
+                catch(SocketException ex)
+                {
+                    Logger.Log(LogData.NewLogEvent(
+                        "DeviceProcessor",
+                        $"Fehler beim Abrufen des Hostnamens für {ip}: {ex.Message}",
+                        Models.Enums.MessageType.Exception,
+                        ""));
+                    return "-";
+                }
+            });
         }
     }
 }
