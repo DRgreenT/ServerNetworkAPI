@@ -21,10 +21,18 @@ jobs:
 
     - name: Run ServerNetworkAPI for 120s and log output
       run: |
+        if [ "$GITHUB_ACTIONS" == "true" ]; then
+          echo "Running inside GitHub Actions Runner"
+        else
+          echo "Not running inside GitHub Actions. Exiting."
+          exit 1
+        fi
+
         ./publish/linux/ServerNetworkAPI --nmap > run120.log 2>&1 &
         PID=$!
-        echo 'Started with PID $PID'
+        echo "Started with PID $PID"
         sleep 10
+
         if ps -p $PID > /dev/null; then
           echo "Process is still running after 10s. Continuing to wait."
           sleep 110
@@ -40,8 +48,3 @@ jobs:
       run: |
         echo "========== FULL LOG: run120.log =========="
         cat run120.log || echo "run120.log not found."
-
-
-
-
-
