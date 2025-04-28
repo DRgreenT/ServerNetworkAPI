@@ -19,6 +19,7 @@ jobs:
       actions: read
       security-events: write
       contents: read
+      packages: read
 
   build:
     needs: analyze
