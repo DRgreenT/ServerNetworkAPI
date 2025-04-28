@@ -26,16 +26,16 @@ namespace ServerNetworkAPI
                 return;
             }
 
-            bool isConsoleDisabled = false;
+
             if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true")
             {
-                isConsoleDisabled = true;
+                AppConfig.SetUserInterface(true);
                 isInitArp = false;
                 isInitNmap = false;
             }
-            AppConfig.SetUserInterface(isConsoleDisabled);
-            if (isInitArp && isInitNmap)
+            else
             {
+                AppConfig.SetUserInterface();
                 PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput());
             }
 
