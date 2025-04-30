@@ -5,10 +5,11 @@
         public int Port { get; set; }
         public string ProtocolType { get; set; } = string.Empty;
         public string Service { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
 
         public override string ToString()
         {
-            return $"{Port}/{ProtocolType} ({Service})";
+            return $"{Port}/{ProtocolType} ({Service} - {Version})";
         }
     }
 }
