@@ -14,8 +14,6 @@ namespace ServerNetworkAPI.dev.CLI
                 switch (args[i])
                 {
                     case "--help":
-                    case "-h":
-                    case "-help":
                         result.ShowHelp = true;
                         return result;
 
@@ -32,12 +30,10 @@ namespace ServerNetworkAPI.dev.CLI
                         break;
 
                     case "--nmap":
-                    case "-nm":
                         result.NmapScanActive = true;
                         break;
 
                     case "--t":
-                    case "-t":
                         if (i + 1 < args.Length && int.TryParse(args[i + 1], out int timeout))
                         {
                             result.TimeoutSeconds = Math.Clamp(timeout, 1, 3600);
@@ -46,7 +42,6 @@ namespace ServerNetworkAPI.dev.CLI
                         break;
 
                     case "--p":
-                    case "-p":
                         if (i + 1 < args.Length && int.TryParse(args[i + 1], out int port))
                         {
                             result.Port = port;
@@ -73,6 +68,7 @@ namespace ServerNetworkAPI.dev.CLI
             --p {int}              Web API port (default: 5050)
             --nmap                 Enable nmap scan mode
             --fip {string}         Fallback IP mask (e.g., 192.168.178.)
+            --headless             Run in headless mode (no console interaction)
             ");
         }
     }
