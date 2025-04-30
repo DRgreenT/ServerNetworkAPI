@@ -8,22 +8,27 @@ namespace ServerNetworkAPI.dev.Network.Processor
 {
     public class DeviceProcessor
     {
-        public static async Task ProcessAsync(string ip, int total, Action<int> onProgressUpdate)
+        public static async Task ProcessAsync(string ip, Action<int> onProgressUpdate)
         {
             var nmapData = await Scanner.NmapScanner.GetNmapDataAsync(ip);
             string hostname = await GetHostnameAsync(ip);
-            string os = Scanner.NmapScanner.ExtractOS(nmapData);
-            var ports = Scanner.NmapScanner.ExtractOpenPorts(nmapData);
 
             var device = new Device
             {
                 IP = ip,
                 Hostname = hostname,
-                OS = os,
+                OS = nmapData.OS,
+                MacAddress = nmapData.MACAddress,
+                HopDistance = nmapData.NetworkDistance,
                 IsOnline = true,
-                LastSeen = DateTime.Now.ToString("dd-MM-yy HH:ss"),
-                Ports = ports
+                LastSeen = DateTime.Now.ToString("dd-MM-yy HH:mm"),
+                Ports = nmapData.OpenPorts,
             };
+            Logger.Log(LogData.NewLogEvent(
+                "DeviceProcessor",
+                $"{device.IP} : {device.MacAddress} - name?: " + (device.Hostname == "" ? false : true)+  $" - ports: {device.Ports.Count} - dist: {device.HopDistance} -  OS?: " + (device.OS == "unknown" ? false : true),
+                Models.Enums.MessageType.Standard,
+                ""));
 
             NetworkContext.AddOrUpdateDevice(device);
 
@@ -38,7 +43,7 @@ namespace ServerNetworkAPI.dev.Network.Processor
                 Hostname = "-",
                 OS = "",
                 IsOnline = true,
-                LastSeen = DateTime.Now.ToString("dd-MM-yy HH:ss"),
+                LastSeen = DateTime.Now.ToString("dd-MM-yy HH:mm"),
                 Ports = new List<OpenPorts>()
             };
 
