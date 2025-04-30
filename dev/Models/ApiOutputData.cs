@@ -14,7 +14,6 @@ namespace ServerNetworkAPI.dev.Models
         public bool IsInternetAvailable { get; private set; } = false;
         public bool IsNmapEnabled { get; private set; } = false;
         public SystemInfoService SystemInfo { get; private set; } = new SystemInfoService();
-        public List<Device> Devices { get; private set; } = [];
         public Stack<LogData> Log { get; private set; } = [];
         public Stack<NotificationData> Notifications { get; private set; } = [];
         public int[] ActiveDevicesCounts { get; private set; } = [];
@@ -29,7 +28,6 @@ namespace ServerNetworkAPI.dev.Models
                 LastUpdateTime = ArpScanner.LastScanTime.ToString("HH:mm:ss"),
                 Uptime = FormatUptime(TasksBackgroundService.ServiceStartTime),
                 IsInternetAvailable = TasksBackgroundService.IsInternetAvailable,
-                Devices = NetworkContext.GetDevices().ToList(),
                 IsNmapEnabled = AppConfig.IsNmapEnabled,
                 Log = LogData.GetLogData(),
 
