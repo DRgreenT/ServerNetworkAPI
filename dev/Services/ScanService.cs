@@ -33,7 +33,7 @@ namespace ServerNetworkAPI.dev.Services
 
                     if (AppConfig.IsNmapEnabled)
                     {
-                        await DeviceProcessor.ProcessAsync(ip, total, _ =>
+                        await DeviceProcessor.ProcessAsync(ip, _ =>
                         {
                             progress++;
                             OutputLayout.UpdateRow(22, $"# Nmap Scan: {progress}/{total} ({(progress * 100 / total):F1}%)");
