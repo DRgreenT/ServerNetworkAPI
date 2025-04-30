@@ -23,6 +23,23 @@ namespace ServerNetworkAPI.dev.Network.Adapter
             return activeAdapters;
         }
 
+        public static string GetLocalMacAdress()
+        {
+            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.OperationalStatus == OperationalStatus.Up &&
+                    ni.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                {
+                    var macAddr = ni.GetPhysicalAddress().ToString();
+                    if (macAddr.Length == 0)
+                        continue;
+                    macAddr = string.Join(":", Enumerable.Range(0, macAddr.Length / 2));
+                    return macAddr;
+                }
+            }
+            return "?";
+        }
+
         public static string GetLocalIPv4Address()
         {
             foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
