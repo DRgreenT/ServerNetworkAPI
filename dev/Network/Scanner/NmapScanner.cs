@@ -2,13 +2,14 @@
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.Models.Enums;
+using ServerNetworkAPI.dev.Network.Adapter;
 using ServerNetworkAPI.dev.Services;
 
 namespace ServerNetworkAPI.dev.Network.Scanner
 {
     public class NmapScanner
     {
-        public static async Task<List<string>> GetNmapDataAsync(string ip, string parameter = "-O -Pn --host-timeout 5s")
+        public static async Task<NmapData> GetNmapDataAsync(string ip, string parameter = "-O -Pn --osscan-guess --host-timeout 60s")
         {
             if (!AppConfig.IsNmapEnabled)
                 return new();
@@ -22,19 +23,21 @@ namespace ServerNetworkAPI.dev.Network.Scanner
                 {
                     Logger.Log(LogData.NewLogEvent(
                         "NmapScanner",
-                        $"Leere Ausgabe beim Scan von {ip}",
+                        $"Empty scan {ip} (timed out)",
                         MessageType.Warning,
                         ""));
                     return new();
                 }
 
-                return ParseNmapOutput(output);
+                var result = ParseNmapOutput(output);
+
+                return ExtractFromRawData(result);
             }
             catch (Exception ex)
             {
                 Logger.Log(LogData.NewLogEvent(
                     "NmapScanner",
-                    $"Fehler beim Scannen von {ip}",
+                    $"Error scan {ip}",
                     MessageType.Exception,
                     Logger.RemoveNewLineSymbolFromString(ex.Message)
                 ));
@@ -75,10 +78,13 @@ namespace ServerNetworkAPI.dev.Network.Scanner
             {
                 var trimmed = line.Trim();
                 if (trimmed.StartsWith("Running:") ||
+                    trimmed.StartsWith("OS CPE:") ||
                     trimmed.StartsWith("OS details:") ||
                     trimmed.StartsWith("MAC Address:") ||
                     trimmed.StartsWith("Aggressive OS guesses:") ||
-                    trimmed.Contains("open"))
+                    trimmed.Contains("open") ||
+                    trimmed.StartsWith("Nmap scan report for") ||
+                    trimmed.StartsWith("Network Distance:"))
                 {
                     result.Add(trimmed);
                 }
@@ -87,42 +93,115 @@ namespace ServerNetworkAPI.dev.Network.Scanner
             return result;
         }
 
-        public static string ExtractOS(List<string> nmapData)
+        private static NmapData ExtractFromRawData(List<string> nmapData)
         {
-            string os = "unknown";
+            bool hasSearcedOS = false;
+
+            var nmapDataObj = new NmapData();
+            bool macAddressFound = false;
+
             foreach (var line in nmapData)
             {
-                var lower = line.ToLower();
-                if (lower.Contains("windows")) return "Windows";
-                if (lower.Contains("linux")) return "Linux";
-                if (lower.Contains("android")) return "Android";
-                if (lower.Contains("iphone")) return "iOS";
-                if (lower.Contains("apple")) return "MacOS";
-                if (lower.Contains("freebsd")) return "FreeBSD";
-                if (lower.Contains("routeros")) return "RouterOS";
-                if (lower.Contains("openwrt")) return "OpenWRT";
+                if(line.Contains(LocalAdapterService.GetLocalIPv4Address()))
+                {
+                    nmapDataObj.MACAddress = LocalAdapterService.GetLocalMacAdress();
+                    macAddressFound = true;
+                }
+                if (!hasSearcedOS)
+                {
+                    if (line.StartsWith("Running:") || line.StartsWith("Aggressive OS guesses: ") || line.StartsWith("OS CPE:") || line.StartsWith("OS details:") || line.StartsWith("Nmap scan report for"))
+                    {
+                        nmapDataObj.OS = ExtractOS(line);
+                        if (nmapDataObj.OS != "unknown")
+                            hasSearcedOS = true;
+                    }
+                }
+
+                if (line.StartsWith("MAC Address:") && !macAddressFound)
+                {
+                    nmapDataObj.MACAddress = ExtractMacAddress(line);
+                }
+
+                if (line.StartsWith("Network Distance:"))
+                {
+                    nmapDataObj.NetworkDistance = ExtractNetworkDistance(line);
+                }
+
+
+                if (line.Contains("open"))
+                {
+                    nmapDataObj.OpenPorts.Add(ExtractOpenPorts(line));
+                }
+
+            }
+            return nmapDataObj;
+
+        }
+
+        static string[] appleOS = { "iOS", "Mac", "MacOS", "IPhone", "iPhone", "iPad", "iPod", "iOS device", "Apple", "ipadOS", "AFS3-Fileserver", "macOS" };
+        static string[] androidOS = { "Redme", "Android", "Google", "Galaxy", "Samsung", "Pixel", "Huawei", "OnePlus", "Xiaomi", "MIUI", "Oppo", "Realme", "Motorola", "Sony", "Nexus", "Android TV", "Android Wear", };
+        static string[] windowsOS = { "Microsoft", "Windows", "Win", "MSIE", "Windows NT", "Windows 10", "Windows 11", "Windows 7", "Windows 8", "Windows XP", "Windows Vista", "Win32", "Win64", "XBOX", "Xbox", "XBox" };
+        static string[] linuxOS = { "Linux", "Debian", "Ubuntu", "Fedora", "CentOS", "Red Hat", "Arch", "Raspbian", "Kali", "Mint", "openSUSE", "Gentoo", "Slackware" };
+        private static bool ContainsAny(string target, string[] values)
+        {
+            return values.Any(value => target.Contains(value, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static string ExtractOS(string line)
+        {
+            string os = "unknown";
+
+            if (line.StartsWith("Running:") || line.StartsWith("Aggressive OS guesses: ") || line.StartsWith("OS CPE:") || line.StartsWith("OS details:") || line.StartsWith("Nmap scan report for"))
+            {
+                if (ContainsAny(line, androidOS)) return "Android";
+                if (ContainsAny(line, windowsOS)) return "MS";
+                if (ContainsAny(line, linuxOS)) return "Linux";
+                if (ContainsAny(line, appleOS)) return "Apple";
             }
             return os;
         }
 
-        public static List<OpenPorts> ExtractOpenPorts(List<string> nmapData)
+        public static string ExtractMacAddress(string line)
         {
-            var ports = new List<OpenPorts>();
-            foreach (var line in nmapData)
+
+            if (line.StartsWith("MAC Address:"))
             {
                 var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 3 && parts[0].Contains("/") && parts[1] == "open")
+                if (parts.Length >= 3)
                 {
-                    var portProto = parts[0].Split('/');
-                    if (portProto.Length == 2 && int.TryParse(portProto[0], out var port))
-                    {
-                        ports.Add(new OpenPorts
-                        {
-                            Port = port,
-                            ProtocolType = portProto[1],
-                            Service = parts[2]
-                        });
-                    }
+                    return parts[2];
+                }
+            }
+
+            return string.Empty;
+        }
+
+        public static string ExtractNetworkDistance(string line)
+        {
+
+            if (line.StartsWith("Network Distance:"))
+            {
+                var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 3)
+                {
+                    return parts[2];
+                }
+            }
+            return string.Empty;
+        }
+        public static OpenPorts ExtractOpenPorts(string line)
+        {
+            var ports = new OpenPorts();
+
+            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 3 && parts[0].Contains("/") && parts[1] == "open")
+            {
+                var portProto = parts[0].Split('/');
+                if (portProto.Length == 2 && int.TryParse(portProto[0], out var port))
+                {
+                    ports.Port = port;
+                    ports.ProtocolType = portProto[1];
+                    ports.Service = parts[2];
                 }
             }
             return ports;
