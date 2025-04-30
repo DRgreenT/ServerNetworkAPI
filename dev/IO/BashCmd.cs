@@ -17,19 +17,19 @@ namespace ServerNetworkAPI.dev.IO
 
                 if (!string.IsNullOrWhiteSpace(error))
                 {
-                    LogData.NewLogEvent(modul, $"stderr: {error.Trim()}", MessageType.Warning);
+                    Logger.Log(LogData.NewLogEvent(modul, $"stderr: {error.Trim()}", MessageType.Warning));
                 }
 
                 return output.Trim();
             }
             catch (Exception ex)
             {
-                LogData.NewLogEvent(modul, $"Error executing command: {ex.Message}", MessageType.Exception);
+                Logger.Log(LogData.NewLogEvent(modul, $"Error executing command: {ex.Message}", MessageType.Exception));
                 return string.Empty;
             }
         }
 
-        public static async Task<string> ExecuteCmdAsync(string command, string modul, int timeoutSeconds = 15)
+        public static async Task<string> ExecuteCmdAsync(string command, string modul, int timeoutSeconds = 30)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace ServerNetworkAPI.dev.IO
                 var completed = await Task.WhenAny(waitTask, Task.Delay(-1, cts.Token));
                 if (completed != waitTask)
                 {
-                    TryKillProcess(process, modul);
+                    TryKillProcess(process, modul, timeoutSeconds);
                     return string.Empty;
                 }
 
@@ -54,14 +54,14 @@ namespace ServerNetworkAPI.dev.IO
 
                 if (!string.IsNullOrWhiteSpace(error))
                 {
-                    LogData.NewLogEvent(modul, $"{error.Trim()}", MessageType.Warning);
+                    Logger.Log(LogData.NewLogEvent(modul, $"{error.Trim()}", MessageType.Warning));
                 }
 
                 return output.Trim();
             }
             catch (Exception ex)
             {
-                LogData.NewLogEvent(modul, $"Error executing command: {ex.Message}", MessageType.Exception);
+                Logger.Log(LogData.NewLogEvent(modul, $"Error executing command: {ex.Message}", MessageType.Exception));
                 return string.Empty;
             }
         }
@@ -77,7 +77,7 @@ namespace ServerNetworkAPI.dev.IO
             }
             catch
             {
-                LogData.NewLogEvent("BashCmd", "Error checking if running as root.", MessageType.Exception);
+                Logger.Log(LogData.NewLogEvent("BashCmd", "Error checking if running as root.", MessageType.Exception));
                 return false;
             }
         }
@@ -97,16 +97,16 @@ namespace ServerNetworkAPI.dev.IO
             };
         }
 
-        private static void TryKillProcess(Process process, string modul)
+        private static void TryKillProcess(Process process, string modul, int timeOut)
         {
             try
             {
                 process.Kill(entireProcessTree: true);
-                LogData.NewLogEvent(modul, "Process timeout, killed.", MessageType.Warning);
+                Logger.Log(LogData.NewLogEvent(modul, $"Process timeout after {timeOut}sec -> killed.", MessageType.Warning));
             }
             catch (Exception killEx)
             {
-                LogData.NewLogEvent(modul, $"Error killing process: {killEx.Message}", MessageType.Exception);
+                Logger.Log(LogData.NewLogEvent(modul, $"Error killing process: {killEx.Message}", MessageType.Exception));
             }
         }
     }
