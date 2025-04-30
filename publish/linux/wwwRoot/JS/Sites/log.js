@@ -29,7 +29,7 @@ function renderLogFilterUI(content) {
     content.innerHTML = `
         <div class="logContainer">
         <h2>System Logs</h2>
-        <div id="filters">
+        <div id="filters" style="width:85%">
             <label>Filter Timestamp: <input type="text" id="timestampFilter" placeholder="e.g. 09:13"></label>
             <label>Message Type: 
                 <select id="messageTypeFilter">
@@ -71,10 +71,10 @@ function renderLogTable(logs) {
         <table>
             <thead>
                 <tr>
-                    <th>Time</th>
-                    <th>Source</th>
-                    <th>Message</th>
-                    <th>Type</th>
+                    <th style="padding:5px">Time</th>
+                    <th style="padding:5px">Source</th>
+                    <th style="padding:5px">Message</th>
+                    <th style="padding:5px">Type</th>
                 </tr>
             </thead>
             <tbody>
