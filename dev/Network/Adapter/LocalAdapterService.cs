@@ -33,8 +33,14 @@ namespace ServerNetworkAPI.dev.Network.Adapter
                     var macAddr = ni.GetPhysicalAddress().ToString();
                     if (macAddr.Length == 0)
                         continue;
-                    macAddr = string.Join(":", Enumerable.Range(0, macAddr.Length / 2));
-                    return macAddr;
+                    if (macAddr.Contains(':'))return macAddr;
+
+                    string _macAddr = "";
+                    for (int i = 0; i < macAddr.Length-1;i+=2)
+                    {
+                        _macAddr += macAddr.Substring(i, 2) + ":";
+                    }
+                    return _macAddr;
                 }
             }
             return "?";
