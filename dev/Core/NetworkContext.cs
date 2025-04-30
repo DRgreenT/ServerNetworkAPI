@@ -106,11 +106,7 @@ namespace ServerNetworkAPI.dev.Core
                     if (!activeIps.Contains(device.IP))
                     {
                         device.IsOnline = false;
-                        device.OS = "";
                         device.Ports = [];
-                        device.Hostname = "";
-                        device.MacAddress = "";
-                        device.HopDistance = "";
                         device.Uptime = "";
                         device.isNmapScanned = false;
                     }
