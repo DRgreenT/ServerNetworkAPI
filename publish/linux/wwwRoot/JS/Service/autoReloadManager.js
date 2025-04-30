@@ -1,15 +1,25 @@
 let isUpdateDashboardCancelled = false;
 let isUpdateLogCancelled = false;
+let isDeviceListCancelled = false;
 
 function setUpdate(name) {
     if (name === "dash") {
         isUpdateDashboardCancelled = false;
         isUpdateLogCancelled = true;
-    } else if (name === "log") {
+        isDeviceListCancelled = true;}
+         
+    else if (name === "log") {
         isUpdateLogCancelled = false;
         isUpdateDashboardCancelled = true;
-    } else if (!name) {
+        isDeviceListCancelled = true;}
+
+    else if (name== "device"){
         isUpdateDashboardCancelled = true;
         isUpdateLogCancelled = true;
-    }
+        isDeviceListCancelled = false;}
+
+    else if (!name) {
+        isUpdateDashboardCancelled = true;
+        isUpdateLogCancelled = true;
+        isDeviceListCancelled = true;}
 }
