@@ -46,8 +46,12 @@ namespace ServerNetworkAPI.dev.Core
                     existing.IsOnline = updatedDevice.IsOnline;
                     existing.LastSeen = updatedDevice.LastSeen;
                     existing.Ports = updatedDevice.Ports;
+                    existing.MacAddress = updatedDevice.MacAddress;
+                    existing.HopDistance = updatedDevice.HopDistance;
+                    existing.Uptime = updatedDevice.Uptime;
+                    existing.isNmapScanned = true;
 
-                    if(IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
+                    if (IsolateLastIPNumber(updatedDevice.IP) > AppConfig.MaxIPv4AddressWithoutWarning)
                     {
                         log = LogData.NewLogEvent(
                             "NetworkContext",
@@ -104,6 +108,11 @@ namespace ServerNetworkAPI.dev.Core
                         device.IsOnline = false;
                         device.OS = "";
                         device.Ports = [];
+                        device.Hostname = "";
+                        device.MacAddress = "";
+                        device.HopDistance = "";
+                        device.Uptime = "";
+                        device.isNmapScanned = false;
                     }
                 }
             }
