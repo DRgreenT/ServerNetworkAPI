@@ -9,7 +9,12 @@ namespace ServerNetworkAPI.dev.Models
         public string OS { get; set; } = string.Empty;
         public bool IsOnline { get; set; } = false;
         public string LastSeen { get; set; } = string.Empty;
+        public string MacAddress { get; set; } = string.Empty;
+        public string HopDistance { get; set; } = string.Empty;
+        public string Uptime { get; set; } = string.Empty;
+        public bool isNmapScanned { get; set; } = false;
         public List<OpenPorts> Ports { get; set; } = new();
+
 
         [JsonIgnore]
         public int Index { get; set; }
@@ -23,6 +28,11 @@ namespace ServerNetworkAPI.dev.Models
                 OS = OS,
                 IsOnline = IsOnline,
                 LastSeen = LastSeen,
+                MacAddress = MacAddress,
+                HopDistance = HopDistance,
+                Uptime = Uptime,
+                isNmapScanned = isNmapScanned,
+
                 Ports = new List<OpenPorts>(Ports),
             };
         }
