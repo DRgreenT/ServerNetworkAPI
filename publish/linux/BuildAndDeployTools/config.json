@@ -1,0 +1,13 @@
+{
+  "host": "192.168.178.10",
+  "user": "thomas",
+  "pass": "$081524_T",
+  "remotePath": "/home/thomas/ServerNetworkAPI",
+  "localPath": "C:\\Users\\thoma\\source\\repos\\_projects\\ServerNetworkAPI\\publish\\linux\\",
+  "processName": "ServerNetworkAPI",
+  "processArguments": "--nmap --pw $081524_T",
+  "restartProcess": false,
+  "isSFTP": true,
+  "includeSubfolder": true,
+  "overwriteMode": 1
+}
