@@ -18,7 +18,6 @@ namespace ServerNetworkAPI.dev.Core
         public static string LogDirectory { get; } = Path.Combine(BaseDirectory, "Log");
         public static string LogFilePath { get; } = Path.Combine(LogDirectory, "scanlog.txt");
         public static string SaveFilePath { get; } = Path.Combine(BaseDirectory, "devices.json");
-
         public static string FallbackIpMask { get; private set; } = "192.168.178.";
         public static int ScanIntervalSeconds { get; private set; } = 15;
         public static bool IsNmapEnabled { get; private set; } = false;
