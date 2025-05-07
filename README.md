@@ -1,4 +1,4 @@
-# ServerNetworkAPI (v0.2.6b)
+# ServerNetworkAPI (v0.2.7b)
 
 A minimalistic Web API with a CLI and WebUI interface, that scans your local IPv4 network and provides information like IP, OS, and open ports of all reachable devices.
 
@@ -13,7 +13,7 @@ I also wanted to learn how to create a **Web API** and how to use **webhooks** f
 So I developed this tool to monitor all active devices in my **private network**, specifically on a **headless Linux server**. 
 I wanted an always-on **local Web API** that gives me live access to all devices on the network – including:
 
-- IP addresses
+- IP & Mac addresses
 - Hostnames
 - OS guesses
 - Open ports
@@ -38,10 +38,10 @@ And for me, it’s a great learning project to grow my understanding of networks
 
 - Automatic local network scan using `arp-scan`
 - Optional detailed device scan via `nmap`
-- Basic OS recognition (not working as intended yet)
+- Basic OS recognition
 - CLI argument support
 - RESTful Web API (JSON output)
-- HTML WebUI
+- Build in HTML WebUI
 - Persistent device data between restarts
 - Color-coded terminal output
 - Offline detection & live status
@@ -58,8 +58,6 @@ And for me, it’s a great learning project to grow my understanding of networks
 - Device type recognition (e.g. phone, computer, etc.)
 - Improved OS recognition
 - WebUI overhaul
-- More detailed `nmap` scan options
-- better error handling
 - more robust code
 - and some other stuff...
 
