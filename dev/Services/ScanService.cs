@@ -36,7 +36,7 @@ namespace ServerNetworkAPI.dev.Services
                         await DeviceProcessor.ProcessAsync(ip, _ =>
                         {
                             progress++;
-                            OutputLayout.UpdateRow(27, $"# Nmap Scan: {progress}/{total} ({(progress * 100 / total):F1}%)");
+                            OutputLayout.UpdateRow(27, $"# Nmap Scan: {progress}/{total} ({(progress * 100 / total):F1}%)", null);
                         });
                     }
                     else
@@ -55,7 +55,7 @@ namespace ServerNetworkAPI.dev.Services
                 _totalScanTime += scanTime;
                 _scanCount++;
 
-                OutputLayout.UpdateRow(28, $"# Total Scans: {_scanCount}");
+                OutputLayout.UpdateRow(28, $"# Total Scans: {_scanCount}", null);
                 OutputFormatter.PrintMessage($"Scan #{_scanCount} done in {scanTime.TotalSeconds:F1}s. Devices: {NetworkContext.GetDevices().Count}");
 
                 await RunScanCountdown(token);
@@ -73,7 +73,7 @@ namespace ServerNetworkAPI.dev.Services
                     await Task.Delay(150);
 
                     aniIndex = aniIndex < anmimation.Length - 1 ? aniIndex + 1 : 0;
-                    OutputLayout.UpdateRow(29, $"# Scanning{anmimation[aniIndex]}");
+                    OutputLayout.UpdateRow(29, $"# Scanning{anmimation[aniIndex]}", null);
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace ServerNetworkAPI.dev.Services
             {
                 if (token.IsCancellationRequested) break;
 
-                OutputLayout.UpdateRow(29, $"# Next scan in {i}s...");
+                OutputLayout.UpdateRow(29, $"# Next scan in {i}s...", null);
                 await Task.Delay(1000, token);
             }
             isDelayRunning = false;

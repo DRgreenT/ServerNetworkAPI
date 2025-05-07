@@ -1,4 +1,5 @@
 ﻿using ServerNetworkAPI.dev.Core;
+using System.Drawing;
 
 namespace ServerNetworkAPI.dev.UI
 {
@@ -6,6 +7,7 @@ namespace ServerNetworkAPI.dev.UI
     {
         public int ConsoleRow { get; set; }
         public string Value { get; set; } = string.Empty;
+        public ConsoleColor color { get; set; } = ConsoleColor.Gray;
     }
 
     public static class OutputLayout
@@ -28,15 +30,51 @@ namespace ServerNetworkAPI.dev.UI
             Add(29, "# Scanning...");
         }
 
-        public static void UpdateRow(int row, string content)
+        public static void UpdateRow(int row, string content, ConsoleColor? color)
+        {
+            if (row == 23)
+            {
+                ScrollMessageRows();
+                WriteRow(row, content, color ?? ConsoleColor.Gray);
+            }
+            else
+            {
+                WriteRow(row, content, color ?? ConsoleColor.Gray);
+            }
+        }
+        private static void ScrollMessageRows()
+        {
+            for (int i = 6; i < 23; i++)
+            {
+                if (_rows.TryGetValue(i + 1, out var nextRow) && _rows.TryGetValue(i, out var currentRow))
+                {
+                    currentRow.Value = nextRow.Value;
+                    currentRow.color = nextRow.color;
+                    DrawRow(i, currentRow.Value, currentRow.color);
+                }
+            }
+        }
+
+        private static void WriteRow(int row, string content, ConsoleColor color)
         {
             if (_rows.TryGetValue(row, out var outputRow))
             {
                 outputRow.Value = content;
-                Console.SetCursorPosition(0, row);
-                Console.Write(content.PadRight(Console.WindowWidth));
+                outputRow.color = color;
+                DrawRow(row, content, color);
             }
         }
+
+        private static void DrawRow(int row, string content, ConsoleColor color)
+        {
+            Console.SetCursorPosition(0, row);
+            var originalColor = Console.ForegroundColor;
+
+            Console.ForegroundColor = color;
+            Console.Write(content.PadRight(Console.WindowWidth));
+            Console.ForegroundColor = originalColor;
+        }
+
 
         private static void Add(int row, string content)
         {
@@ -45,19 +83,19 @@ namespace ServerNetworkAPI.dev.UI
             Console.Write(content.PadRight(Console.WindowWidth));
         }
 
-        public static void RedrawAll()
-        {
-            foreach (var (row, output) in _rows.OrderBy(r => r.Key))
-            {
-                Console.SetCursorPosition(0, row);
-                Console.Write(output.Value.PadRight(Console.WindowWidth));
-            }
-        }
+        //public static void RedrawAll()
+        //{
+        //    foreach (var (row, output) in _rows.OrderBy(r => r.Key))
+        //    {
+        //        Console.SetCursorPosition(0, row);
+        //        Console.Write(output.Value.PadRight(Console.WindowWidth));
+        //    }
+        //}
 
-        public static void Clear()
-        {
-            Console.Clear();
-            _rows.Clear();
-        }
+        //public static void Clear()
+        //{
+        //    Console.Clear();
+        //    _rows.Clear();
+        //}
     }
 }

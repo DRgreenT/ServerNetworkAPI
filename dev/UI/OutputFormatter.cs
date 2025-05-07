@@ -6,8 +6,6 @@ namespace ServerNetworkAPI.dev.UI
 {
     public class OutputFormatter
     {
-        private static readonly int[] MessageRows = Enumerable.Range(0, 24).ToArray();
-        private static int _messageIndex = 0;
         private static string localIp = LocalAdapterService.GetLocalIPv4Address();
         public static void PrintStartupInfo()
         {
@@ -24,50 +22,29 @@ namespace ServerNetworkAPI.dev.UI
             return hasTimeInfo ? $"[{DateTime.Now:HH:mm:ss}] " : "";
         }
 
-        public static void PrintMessage(string message, ConsoleColor? color = null, bool hasTimeInfo = true, int? preferedRow = null)
+        public static void PrintMessage(string message, ConsoleColor? color = null, bool hasTimeInfo = true, int? preferredRow = null)
         {
             if (!AppConfig.ConsoleUserInterface)
-            {
                 return;
-            }
+
             string timestamp = TimeStamp(hasTimeInfo);
+            int row;
 
-
-            int row = MessageRows[_messageIndex % MessageRows.Length];
-            if (row < 6 && hasTimeInfo) row = 6;
-            if (row == MessageRows.Length - 1)
+            if (preferredRow.HasValue)
             {
-                ClearMessageArea();
-                _messageIndex = 6;
-                row = 6;
+                row = preferredRow.Value;
             }
-            if (preferedRow != null) row = preferedRow.Value;
             else
             {
-                _messageIndex++;
+                row = 23;
             }
-            if (color.HasValue)
-            {
-                Console.ForegroundColor = color.Value;
-            }
-            OutputLayout.UpdateRow(row, $"# {timestamp}{message}");
 
-            if (color.HasValue)
-            {
-                Console.ResetColor();
-            }
+            message = message.Length >= Console.WindowWidth - timestamp.Length - 7 
+                ? message.Substring(0, Console.WindowWidth - timestamp.Length - 7) + "..." 
+                : message;
+            OutputLayout.UpdateRow(row, $"# {timestamp}{message}", color);
 
         }
-
-
-        private static void ClearMessageArea()
-        {
-            for (int i = 6; i < MessageRows.Length; i++)
-            {
-                OutputLayout.UpdateRow(i, "#");
-            }
-        }
-
         public static void PrintDeviceSummary()
         {
             if (!AppConfig.ConsoleUserInterface)
@@ -96,23 +73,5 @@ namespace ServerNetworkAPI.dev.UI
             }
         }
 
-        public static void PrintDivider()
-        {
-            int row = MessageRows[_messageIndex % MessageRows.Length];
-            OutputLayout.UpdateRow(row, new string('-', 60));
-            _messageIndex++;
-        }
-
-        public static void PrintProgressBar(int current, int total, string label = "Progress")
-        {
-            double percent = (double)current / total;
-            int barWidth = 30;
-            int filled = (int)(percent * barWidth);
-            string bar = new string('=', filled).PadRight(barWidth);
-
-            int row = MessageRows[_messageIndex % MessageRows.Length];
-            OutputLayout.UpdateRow(row, $"# {label}: [{bar}] {percent * 100:000.0}%");
-            _messageIndex++;
-        }
     }
 }
