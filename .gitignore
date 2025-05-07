@@ -1,3 +1,4 @@
 /.vs
 /obj
 /build_linux.bat
+/BuildAndDeployTools/config.json
