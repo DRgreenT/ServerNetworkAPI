@@ -11,7 +11,7 @@ namespace ServerNetworkAPI.dev.Core
 {
     public class AppConfig
     {
-        public static string Version { get; } = "0.2.6b";
+        public static string Version { get; } = "0.2.7b";
         public static string BaseDirectory { get; } = AppContext.BaseDirectory;
 
         public static string ConfigBasePath { get; } = Path.Combine(BaseDirectory, "Configs");
