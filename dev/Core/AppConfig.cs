@@ -34,7 +34,7 @@ namespace ServerNetworkAPI.dev.Core
             ConfigManager.NotificationConfig = NoteConfigBuilder.LoadOrCreate();
         }
 
-        public static void InitializeFromArgs(CLI.ParsedArgs args)
+        public static void InitializeFromArgs(ParsedArgs args)
         {
             var cfg = AppConfigBuilder.LoadOrCreate();
 
@@ -60,6 +60,11 @@ namespace ServerNetworkAPI.dev.Core
                 ConsoleUserInterface = false;
             }
             else ConsoleUserInterface = true;
+            Logger.Log(LogData.NewLogEvent(
+                "AppConfig",
+                $"Console user interface: {ConsoleUserInterface}",
+                MessageType.Standard,
+                ""));
         }
 
         private static string? CalculateLocalNetworkPrefix()
