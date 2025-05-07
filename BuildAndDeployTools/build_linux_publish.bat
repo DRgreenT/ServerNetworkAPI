@@ -56,31 +56,6 @@ if exist %OUTPUT_FE% (
 )
 xcopy /e /i /y %FRONTEND_SOURCE% %OUTPUT_FE%
 
-
-if exist %OUTPUT_API%\publish\BuildAndDeployTools (
-    echo Deleting %OUTPUT_API%\publish\BuildAndDeployTools ...
-    rd /s /q %OUTPUT_API%\publish\BuildAndDeployTools
-)
-
-:: === Ensure ZIP folder exists ===
-if not exist %OUTPUT_ZIP_FOLDER% (
-    echo Creating ZIP folder: %OUTPUT_ZIP_FOLDER%
-    mkdir %OUTPUT_ZIP_FOLDER%
-)
-
-echo ========================
-echo CREATING ZIP ARCHIVE (API)
-echo ========================
-if exist %ZIPFILE_API% (
-    echo Previous ZIP exists. Deleting...
-    del /f /q %ZIPFILE_API%
-)
-powershell -Command "Compress-Archive -Path '%OUTPUT_API%\*' -DestinationPath '%ZIPFILE_API%' -Force"
-if exist %ZIPFILE_API% (
-    echo ZIP created: %ZIPFILE_API%
-) else (
-    echo Failed to create ZIP (API)
-)
 echo ========================
 echo DEPLOYING
 echo ========================
