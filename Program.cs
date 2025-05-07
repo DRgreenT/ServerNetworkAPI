@@ -12,12 +12,11 @@ namespace ServerNetworkAPI
 {
     public class Program
     {
-        
-
         public static bool isInitArp = true;
         public static bool isInitNmap = true;
         public static void Main(string[] args)
         {
+
             var parsedArgs = CLIArgsParser.Parse(args);
             AppConfig.InitializeFromArgs(parsedArgs);
 
@@ -26,15 +25,19 @@ namespace ServerNetworkAPI
                 CLIArgsParser.PrintHelp();
                 return;
             }
-            
-            AppConfig.SetUserInterface();
 
-            PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput());
+
+            AppConfig.SetUserInterface();
+            
+            PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput(parsedArgs));
 
             FileHelper.EnsureApplicationDirectories();
-                        
-            OutputLayout.Initialize();
-            OutputFormatter.PrintStartupInfo();
+
+            if (AppConfig.ConsoleUserInterface)
+            {
+                OutputLayout.Initialize();
+                OutputFormatter.PrintStartupInfo();
+            }
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Logging.ClearProviders();

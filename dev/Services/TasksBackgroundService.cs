@@ -43,6 +43,11 @@ namespace ServerNetworkAPI.dev.Services
                         TaskCreationOptions.LongRunning,
                         TaskScheduler.Default);
 
+            _ = Task.Factory.StartNew(() => ScanService.ScanAnimation(_TokenSource.Token),
+                                  _TokenSource.Token,
+                                  TaskCreationOptions.LongRunning,
+                                  TaskScheduler.Default);
+
             await _scanService.RunAsync(stoppingToken);
         }
 

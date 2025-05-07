@@ -6,53 +6,59 @@ namespace ServerNetworkAPI.dev.UI
 {
     public class OutputFormatter
     {
-        private static readonly int[] MessageRows = Enumerable.Range(0, 20).ToArray(); 
+        private static readonly int[] MessageRows = Enumerable.Range(0, 24).ToArray();
         private static int _messageIndex = 0;
-        private static string localIp = LocalAdapterService.GetLocalIPv4Address(); 
+        private static string localIp = LocalAdapterService.GetLocalIPv4Address();
         public static void PrintStartupInfo()
         {
-            if (!AppConfig.ConsoleUserInterface)
-            {
-                return;
-            }
-            PrintMessage($"Server NetworkAPI v{AppConfig.Version} started.", ConsoleColor.Green, false);
-            PrintMessage($"", null, false);
-            PrintMessage($"IP-Mask: {AppConfig.LocalIpMask}, Nmap enabled: {AppConfig.IsNmapEnabled}, Scan Interval: {AppConfig.ScanIntervalSeconds}s", ConsoleColor.Yellow, false);
-            PrintMessage($"API running at: http://{localIp}:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false);
-            PrintMessage($"API running at: http://127.0.0.1:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false);
-
+            Console.SetCursorPosition(0, 0);
+            PrintMessage($"Server NetworkAPI v{AppConfig.Version} started.", ConsoleColor.Green, false,0);
+            PrintMessage($"", null, false,1);
+            PrintMessage($"IP-Mask: {AppConfig.LocalIpMask}, Nmap enabled: {AppConfig.IsNmapEnabled}, Scan Interval: {AppConfig.ScanIntervalSeconds}s", ConsoleColor.Yellow, false,2);
+            PrintMessage($"API running at: http://{localIp}:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false,3);
+            PrintMessage($"API running at: http://127.0.0.1:{AppConfig.WebApiPort}/{ControllerAPI.NetworkControllerName}", ConsoleColor.Yellow, false,4);
         }
 
-        public static void PrintMessage(string message, ConsoleColor? color = null, bool hasTimeInfo = true)
+        private static string TimeStamp(bool hasTimeInfo)
+        {
+            return hasTimeInfo ? $"[{DateTime.Now:HH:mm:ss}] " : "";
+        }
+
+        public static void PrintMessage(string message, ConsoleColor? color = null, bool hasTimeInfo = true, int? preferedRow = null)
         {
             if (!AppConfig.ConsoleUserInterface)
             {
                 return;
             }
-            string timestamp = hasTimeInfo ? $"[{DateTime.Now:HH:mm:ss}]" : "";
+            string timestamp = TimeStamp(hasTimeInfo);
+
+
             int row = MessageRows[_messageIndex % MessageRows.Length];
-            if (row < 7 && hasTimeInfo) row = 7;
+            if (row < 6 && hasTimeInfo) row = 6;
             if (row == MessageRows.Length - 1)
             {
                 ClearMessageArea();
-                _messageIndex = 7;
-                row = 7;
+                _messageIndex = 6;
+                row = 6;
+            }
+            if (preferedRow != null) row = preferedRow.Value;
+            else
+            {
+                _messageIndex++;
             }
             if (color.HasValue)
             {
                 Console.ForegroundColor = color.Value;
             }
-            string spacer = hasTimeInfo ? " " : "";
-            OutputLayout.UpdateRow(row, $"# {timestamp}{spacer}{message}");
+            OutputLayout.UpdateRow(row, $"# {timestamp}{message}");
 
             if (color.HasValue)
             {
                 Console.ResetColor();
             }
 
-            _messageIndex++;
         }
-        
+
 
         private static void ClearMessageArea()
         {
@@ -69,7 +75,8 @@ namespace ServerNetworkAPI.dev.UI
                 return;
             }
             var devices = NetworkContext.GetDevices();
-            Console.SetCursorPosition(0, 26);
+            Console.SetCursorPosition(0, 30);
+            Console.WriteLine();
             Console.WriteLine(new string('#', 20) + "< SUMMARY >" + new string('#', 20));
             Console.WriteLine($"Total devices: {devices.Count}");
             Console.WriteLine("IP".PadRight(16) + "| " + "Hostname".PadRight(24) + "| " + "OS".PadRight(10) + "| Status");

@@ -10,7 +10,7 @@ namespace ServerNetworkAPI.dev.Services
     {
         private int _scanCount = 0;
         private TimeSpan _totalScanTime = TimeSpan.Zero;
-
+        private static int aniIndex = 0;
         public async Task RunAsync(CancellationToken token)
         {
             await DeviceRepository.LoadAsync();
@@ -36,7 +36,7 @@ namespace ServerNetworkAPI.dev.Services
                         await DeviceProcessor.ProcessAsync(ip, _ =>
                         {
                             progress++;
-                            OutputLayout.UpdateRow(22, $"# Nmap Scan: {progress}/{total} ({(progress * 100 / total):F1}%)");
+                            OutputLayout.UpdateRow(27, $"# Nmap Scan: {progress}/{total} ({(progress * 100 / total):F1}%)");
                         });
                     }
                     else
@@ -55,24 +55,42 @@ namespace ServerNetworkAPI.dev.Services
                 _totalScanTime += scanTime;
                 _scanCount++;
 
-                OutputLayout.UpdateRow(23, $"# Total Scans: {_scanCount}");
+                OutputLayout.UpdateRow(28, $"# Total Scans: {_scanCount}");
                 OutputFormatter.PrintMessage($"Scan #{_scanCount} done in {scanTime.TotalSeconds:F1}s. Devices: {NetworkContext.GetDevices().Count}");
 
                 await RunScanCountdown(token);
             }
         }
 
+        static readonly string[] anmimation = { "", ".", "..", "..." };
+        public static async Task ScanAnimation(CancellationToken token)
+        {
+     
+            while (!token.IsCancellationRequested)
+            {
+                if (!isDelayRunning)
+                {
+                    await Task.Delay(150);
+
+                    aniIndex = aniIndex < anmimation.Length - 1 ? aniIndex + 1 : 0;
+                    OutputLayout.UpdateRow(29, $"# Scanning{anmimation[aniIndex]}");
+                }
+            }
+        }
+
+        public static bool isDelayRunning = false;
         private static async Task RunScanCountdown(CancellationToken token)
         {
+            isDelayRunning = true;
             for (int i = AppConfig.ScanIntervalSeconds; i > 0; i--)
             {
                 if (token.IsCancellationRequested) break;
 
-                OutputLayout.UpdateRow(24, $"# Next scan in {i}s...");
+                OutputLayout.UpdateRow(29, $"# Next scan in {i}s...");
                 await Task.Delay(1000, token);
             }
+            isDelayRunning = false;
 
-            OutputLayout.UpdateRow(24, "# Scanning...");
         }
     }
 }
