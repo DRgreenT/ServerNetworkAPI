@@ -56,6 +56,12 @@ if exist %OUTPUT_FE% (
 )
 xcopy /e /i /y %FRONTEND_SOURCE% %OUTPUT_FE%
 
+
+if exist %OUTPUT_API%\publish\BuildAndDeployTools (
+    echo Deleting %OUTPUT_API%\publish\BuildAndDeployTools ...
+    rd /s /q %OUTPUT_API%\publish\BuildAndDeployTools
+)
+
 :: === Ensure ZIP folder exists ===
 if not exist %OUTPUT_ZIP_FOLDER% (
     echo Creating ZIP folder: %OUTPUT_ZIP_FOLDER%
