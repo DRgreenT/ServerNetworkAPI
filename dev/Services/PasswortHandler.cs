@@ -1,4 +1,6 @@
-﻿using ServerNetworkAPI.dev.IO;
+﻿using ServerNetworkAPI.dev.Models;
+using ServerNetworkAPI.dev.Models.Enums;
+using ServerNetworkAPI.dev.IO;
 using System.Diagnostics;
 
 namespace ServerNetworkAPI.dev.Services
@@ -7,7 +9,7 @@ namespace ServerNetworkAPI.dev.Services
     {
         private static char[] Password = Array.Empty<char>();
 
-        public static char[]  GetPasswordArray()
+        public static char[] GetPasswordArray()
         {
             return Password;
         }
@@ -19,7 +21,7 @@ namespace ServerNetworkAPI.dev.Services
 
         public static void PasswortOverride(ref string? s, ref string? s2, ref char[] pw)
         {
-            if (s  != null)
+            if (s != null)
                 s = string.Empty;
             if (s2 != null)
                 s2 = string.Empty;
@@ -30,7 +32,7 @@ namespace ServerNetworkAPI.dev.Services
             GC.WaitForPendingFinalizers();
         }
 
-        public static char[] PasswordInput()
+        public static char[] PasswordInput(ParsedArgs args)
         {
             if (BashCmd.IsRunningAsRoot() || SystemInfoService.IsConsoleInactive)
             {
@@ -38,10 +40,20 @@ namespace ServerNetworkAPI.dev.Services
                 Program.isInitNmap = false;
                 return Array.Empty<char>();
             }
-               
+
+            char[] password;
+
+            if (!string.IsNullOrEmpty(args.Password))
+            {
+                password = args.Password.Trim().ToCharArray();
+                Logger.Log(LogData.NewLogEvent(
+                    "PasswortHandler",
+                    $"Password from args {args.Password}",
+                    MessageType.Warning,
+                    ""));
+            }
             else
             {
-                char[] password;
                 int tries = 0;
                 do
                 {
@@ -55,9 +67,9 @@ namespace ServerNetworkAPI.dev.Services
                     Array.Clear(password, 0, password.Length);
                     Environment.Exit(0);
                 }
-
-                return password;
             }
+            return password;
+
         }
 
         public static bool IsValidSudoPassword(char[] password)
