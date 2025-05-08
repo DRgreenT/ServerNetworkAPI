@@ -6,12 +6,25 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Ausschluss bestimmter Ordner vom Kompilierungsprozess -->
   <ItemGroup>
     <Compile Remove="dev\tmp\**" />
     <Content Remove="dev\tmp\**" />
     <EmbeddedResource Remove="dev\tmp\**" />
     <None Remove="dev\tmp\**" />
+    
+    <!-- Zusätzlich BuildAndDeployTools vom Publish ausschließen -->
+    <Content Remove="BuildAndDeployTools\**" />
+    <None Remove="BuildAndDeployTools\**" />
   </ItemGroup>
+
+  <!-- Ausschluss von BuildAndDeployTools beim Publish -->
+<Target Name="ExcludeBuildAndDeployTools" BeforeTargets="Publish">
+  <ItemGroup>
+    <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" 
+                           Condition=" '%(ResolvedFileToPublish.RelativePath)' != '' and '%(ResolvedFileToPublish.RelativePath)' == 'BuildAndDeployTools\%(Filename)%(Extension)' " />
+  </ItemGroup>
+</Target>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />

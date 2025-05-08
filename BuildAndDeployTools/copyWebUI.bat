@@ -1,7 +1,7 @@
 @echo off
 cls
 setlocal
-
+cd..
 set FRONTEND_SOURCE=dev\WebUI
 
 :: === OUTPUT PATHS ===
