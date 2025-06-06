@@ -2,6 +2,7 @@
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.Models.Enums;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace ServerNetworkAPI.dev.Services
 {
@@ -140,6 +141,11 @@ namespace ServerNetworkAPI.dev.Services
             }
 
             string oldestProcess = oldestOutput.Substring(0, 24).Trim();
+
+            if(oldestProcess.Contains("  "))
+            {
+                oldestProcess = Regex.Replace(oldestProcess, @"\s{2,}", " ");
+            }
 
             if (DateTime.TryParseExact(oldestProcess, "ddd MMM d HH:mm:ss yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startTime))
             {
