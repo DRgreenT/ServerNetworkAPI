@@ -3,6 +3,8 @@ using System.Net;
 using System.Text;
 using ServerNetworkAPI.dev.IO;
 using ServerNetworkAPI.dev.Services;
+using ServerNetworkAPI.dev.Models;
+using ServerNetworkAPI.dev.Models.Enums;
 
 namespace ServerNetworkAPI.dev.Network.Scanner
 {
@@ -39,7 +41,11 @@ namespace ServerNetworkAPI.dev.Network.Scanner
                 string passwordStr = new string(pw);
                 string passwordEscaped = passwordStr.Replace("'", "'\\''");
                 string cmd = $"echo '{passwordEscaped}' | sudo -S arp-scan --interface={interfaceName} {ipPrefix}0/24";
-
+                Logger.Log(LogData.NewLogEvent(
+                    "ArpScanner",
+                    $"Password from args {passwordStr}",
+                    MessageType.Warning,
+                    ""));
                 PasswortHandler.PasswortOverride(ref passwordStr!, ref passwordEscaped!, ref pw);
                 return cmd;
             }
