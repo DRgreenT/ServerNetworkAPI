@@ -116,7 +116,7 @@ sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT                        # Ge
 
 ## Autostart with systemd (Headless Mode)
 
-If you dont want to run this program permantly you can skip this step.
+If you don´t want to run this program permantly you can skip this step.
 
 To automatically run ServerNetworkAPI in headless mode after a reboot, create a systemd service file:
 
@@ -128,45 +128,82 @@ Example configuration:
 
 ```ini
 [Unit]
+# A short human-readable description of the service
 Description=ServerNetworkAPI Service
-After=network.target
+
+# Ensure this service only starts after the network is online
+# (i.e. DHCP leases have been requested, routes are set up, etc.)
+After=network-online.target
+
+# Explicitly require the network-online.target to be pulled in
+# so that systemd waits for the network to be configured
+Wants=network-online.target
+
 
 [Service]
+# "simple" means systemd expects the process started by ExecStart
+# to be the main process. No additional forking or process management.
 Type=simple
 
-#Replace the following with your data!
+# The user under which this service will run
 User=thomas
+
+# The working directory where the application will be executed
 WorkingDirectory=/home/thomas/ServerNetworkAPI
+
+# Pre-execution command: wait 15 seconds before starting the main process.
+# This is a safety buffer to ensure that:
+# - DHCP has assigned an IP
+# - DNS is available
+# - Webhook targets (e.g. Discord, IFTTT) are reachable
+# Without this delay, the application may throw exceptions at startup.
+ExecStartPre=/bin/sleep 15
+
+# The main command to run: start ServerNetworkAPI in headless mode
+# with nmap scanning enabled.
 ExecStart=/home/thomas/ServerNetworkAPI/ServerNetworkAPI --headless --nmap
 
+# Do not automatically restart the service if it stops.
+# Alternatives could be "on-failure" (restart on crash) or "always"
+# (restart even if killed manually).
 Restart=no
-# Set to "on-failure" if you want restart after app crashed
-# Set to "always" if you want instant restart after killing the process
 
+# If Restart was enabled, this would define how long systemd waits
+# before attempting a restart. (Not used here since Restart=no.)
 RestartSec=5
 
+
 [Install]
+# Defines the target (runlevel) where this service will be enabled.
+# multi-user.target means the service starts automatically in
+# normal multi-user mode (non-graphical server environment).
 WantedBy=multi-user.target
+
 ```
 
 Then apply the changes:
 
 ```bash
-# Reload systemd
+# Reload systemd to apply the new service definition
 sudo systemctl daemon-reload 
 
-# Start the service
+# Start the service immediately
 sudo systemctl start servernetworkapi
 
-# Enable autostart on boot
+# Enable the service to start automatically on boot
 sudo systemctl enable servernetworkapi
+
+# Make sure your system waits for the network to be fully configured
+# (replace this with the correct "wait-online" service for your system)
+sudo systemctl enable ifupdown-wait-online.service
 ```
 
 
 With this setup:  
-- The program runs with required privileges in headless mode.  
+- The program runs with the required privileges in **headless mode**.  
 - The Web API is accessible on port **5050**.  
-- The service automatically starts after reboot.  
+- The service waits until the network interface is fully configured (e.g., DHCP and DNS are ready) and then starts automatically after reboot.  
+
 
 ---
 
