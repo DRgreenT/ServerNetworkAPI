@@ -1,4 +1,25 @@
-﻿# Requirements
+﻿# Table of Contents
+
+- [Requirements](#requirements)
+- [Dependencies](#dependencies)
+
+- [Download & Installation](#download--installation)
+  - [Required Packages](#required-packages)
+  - [Sudo Rights for Headless Mode](#sudo-rights-for-headless-mode)
+  - [Open the Web API Port](#open-the-web-api-port)
+  - [Autostart with systemd (Headless Mode)](#autostart-with-systemd-headless-mode)
+  - [Device Notifications via Webhook](#device-notifications-via-webhook)
+  - [Application Configuration](#application-configuration)
+  - [Available CLI parameters](#available-cli-parameters)
+  - [WebUI](#webui)
+	- 
+- [Build Instructions](#build-instructions-requires-net-90-sdk)
+- [Building and Deploying Tools](#building-and-deploying-tools)
+
+- [Notes](#notes)
+
+
+# Requirements
 
 - root or sudo privileges (for `arp-scan` and `nmap` commands)
 - Linux x64 system
