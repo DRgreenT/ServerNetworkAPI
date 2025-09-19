@@ -18,4 +18,6 @@
   - The password handler has been removed.  
 
 - **Code Quality:**  
-  - Removed repetitive code snippets and improved maintainability.  
+  - Removed repetitive code snippets and improved maintainability.
+
+- **BuildAndDeployTool** latest version of FTP_Deploy_Client.exe added (https://github.com/DRgreenT/FTP_Deploy_Client)
