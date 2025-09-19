@@ -220,6 +220,7 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
 The WebUI is accessible via the Web API at the IP and port of the local host where the tool is running: e.g.`http:\\192.168.178.10:5050` via web browser.
 
 ---
+
 ## Build Instructions (Requires .NET 9.0 SDK)
 
 ```bash
@@ -228,13 +229,27 @@ cd ServerNetworkAPI
 dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
+
+# Building and deploying tools
+
+The repository includes a folder named **`BuildAndDeployTools`**, which is primarily useful if you plan to work on this project in a Windows environment.  
+It contains the following files:  
+
+- **`build_linux.bat`** → Deletes the old build files (including the WebUI) and rebuilds the project into the `publish` folder of the repository *without* the WebUI. Afterward, it starts **`FTP_Deploy_Client.exe`** to update and restart the program on your server.  
+- **`copyWebUI.bat`** → Copies the current content of the WebUI folder from `dev/WebUI` into `publish/wwwRoot`.  
+- **`build_linux_publish.bat`** → Same as `build_linux.bat`, but also copies the WebUI and creates a `.zip` archive in the `publish/zip` folder.  
+- **`FTP_Deploy_Client.exe`** → [More Info](https://github.com/DRgreenT/FTP_Deploy_Client)
+
+You can also deploy the project to your server by using FileZilla or a similar SFTP/FTP client.  
+Simply upload the contents of the **`ServerNetworkAPI\publish\linux`** folder into the `ServerNetworkAPI` directory on your server.  
+
+
 ---
 
-## Notes:
 
----
+# Notes:
 
-### Important Notice for DNS Setup
+## Important Notice for DNS Setup
 
 If you are using a custom DNS server (e.g., AdGuard Home, Pi-hole, Unbound, etc.),
 make sure that Reverse DNS (PTR) lookups for your local network are correctly configured.
