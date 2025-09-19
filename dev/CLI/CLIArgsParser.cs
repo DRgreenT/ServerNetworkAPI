@@ -49,23 +49,12 @@ namespace ServerNetworkAPI.dev.CLI
                         }
                         break;
                     case "--headless":
-                        SystemInfoService.IsHeadlessFromArgs = true;
+                        SystemInfoService.IsHeadlessModeFromArgs = true;
                         
-                        break;
-                    case "--pw":
-                        if (i + 1 < args.Length)
-                        {
-                            var value = args[i + 1]?.Trim();
-                            if (!string.IsNullOrEmpty(value))
-                            {
-                                result.Password = value.Trim();
-                                i++;
-                            }
-                        }
                         break;
                 }
             }
-            SystemInfoService.SetConsoleState();
+            //SystemInfoService.SetConsoleState();
 
             return result;
         }
@@ -80,7 +69,6 @@ namespace ServerNetworkAPI.dev.CLI
             --nmap                 Enable nmap scan mode
             --fip {string}         Fallback IP mask (e.g., 192.168.178.)
             --headless             Run in headless mode (no console interaction)
-            --pw {string}          Sudo Password - not recomended (default: empty)
             ");
         }
     }

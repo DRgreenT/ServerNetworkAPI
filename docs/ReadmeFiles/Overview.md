@@ -44,12 +44,15 @@ And for me, it’s a great learning project to grow my understanding of networks, 
 - **External Config Files**:
   - `NotificationConfig.json` for webhooks
   - `AppConfig.json` for persistent settings (overridable by CLI)
+- Basic Mac address recognition
+- Headless mode
 
 ## Upcoming Features
 
-- Mac address recognition
+- Better Mac address recognition
 - Device type recognition (e.g. phone, computer, etc.)
 - Improved OS recognition
 - WebUI overhaul
 - more robust code
 - and some other stuff...
+- less memory consuming

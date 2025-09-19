@@ -9,6 +9,8 @@ namespace ServerNetworkAPI.dev.Services
     {
         private static readonly HttpClient _httpClient = new();
 
+        private static readonly string sendMessagePrefix = "@everyone ";
+
         public static void SendMessage(string message, bool isWarning)
         {
             var config = ConfigManager.NotificationConfig;
@@ -37,7 +39,7 @@ namespace ServerNetworkAPI.dev.Services
 
             var payload = new
             {
-                content = message
+                content = sendMessagePrefix + message
             };
 
             string json = JsonSerializer.Serialize(payload);
@@ -82,7 +84,7 @@ namespace ServerNetworkAPI.dev.Services
                     "NotificationService",
                     $"Exeption:",
                     Models.Enums.MessageType.Exception,
-                    Logger.RemoveNewLineSymbolFromString(ex.Message)
+                    "In SendMessage: " + Logger.RemoveNewLineSymbolFromString(ex.Message)
                 ));
             }           
         }
@@ -151,7 +153,7 @@ namespace ServerNetworkAPI.dev.Services
                         "NotificationService",
                         $"Exeption:",
                         Models.Enums.MessageType.Exception,
-                        Logger.RemoveNewLineSymbolFromString(ex.Message)
+                        "In SendDeviceNotificationAsync: " + Logger.RemoveNewLineSymbolFromString(ex.Message)
                     ));
                 }
             }

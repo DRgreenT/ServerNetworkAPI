@@ -37,24 +37,11 @@ namespace ServerNetworkAPI.dev.Network.Scanner
             {
                 Program.isInitArp = false;
 
-                var pw = PasswortHandler.GetPasswordArray();
-                string passwordStr = new string(pw);
-                string passwordEscaped = passwordStr.Replace("'", "'\\''");
-                string cmd = $"echo '{passwordEscaped}' | sudo -S arp-scan --interface={interfaceName} {ipPrefix}0/24";
-                Logger.Log(LogData.NewLogEvent(
-                    "ArpScanner",
-                    $"Password from args {passwordStr}",
-                    MessageType.Warning,
-                    ""));
-                PasswortHandler.PasswortOverride(ref passwordStr!, ref passwordEscaped!, ref pw);
+                string cmd = $"echo  sudo -S arp-scan --interface={interfaceName} {ipPrefix}0/24";
                 return cmd;
             }
             else
             {
-                if (!Program.isInitNmap)
-                {
-                    PasswortHandler.SetPasswordArray(Array.Empty<char>());
-                }
                 return $"sudo arp-scan --interface={interfaceName} {ipPrefix}0/24";
             }
         }

@@ -20,20 +20,32 @@ namespace ServerNetworkAPI
             var parsedArgs = CLIArgsParser.Parse(args);
             AppConfig.InitializeFromArgs(parsedArgs);
 
-            if (parsedArgs.ShowHelp && !SystemInfoService.IsConsoleInactive)
+            if (parsedArgs.ShowHelp && !SystemInfoService.IsHeadlessModeFromArgs)
             {
                 CLIArgsParser.PrintHelp();
                 return;
             }
 
+            if (!SystemInfoService.IsHeadlessModeFromArgs)
+            {
 
-            AppConfig.SetUserInterface();
-            
-            PasswortHandler.SetPasswordArray(PasswortHandler.PasswordInput(parsedArgs));
+                if (Console.IsOutputRedirected || Console.IsErrorRedirected || Console.IsInputRedirected)
+                    return;
+
+                try
+                {
+                    var _ = Console.BufferWidth;
+                }
+                catch
+                {
+                    return;
+                }
+            }
+
 
             FileHelper.EnsureApplicationDirectories();
 
-            if (AppConfig.ConsoleUserInterface)
+            if (!SystemInfoService.IsHeadlessModeFromArgs)
             {
                 OutputLayout.Initialize();
                 OutputFormatter.PrintStartupInfo();

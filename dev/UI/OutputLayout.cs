@@ -1,4 +1,5 @@
 ﻿using ServerNetworkAPI.dev.Core;
+using ServerNetworkAPI.dev.Services;
 using System.Drawing;
 
 namespace ServerNetworkAPI.dev.UI
@@ -16,6 +17,9 @@ namespace ServerNetworkAPI.dev.UI
 
         public static void Initialize()
         {
+            if (SystemInfoService.IsHeadlessModeFromArgs)
+                return;
+
             Console.Clear();
 
             for (int i = 0; i < 25; i++)
@@ -67,6 +71,8 @@ namespace ServerNetworkAPI.dev.UI
 
         private static void DrawRow(int row, string content, ConsoleColor color)
         {
+            if (SystemInfoService.IsHeadlessModeFromArgs)
+                return;
             Console.SetCursorPosition(0, row);
             var originalColor = Console.ForegroundColor;
 
@@ -78,6 +84,8 @@ namespace ServerNetworkAPI.dev.UI
 
         private static void Add(int row, string content)
         {
+            if (SystemInfoService.IsHeadlessModeFromArgs)
+                return;
             _rows[row] = new OutputRow { ConsoleRow = row, Value = content };
             Console.SetCursorPosition(0, row);
             Console.Write(content.PadRight(Console.WindowWidth));

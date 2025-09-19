@@ -51,12 +51,8 @@ namespace ServerNetworkAPI.dev.Network.Scanner
             {
                 Program.isInitNmap = false;
 
-                var pw = PasswortHandler.GetPasswordArray();
-                string passwordStr = new string(pw);
-                string passwordEscaped = passwordStr.Replace("'", "'\\''");
-                string cmd = $"echo '{passwordEscaped}' | sudo -S nmap {parameter} {ip}";
+                string cmd = $"echo sudo -S nmap {parameter} {ip}";
 
-                PasswortHandler.PasswortOverride(ref passwordStr!, ref passwordEscaped!, ref pw);
                 return cmd;
             }
             else

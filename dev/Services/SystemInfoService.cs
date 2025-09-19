@@ -14,59 +14,7 @@ namespace ServerNetworkAPI.dev.Services
 
         private static readonly int ProcessorCores = Environment.ProcessorCount;
 
-        public static bool IsHeadlessFromArgs { get; set; } = false;
-
-        public static bool IsConsoleInactive { get; private set; } = false;
-
-        public static void SetConsoleState()
-        {
-            IsConsoleInactive = IsHeadlessServer(); 
-        }
-        public static bool IsHeadlessServer(bool debugMode = true)
-        {
-            try
-            {
-                bool inputRedirected = Console.IsInputRedirected;
-                bool githubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
-                bool keyAvailableFails = false;
-                bool noUserInteraction = !Environment.UserInteractive;
-                bool isHeadless = false;
-
-                try
-                {
-                    var _ = Console.KeyAvailable;
-                }
-                catch (Exception)
-                {
-                    keyAvailableFails = true;
-                }
-
-                isHeadless = inputRedirected || githubActions || keyAvailableFails || noUserInteraction || IsHeadlessFromArgs;
-               
-                string message = isHeadless ? "On" : "Off";
-
-                string debugMessage = debugMode ? $" -> InputRedirected:{ inputRedirected}, GitHubActions: { githubActions}, KeyAvailableFails: { keyAvailableFails}, NoUserInteraction: { noUserInteraction}, FromArgs: { IsHeadlessFromArgs}" : "";
-                
-                Logger.Log(LogData.NewLogEvent(
-                    "SystemInfoService",
-                    $"Headless mode {message}{debugMessage}",
-                    MessageType.Standard,
-                    ""));
-
-                return isHeadless;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(LogData.NewLogEvent(
-                    "SystemInfoService",
-                    $"Error checking headless mode: {ex.Message}",
-                    MessageType.Exception,
-                    ""));
-                return true;
-            }
-        }
-
-
+        public static bool IsHeadlessModeFromArgs { get; set; } = false;
 
         public static SystemInfoService GetProcessStats()
         {
@@ -127,45 +75,54 @@ namespace ServerNetworkAPI.dev.Services
             return 0;
         }
 
+        private static bool noteWasTriggered = false;
+
         private static string GetUptime()
         {
-            var oldestOutput = BashCmd.ExecuteCmd("ps -eo lstart,pid,comm --sort=start_time --no-headers | head -n 1", "SystemInfoService");
-            if (string.IsNullOrEmpty(oldestOutput))
+            // Nutzt "uptime -s" für den exakten System-Startzeitpunkt
+            var startTimeOutput = BashCmd.ExecuteCmd("uptime -s", "SystemInfoService");
+            if (string.IsNullOrWhiteSpace(startTimeOutput))
             {
                 Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
-                    "Error reading process start time",
-                    MessageType.Exception,
-                    ""));
+                    "Error reading system uptime",
+                    MessageType.Exception
+                ));
                 return "-";
             }
 
-            string oldestProcess = oldestOutput.Substring(0, 24).Trim();
-
-            if(oldestProcess.Contains("  "))
-            {
-                oldestProcess = Regex.Replace(oldestProcess, @"\s{2,}", " ");
-            }
-
-            if (DateTime.TryParseExact(oldestProcess, "ddd MMM d HH:mm:ss yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startTime))
-            {
-                TimeSpan uptime = DateTime.Now - startTime;
-                string days = (uptime.Days > 0) ? $"{uptime.Days}d " : "";
-                string hours = (uptime.Hours > 0) ? $"{uptime.Hours.ToString().PadLeft(2, '0')}h " : "00h";
-                string minutes = (uptime.Minutes > 0) ? $"{uptime.Minutes.ToString().PadLeft(2, '0')}m " : "00m";
-                string seconds = (uptime.Seconds > 0) ? $"{uptime.Seconds.ToString().PadLeft(2, '0')}s" : "00s";
-                return days + hours + minutes + seconds;
-            }
-            else
+            if (!DateTime.TryParse(startTimeOutput.Trim(), out DateTime startTime))
             {
                 Logger.Log(LogData.NewLogEvent(
                     "SystemInfoService",
-                    "Failed to parse process start time",
+                    "Failed to parse system uptime",
                     MessageType.Exception,
-                    oldestProcess));
+                    startTimeOutput.Trim()
+                ));
                 return "-";
             }
+
+            TimeSpan uptime = DateTime.Now - startTime;
+
+            if (uptime.TotalMinutes < 5 && !noteWasTriggered)
+            {
+                NotificationService.SendMessage("Server was recently restarted.", true);
+                Logger.Log(LogData.NewLogEvent(
+                    "SystemInfoService",
+                    "Recent server restart detected.",
+                    MessageType.Warning
+                ));
+                noteWasTriggered = true;
+            }
+
+            string days = uptime.Days > 0 ? $"{uptime.Days}d " : "";
+            string hours = $"{uptime.Hours:D2}h ";
+            string minutes = $"{uptime.Minutes:D2}m ";
+            string seconds = $"{uptime.Seconds:D2}s";
+
+            return days + hours + minutes + seconds;
         }
+
 
         private static string GetCpuUsage()
         {

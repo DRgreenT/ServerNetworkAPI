@@ -14,15 +14,12 @@
     <None Remove="dev\tmp\**" />
     
     <!-- Zusätzlich BuildAndDeployTools vom Publish ausschließen -->
-    <Content Remove="BuildAndDeployTools\**" />
-    <None Remove="BuildAndDeployTools\**" />
   </ItemGroup>
 
   <!-- Ausschluss von BuildAndDeployTools beim Publish -->
 <Target Name="ExcludeBuildAndDeployTools" BeforeTargets="Publish">
   <ItemGroup>
-    <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" 
-                           Condition=" '%(ResolvedFileToPublish.RelativePath)' != '' and '%(ResolvedFileToPublish.RelativePath)' == 'BuildAndDeployTools\%(Filename)%(Extension)' " />
+    <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition=" '%(ResolvedFileToPublish.RelativePath)' != '' and '%(ResolvedFileToPublish.RelativePath)' == 'BuildAndDeployTools\%(Filename)%(Extension)' " />
   </ItemGroup>
 </Target>
 

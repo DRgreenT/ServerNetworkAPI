@@ -1,5 +1,6 @@
 ﻿using ServerNetworkAPI.dev.Core;
 using ServerNetworkAPI.dev.Network.Adapter;
+using ServerNetworkAPI.dev.Services;
 using ServerNetworkAPI.dev.WebAPI;
 
 namespace ServerNetworkAPI.dev.UI
@@ -9,6 +10,9 @@ namespace ServerNetworkAPI.dev.UI
         private static string localIp = LocalAdapterService.GetLocalIPv4Address();
         public static void PrintStartupInfo()
         {
+            if (SystemInfoService.IsHeadlessModeFromArgs)
+                return;
+
             Console.SetCursorPosition(0, 0);
             PrintMessage($"Server NetworkAPI v{AppConfig.Version} started.", ConsoleColor.Green, false,0);
             PrintMessage($"", null, false,1);
@@ -24,7 +28,7 @@ namespace ServerNetworkAPI.dev.UI
 
         public static void PrintMessage(string message, ConsoleColor? color = null, bool hasTimeInfo = true, int? preferredRow = null)
         {
-            if (!AppConfig.ConsoleUserInterface)
+            if (SystemInfoService.IsHeadlessModeFromArgs)
                 return;
 
             string timestamp = TimeStamp(hasTimeInfo);
@@ -47,7 +51,7 @@ namespace ServerNetworkAPI.dev.UI
         }
         public static void PrintDeviceSummary()
         {
-            if (!AppConfig.ConsoleUserInterface)
+            if (SystemInfoService.IsHeadlessModeFromArgs)
             {
                 return;
             }

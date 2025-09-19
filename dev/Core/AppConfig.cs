@@ -52,20 +52,6 @@ namespace ServerNetworkAPI.dev.Core
             LoadExternalSettings();          
         }
 
-        public static void SetUserInterface()
-        {
-            if(SystemInfoService.IsConsoleInactive)
-            {
-                ConsoleUserInterface = false;
-            }
-            else ConsoleUserInterface = true;
-            Logger.Log(LogData.NewLogEvent(
-                "AppConfig",
-                $"Console user interface: {ConsoleUserInterface}",
-                MessageType.Standard,
-                ""));
-        }
-
         private static string? CalculateLocalNetworkPrefix()
         {
             var localIPs = Dns.GetHostEntry(Dns.GetHostName())

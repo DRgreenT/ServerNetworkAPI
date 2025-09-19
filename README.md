@@ -42,8 +42,11 @@ If the last octet of a device IP exceeds a defined threshold, it's flagged as *n
 
 [Disclaimer](docs/ReadmeFiles/Disclaimer.md)
 
+---
+
 ## License
 
+[LICENSE](./LICENSE.txt)
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.  
 You may freely use, modify, and distribute it under the same license –  
 as long as the resulting version remains open-source and AGPL-compatible.

@@ -1,7 +1,8 @@
 ﻿using ServerNetworkAPI.dev.Core;
-using ServerNetworkAPI.dev.UI;
 using ServerNetworkAPI.dev.Models;
 using ServerNetworkAPI.dev.Models.Enums;
+using ServerNetworkAPI.dev.Services;
+using ServerNetworkAPI.dev.UI;
 
 namespace ServerNetworkAPI.dev.IO
 {
@@ -26,7 +27,7 @@ namespace ServerNetworkAPI.dev.IO
 
                 File.AppendAllText(AppConfig.LogFilePath, logLine + Environment.NewLine);
 
-                if (AppConfig.ConsoleUserInterface && alsoConsole)
+                if (!SystemInfoService.IsHeadlessModeFromArgs && alsoConsole)
                 {
                     Console.WriteLine(logLine);
                 }
@@ -36,7 +37,7 @@ namespace ServerNetworkAPI.dev.IO
         public static void Log(LogData data)
         {
             string logLine = BuildFullLogLine(data);
-            if (AppConfig.ConsoleUserInterface)
+            if (!SystemInfoService.IsHeadlessModeFromArgs)
             {
                 var color = GetColorByType(data.MessageType);
                 string displayLine = BuildDisplayLine(logLine, data.TimeStamp!.Length);
@@ -81,6 +82,8 @@ namespace ServerNetworkAPI.dev.IO
 
         private static int GetConsoleWidth()
         {
+            if (SystemInfoService.IsHeadlessModeFromArgs)
+                return 0;
             try
             {
                 int width = Console.WindowWidth;
