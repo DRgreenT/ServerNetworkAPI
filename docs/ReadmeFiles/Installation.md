@@ -106,10 +106,16 @@ After=network.target
 
 [Service]
 Type=simple
+
+#Replace the following with your data!
 User=thomas
 WorkingDirectory=/home/thomas/ServerNetworkAPI
 ExecStart=/home/thomas/ServerNetworkAPI/ServerNetworkAPI --headless --nmap
-Restart=always
+
+Restart=no
+# Set to "on-failure" if you want restart after app crashed
+# Set to "always" if you want instant restart after killing the process
+
 RestartSec=5
 
 [Install]
@@ -129,13 +135,14 @@ sudo systemctl start servernetworkapi
 sudo systemctl enable servernetworkapi
 ```
 
----
 
 With this setup:  
 - The program runs with required privileges in headless mode.  
 - The Web API is accessible on port **5050**.  
 - The service automatically starts after reboot.  
-- 
+
+---
+
 ### Device Notifications via Webhook
 
 Starting with version `v0.2.1b`, you can enable push-style notifications when a **new device** is detected on the network.
@@ -162,7 +169,7 @@ This is done using simple **webhooks**, such as:
 
 > This file is created automatically on first run.
 
-From now on, every time a **new device is detected**, a notification will be sent automatically 
+From now on, every time a **new device is detected**, a notification will be sent automatically - depending on your DHCP setup
 
 #### Discord Notes
 
@@ -191,8 +198,9 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
   "MaxIPv4AddressWithoutWarning": 190
 }
 ```
+```MaxIPv4AddressWithoutWarning``` This is the trigger value for the alert. If the IP count exceeds this threshold, it will be logged and, if configured, a notification will be sent.
 
-> CLI arguments (e.g. `--t`, `--nmap`, etc.) override these values at runtime without modifying the file.
+### CLI arguments (e.g. `--t`, `--nmap`, etc.) override these values at runtime without modifying the file.
 
 ---
 
