@@ -1,22 +1,24 @@
-﻿# Table of Contents
+﻿## Overview
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)
-
 - [Download & Installation](#download--installation)
   - [Required Packages](#required-packages)
+- [Setup](#setup-for-running)
   - [Sudo Rights for Headless Mode](#sudo-rights-for-headless-mode)
-  - [Open the Web API Port](#open-the-web-api-port)
+  - [Open the Web API Port](#open-the-web-api-port)	
   - [Autostart with systemd (Headless Mode)](#autostart-with-systemd-headless-mode)
   - [Device Notifications via Webhook](#device-notifications-via-webhook)
+	- [Notifications config](#notifications-config)
+	- [Discord Notes](#discord-notes)
   - [Application Configuration](#application-configuration)
-  - [Available CLI parameters](#available-cli-parameters)
-  - [WebUI](#webui)
-	
+  - [Available CLI parameters](#available-cli-parameters) 
+  - [Important Notice for DNS Setup](#important-notice-for-dns-setup) 
 - [Build Instructions](#build-instructions-requires-net-90-sdk)
-- [Building and Deploying Tools](#building-and-deploying-tools)
+  - [WebUI](#webui)
+  - [Building and Deploying Tools](#building-and-deploying-tools)
 
-- [Notes](#notes)
+  
 
 
 # Requirements
@@ -25,7 +27,7 @@
 - Linux x64 system
 - Web browser (for WebUI)
 
-## Dependencies:
+# Dependencies:
 
 use: 
 - [Dependencies installer](../../BuildAndDeployTools/setup_dependencies.sh)
@@ -60,7 +62,7 @@ chmod +x ServerNetworkAPI
 
 ---
 
-### Required Packages
+## Required Packages
 
 To run the program, **`nmap`** and **`arp-scan`** must be installed:
 
@@ -73,7 +75,9 @@ sudo zypper install nmap arp-scan  # openSUSE
 
 ---
 
-### Sudo Rights for Headless Mode
+# Setup for running
+
+## Sudo Rights for Headless Mode
 
 By default, running `nmap` and `arp-scan` as a non-root user requires `sudo` and a password.  
 This makes headless execution impossible, since there is no terminal available to enter the password.  
@@ -98,7 +102,7 @@ sudo chmod 0440 /etc/sudoers.d/servernetworkapi
 
 ---
 
-### Open the Web API Port
+## Open the Web API Port
 
 The Web API listens on port **5050** by default. Ensure it is open in your firewall:
 
@@ -110,7 +114,9 @@ sudo iptables -A INPUT -p tcp --dport 5050 -j ACCEPT                        # Ge
 
 ---
 
-### Autostart with systemd (Headless Mode)
+## Autostart with systemd (Headless Mode)
+
+If you dont want to run this program permantly you can skip this step.
 
 To automatically run ServerNetworkAPI in headless mode after a reboot, create a systemd service file:
 
@@ -164,7 +170,7 @@ With this setup:
 
 ---
 
-### Device Notifications via Webhook
+## Device Notifications via Webhook
 
 Starting with version `v0.2.1b`, you can enable push-style notifications when a **new device** is detected on the network.
 
@@ -174,7 +180,7 @@ This is done using simple **webhooks**, such as:
 - [IFTTT Webhooks](https://ifttt.com/maker_webhooks) (e.g. push, email, SMS)
 - Any URL that accepts JSON POST
 
-#### Notifications config:
+### Notifications config
 
 ```
 ./Configs/NotificationConfig.json
@@ -192,7 +198,7 @@ This is done using simple **webhooks**, such as:
 
 From now on, every time a **new device is detected**, a notification will be sent automatically - depending on your DHCP setup
 
-#### Discord Notes
+### Discord Notes
 
 If you're using Discord and want push notifications on mobile:
 
@@ -202,7 +208,7 @@ If you're using Discord and want push notifications on mobile:
 
 ---
 
-### Application Configuration
+## Application Configuration
 
 The runtime settings (like port, controller, timeout, etc.) are stored in:
 
@@ -221,11 +227,11 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
 ```
 ```MaxIPv4AddressWithoutWarning``` This is the trigger value for the alert. If the IP count exceeds this threshold, it will be logged and, if configured, a notification will be sent.
 
-### CLI arguments (e.g. `--t`, `--nmap`, etc.) override these values at runtime without modifying the file.
+CLI arguments (e.g. `--t`, `--nmap`, etc.) override these values at runtime without modifying the file.
 
 ---
 
-### Available CLI parameters:
+## Available CLI parameters:
 
 ```bash
 --help / -help           Show help and usage info
@@ -234,48 +240,6 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
 --nmap                   Enable nmap scanning (optional)
 --fip {string}           Fallback IP mask (default: 192.168.178.)
 ```
-
----
-### WebUI
-
-Since this program includes a built-in Kestrel web server that serves both the API and the WebUI, you don’t need to install an additional (HTTP) web server to access all features.
-
-The WebUI is accessible via the Web API at the IP and port of the local host where the tool is running: e.g.`http:\\192.168.178.10:5050` via web browser.
-
-In a standard Visual Studio 2022 build, the WebUI is not included by default.  
-You can either manually copy the files from the **`dev\WebUI`** folder into **`publish\wwwRoot`**,  
-or use the **`copyWebUI.bat`** script located in **`BuildAndDeployTools`** (see *Building and Deploying Tools* below).  
-
-
----
-
-## Build Instructions (Requires .NET 9.0 SDK)
-
-```bash
-git clone https://github.com/DRgreenT/ServerNetworkAPI.git
-cd ServerNetworkAPI
-dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
-```
-
-
-# Building and Deploying Tools
-
-The repository includes a folder named **`BuildAndDeployTools`**, which is primarily useful if you plan to work on this project in a Windows environment.  
-It contains the following files:  
-
-- **`build_linux.bat`** → Deletes the old build files (including the WebUI) and rebuilds the project into the `publish` folder of the repository *without* the WebUI. Afterward, it starts **`FTP_Deploy_Client.exe`** to update and restart the program on your server.  
-- **`copyWebUI.bat`** → Copies the current content of the WebUI folder from `dev/WebUI` into `publish/wwwRoot`.  
-- **`build_linux_publish.bat`** → Same as `build_linux.bat`, but also copies the WebUI and creates a `.zip` archive in the `publish/zip` folder.  
-- **`FTP_Deploy_Client.exe`** → [More Info](https://github.com/DRgreenT/FTP_Deploy_Client)
-
-You can also deploy the project to your server by using FileZilla or a similar SFTP/FTP client.  
-Simply upload the contents of the **`ServerNetworkAPI\publish\linux`** folder into the `ServerNetworkAPI` directory on your server.  
-
-
----
-
-
-# Notes:
 
 ## Important Notice for DNS Setup
 
@@ -292,3 +256,37 @@ Otherwise, no hostnames will be available — only IP addresses will be shown.
 
 Example:
 In AdGuard Home, enable the option "Private Reverse DNS Resolver" under DNS settings.
+
+---
+
+# Build Instructions (Requires .NET 9.0 SDK)
+
+```bash
+git clone https://github.com/DRgreenT/ServerNetworkAPI.git
+cd ServerNetworkAPI
+dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
+```
+
+## WebUI
+
+Since this program includes a built-in Kestrel web server that serves both the API and the WebUI, you don’t need to install an additional (HTTP) web server to access all features.
+
+The WebUI is accessible via the Web API at the IP and port of the local host where the tool is running: e.g.`http:\\192.168.178.10:5050` via web browser.
+
+In a standard Visual Studio 2022 build, the WebUI is not included by default.  
+You can either manually copy the files from the **`dev\WebUI`** folder into **`publish\wwwRoot`**,  
+or use the **`copyWebUI.bat`** script located in **`BuildAndDeployTools`** (see *Building and Deploying Tools* below).  
+
+## Building and Deploying Tools
+
+The repository includes a folder named **`BuildAndDeployTools`**, which is primarily useful if you plan to work on this project in a Windows environment.  
+It contains the following files:  
+
+- **`build_linux.bat`** → Deletes the old build files (including the WebUI) and rebuilds the project into the `publish` folder of the repository *without* the WebUI. Afterward, it starts **`FTP_Deploy_Client.exe`** to update and restart the program on your server.  
+- **`copyWebUI.bat`** → Copies the current content of the WebUI folder from `dev/WebUI` into `publish/wwwRoot`.  
+- **`build_linux_publish.bat`** → Same as `build_linux.bat`, but also copies the WebUI and creates a `.zip` archive in the `publish/zip` folder.  
+- **`FTP_Deploy_Client.exe`** → [More Info](https://github.com/DRgreenT/FTP_Deploy_Client)
+
+You can also deploy the project to your server by using FileZilla or a similar SFTP/FTP client.  
+Simply upload the contents of the **`ServerNetworkAPI\publish\linux`** folder into the `ServerNetworkAPI` directory on your server.  
+
