@@ -217,7 +217,14 @@ The runtime settings (like port, controller, timeout, etc.) are stored in:
 ---
 ### WebUI
 
+Since this program includes a built-in Kestrel web server that serves both the API and the WebUI, you don’t need to install an additional (HTTP) web server to access all features.
+
 The WebUI is accessible via the Web API at the IP and port of the local host where the tool is running: e.g.`http:\\192.168.178.10:5050` via web browser.
+
+In a standard Visual Studio 2022 build, the WebUI is not included by default.  
+You can either manually copy the files from the **`dev\WebUI`** folder into **`publish\wwwRoot`**,  
+or use the **`copyWebUI.bat`** script located in **`BuildAndDeployTools`** (see *Building and Deploying Tools* below).  
+
 
 ---
 
@@ -230,7 +237,7 @@ dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFil
 ```
 
 
-# Building and deploying tools
+# Building and Deploying Tools
 
 The repository includes a folder named **`BuildAndDeployTools`**, which is primarily useful if you plan to work on this project in a Windows environment.  
 It contains the following files:  
