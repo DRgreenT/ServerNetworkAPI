@@ -7,7 +7,7 @@
 ## Dependencies:
 
 use: 
-- [Dependencies installer] (./BuildAndDeployTools/setup_dependencies.sh)
+- [Dependencies installer](./BuildAndDeployTools/setup_dependencies.sh)
 - ```chmod +x setup-dependencies.sh```
 - ```./setup-dependencies.sh```
 
