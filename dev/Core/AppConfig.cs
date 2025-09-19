@@ -11,7 +11,7 @@ namespace ServerNetworkAPI.dev.Core
 {
     public class AppConfig
     {
-        public static string Version { get; } = "0.2.7b";
+        public static string Version { get; } = "0.2.7c";
         public static string BaseDirectory { get; } = AppContext.BaseDirectory;
 
         public static string ConfigBasePath { get; } = Path.Combine(BaseDirectory, "Configs");
@@ -64,17 +64,16 @@ namespace ServerNetworkAPI.dev.Core
 
             var firstIp = localIPs.FirstOrDefault();
 
-            LogData log = new();
 
             if (string.IsNullOrEmpty(firstIp))
             {
-                log = LogData.NewLogEvent(
+                Logger.Log(LogData.NewLogEvent(
                     "AppConfig",
                     $"No valid local IP found. Using fallback IP mask: {FallbackIpMask}",
                     MessageType.Warning,
                     ""
-                );
-                Logger.Log(log);
+                ));
+
 
                 return null;
             }
@@ -84,25 +83,24 @@ namespace ServerNetworkAPI.dev.Core
             {
                 var mask = $"{parts[0]}.{parts[1]}.{parts[2]}.";
 
-                log = LogData.NewLogEvent(
+                Logger.Log(LogData.NewLogEvent(
                     "AppConfig",
                     $"Using detected IP mask: {mask}",
                     MessageType.Success,
                     ""
-                );
-                Logger.Log(log);
+                ));
+
 
                 return mask;
             }
 
-            log = LogData.NewLogEvent(
+            Logger.Log(LogData.NewLogEvent(
                 "AppConfig",
                 $"Invalid IP format: {firstIp}. Using fallback IP mask: {FallbackIpMask}",
                 MessageType.Warning,
                 ""
-            );
-            
-            Logger.Log(log);
+            ));
+
             return null;
         }
 
