@@ -12,7 +12,7 @@
   - [Application Configuration](#application-configuration)
   - [Available CLI parameters](#available-cli-parameters)
   - [WebUI](#webui)
-	- 
+	
 - [Build Instructions](#build-instructions-requires-net-90-sdk)
 - [Building and Deploying Tools](#building-and-deploying-tools)
 
